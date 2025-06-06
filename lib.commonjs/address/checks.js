@@ -102,7 +102,7 @@ async function checkAddress(target, promise) {
  */
 function resolveAddress(target, resolver) {
     if (typeof (target) === "string") {
-        if (target.match(/^0x[0-9a-f]{40}$/i)) {
+        if (target.match(/^0x[0-9a-f]{64}$/i)) {
             return (0, address_js_1.getAddress)(target);
         }
         (0, index_js_1.assert)(resolver != null, "ENS resolution requires a provider", "UNSUPPORTED_OPERATION", { operation: "resolveName" });

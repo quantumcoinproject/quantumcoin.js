@@ -2,7 +2,7 @@
  *
  *
  *  Paths
- *  /index.js => dist/quantum.js
+ *  /index.js => dist/quantumcoin.js
  *  /tests/utils.js => in-memory hijack
  *  /static/* => output/*
  *    - index.html

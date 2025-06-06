@@ -163,7 +163,7 @@ _code: connecting to a JSON-RPC URL  @lang<script>
 
   // If no %%url%% is provided, it connects to the default
   // http://localhost:8545, which most nodes use.
-  provider = new quantum.JsonRpcProvider(url)
+  provider = new quantumcoin.jsonRpcProvider(url)
 
   // Get write access as an account by getting the signer
   signer = await provider.getSigner()

@@ -4,7 +4,7 @@ Distribution Folder
 The contents of this folder are for using `import` in ESM
 browser-base projects.
 
-The `quantum.js` (and `quantum.min.js`) files only include the
+The `quantumcoin.js` (and `quantumcoin.min.js`) files only include the
 English wordlist to conserve space.
 
 For additional Wordlist support, the `wordlist-extra.js` (and

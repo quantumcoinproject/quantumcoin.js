@@ -6,7 +6,7 @@ const index_js_2 = require("../utils/index.js");
 const BN_0 = BigInt(0);
 const BN_36 = BigInt(36);
 function getChecksumAddress(address) {
-    //    if (!isHexString(address, 20)) {
+    //    if (!isHexString(address, 32)) {
     //        logger.throwArgumentError("invalid address", "address", address);
     //    }
     address = address.toLowerCase();
