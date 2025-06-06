@@ -7,7 +7,7 @@ Pull requests are welcome, but please keep the following in mind:
 - Security is important; adding dependencies require fairly
   convincing arguments as to why
 - The library aims to be lean, so keep an eye on the
-  ``dist/quantum.min.js`` file size before and after your
+  ``dist/quantumcoin.min.js`` file size before and after your
   changes (the ``build-clean`` target includes these stats)
 - Keep the PR simple, readable and confined to the relevant
   files; see below for which files to change

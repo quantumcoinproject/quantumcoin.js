@@ -9,7 +9,7 @@ const tslib_1 = require("tslib");
  *  @_section: api:Application Programming Interface  [about-api]
  *  @_navTitle: API
  */
-const ethers = tslib_1.__importStar(require("./quantum.js"));
+const ethers = tslib_1.__importStar(require("./quantumcoin.js"));
 exports.ethers = ethers;
-tslib_1.__exportStar(require("./quantum.js"), exports);
+tslib_1.__exportStar(require("./quantumcoin.js"), exports);
 //# sourceMappingURL=index.js.map

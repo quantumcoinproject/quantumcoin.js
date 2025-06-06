@@ -26057,7 +26057,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     //
     // dummy change; to pick-up ws security issue changes
 
-    var quantum = /*#__PURE__*/Object.freeze({
+    var quantumcoin = /*#__PURE__*/Object.freeze({
         __proto__: null,
         AbiCoder: AbiCoder,
         AbstractProvider: AbstractProvider,
@@ -26380,7 +26380,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.encryptKeystoreJson = encryptKeystoreJson;
     exports.encryptKeystoreJsonSync = encryptKeystoreJsonSync;
     exports.ensNormalize = ensNormalize;
-    exports.ethers = quantum;
+    exports.ethers = quantumcoin;
     exports.formatEther = formatEther;
     exports.formatUnits = formatUnits;
     exports.fromTwos = fromTwos;
@@ -26450,4 +26450,4 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.zeroPadValue = zeroPadValue;
 
 }));
-//# sourceMappingURL=quantum.umd.js.map
+//# sourceMappingURL=quantumcoin.umd.js.map

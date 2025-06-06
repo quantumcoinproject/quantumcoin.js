@@ -88,24 +88,24 @@
     "ethereum",
     "ethers",
     "ethersjs",
-    "quantumjs",
+    "quantumcoinjs",
     "quantumcoin"
   ],
   "license": "MIT",
   "main": "./lib.commonjs/index.js",
   "module": "./lib.esm/index.js",
-  "name": "quantum",
+  "name": "quantumcoin",
   "publishConfig": {
     "access": "public",
     "tag": "latest"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/quantumcoinproject/quantum.js.git"
+    "url": "git://github.com/quantumcoinproject/quantumcoin.js.git"
   },
   "scripts": {
-    "_build-dist": "rollup -c && uglifyjs ./dist/quantum.js -o ./dist/quantum.min.js && uglifyjs ./dist/quantum.umd.js -o ./dist/quantum.umd.min.js && uglifyjs ./dist/wordlists-extra.js -o ./dist/wordlists-extra.min.js",
-    "_dist-stats": "gzip -k9f -S '.gz' ./dist/quantum.min.js && gzip -k9f -S '.gz' ./dist/quantum.umd.min.js && gzip -k9f -S '.gz' ./dist/wordlists-extra.min.js && du -hs ./dist/*.gz && echo '' && du -hs ./dist/*.js",
+    "_build-dist": "rollup -c && uglifyjs ./dist/quantumcoin.js -o ./dist/quantumcoin.min.js && uglifyjs ./dist/quantumcoin.umd.js -o ./dist/quantumcoin.umd.min.js && uglifyjs ./dist/wordlists-extra.js -o ./dist/wordlists-extra.min.js",
+    "_dist-stats": "gzip -k9f -S '.gz' ./dist/quantumcoin.min.js && gzip -k9f -S '.gz' ./dist/quantumcoin.umd.min.js && gzip -k9f -S '.gz' ./dist/wordlists-extra.min.js && du -hs ./dist/*.gz && echo '' && du -hs ./dist/*.js",
     "auto-build": "npm run build -- -w",
     "build": "tsc --project tsconfig.esm.json",
     "build-all": "npm run build && npm run build-commonjs",

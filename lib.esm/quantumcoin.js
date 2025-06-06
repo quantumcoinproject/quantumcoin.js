@@ -13,4 +13,4 @@ export { decodeBase58, encodeBase58, decodeBase64, encodeBase64, concat, dataLen
 export { Mnemonic, BaseWallet, HDNodeWallet, HDNodeVoidWallet, Wallet, defaultPath, getAccountPath, getIndexedAccountPath, isCrowdsaleJson, isKeystoreJson, decryptCrowdsaleJson, decryptKeystoreJsonSync, decryptKeystoreJson, encryptKeystoreJson, encryptKeystoreJsonSync, } from "./wallet/index.js";
 export { Wordlist, LangEn, WordlistOwl, WordlistOwlA, wordlists } from "./wordlists/index.js";
 // dummy change; to pick-up ws security issue changes
-//# sourceMappingURL=quantum.js.map
+//# sourceMappingURL=quantumcoin.js.map

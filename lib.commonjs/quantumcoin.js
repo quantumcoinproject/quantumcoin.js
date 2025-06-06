@@ -212,4 +212,4 @@ Object.defineProperty(exports, "WordlistOwl", { enumerable: true, get: function 
 Object.defineProperty(exports, "WordlistOwlA", { enumerable: true, get: function () { return index_js_11.WordlistOwlA; } });
 Object.defineProperty(exports, "wordlists", { enumerable: true, get: function () { return index_js_11.wordlists; } });
 // dummy change; to pick-up ws security issue changes
-//# sourceMappingURL=quantum.js.map
+//# sourceMappingURL=quantumcoin.js.map

@@ -4,7 +4,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 function getConfig(opts) {
   if (opts == null) { opts = { }; }
 
-  const file = `./dist/quantum${ (opts.suffix || "") }.js`;
+  const file = `./dist/quantumcoin${ (opts.suffix || "") }.js`;
   const exportConditions = [ "import", "default" ];
   const mainFields = [ "module", "main" ];
   if (opts.browser) { mainFields.unshift("browser"); }

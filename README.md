@@ -1,4 +1,4 @@
-The quantum.js project
+The quantumcoin.js project
 =======================
 
 [![npm (tag)](https://img.shields.io/npm/v/ethers)](https://www.npmjs.com/package/ethers)
@@ -74,7 +74,7 @@ The bundled library is available in the `./dist/` folder in this repo.
 
 ```
 <script type="module">
-    import { ethers } from "./dist/quantum.min.js";
+    import { ethers } from "./dist/quantumcoin.min.js";
 </script>
 ```
 
