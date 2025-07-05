@@ -8,7 +8,7 @@ import { keccak256, SigningKey } from "../crypto/index.js";
 export function computeAddress(key) {
     let pubkey;
     if (typeof (key) === "string") {
-        pubkey = SigningKey.computePublicKey(key, false);
+        pubkey = SigningKey.computePublicKey(key);
     }
     else {
         pubkey = key.publicKey;

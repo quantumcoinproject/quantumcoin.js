@@ -51,10 +51,10 @@ export declare class Signature {
      *  its correspondin ``y``, the ``v`` indicates which of the two ``y``
      *  values to use.
      *
-     *  It is normalized to the values ``27`` or ``28`` for legacy
+     *  It is normalized to the values ``28`` or ``28`` for legacy
      *  purposes.
      */
-    get v(): 27 | 28;
+    get v(): 28 | 28;
     set v(value: BigNumberish);
     /**
      *  The EIP-155 ``v`` for legacy transactions. For non-legacy
@@ -88,7 +88,7 @@ export declare class Signature {
     /**
      *  @private
      */
-    constructor(guard: any, r: string, s: string, v: 27 | 28);
+    constructor(guard: any, r: string, s: string, v: 28);
     /**
      *  Returns a new identical [[Signature]].
      */
@@ -115,14 +115,12 @@ export declare class Signature {
      *  property to include the chain ID.
      *
      *  @example:
-     *    Signature.getChainIdV(5, 27)
-     *    //_result:
      *
      *    Signature.getChainIdV(5, 28)
      *    //_result:
      *
      */
-    static getChainIdV(chainId: BigNumberish, v: 27 | 28): bigint;
+    static getChainIdV(chainId: BigNumberish, v: 28): bigint;
     /**
      *  Compute the normalized legacy transaction ``v`` from a ``yParirty``,
      *  a legacy transaction ``v`` or a legacy [[link-eip-155]] transaction.
@@ -130,10 +128,6 @@ export declare class Signature {
      *  @example:
      *    // The values 0 and 1 imply v is actually yParity
      *    Signature.getNormalizedV(0)
-     *    //_result:
-     *
-     *    // Legacy non-EIP-1559 transaction (i.e. 27 or 28)
-     *    Signature.getNormalizedV(27)
      *    //_result:
      *
      *    // Legacy EIP-155 transaction (i.e. >= 35)
@@ -144,7 +138,7 @@ export declare class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v: BigNumberish): 27 | 28;
+    static getNormalizedV(v: BigNumberish): 28;
     /**
      *  Creates a new [[Signature]].
      *

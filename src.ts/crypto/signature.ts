@@ -1,7 +1,7 @@
 
 import { ZeroHash } from "../constants/index.js";
 import {
-    concat, dataLength, getBigInt, getBytes, getNumber, hexlify,
+    concat, getBigInt, getBytes, getNumber, hexlify,
     toBeArray, isHexString, zeroPadValue,
     assertArgument, assertPrivate
 } from "../utils/index.js";
@@ -15,7 +15,6 @@ import type {
 const BN_0 = BigInt(0);
 const BN_1 = BigInt(1);
 const BN_2 = BigInt(2);
-const BN_27 = BigInt(27);
 const BN_28 = BigInt(28);
 const BN_35 = BigInt(35);
 
@@ -62,7 +61,7 @@ function toUint256(value: BigNumberish): string {
 export class Signature {
     #r: string;
     #s: string;
-    #v: 27 | 28;
+    #v: 28;
     #networkV: null | bigint;
 
     /**
@@ -73,7 +72,6 @@ export class Signature {
      */
     get r(): string { return this.#r; }
     set r(value: BytesLike) {
-        assertArgument(dataLength(value) === 32, "invalid r", "value", value);
         this.#r = hexlify(value);
     }
 
@@ -82,9 +80,7 @@ export class Signature {
      */
     get s(): string { return this.#s; }
     set s(_value: BytesLike) {
-        assertArgument(dataLength(_value) === 32, "invalid s", "value", _value);
         const value = hexlify(_value);
-        assertArgument(parseInt(value.substring(0, 3)) < 8, "non-canonical s", "value", value);
         this.#s = value;
     }
 
@@ -95,13 +91,13 @@ export class Signature {
      *  its correspondin ``y``, the ``v`` indicates which of the two ``y``
      *  values to use.
      *
-     *  It is normalized to the values ``27`` or ``28`` for legacy
+     *  It is normalized to the values ``28`` or ``28`` for legacy
      *  purposes.
      */
-    get v(): 27 | 28 { return this.#v; }
+    get v(): 28 | 28 { return this.#v; }
     set v(value: BigNumberish) {
         const v = getNumber(value, "value");
-        assertArgument(v === 27 || v === 28, "invalid v", "v", value);
+        assertArgument(v === 28, "invalid v", "v", value);
         this.#v = v;
     }
 
@@ -127,7 +123,7 @@ export class Signature {
      *  See ``v`` for more details on how this value is used.
      */
     get yParity(): 0 | 1 {
-        return (this.v === 27) ? 0: 1;
+        return (this.v === 28) ? 0: 1;
     }
 
     /**
@@ -158,7 +154,7 @@ export class Signature {
     /**
      *  @private
      */
-    constructor(guard: any, r: string, s: string, v: 27 | 28) {
+    constructor(guard: any, r: string, s: string, v: 28) {
         assertPrivate(guard, _guard, "Signature");
         this.#r = r;
         this.#s = s;
@@ -205,7 +201,7 @@ export class Signature {
         const bv = getBigInt(v, "v");
 
         // The v is not an EIP-155 v, so it is the unspecified chain ID
-        if ((bv == BN_27) || (bv == BN_28)) { return BN_0; }
+        if ((bv == BN_28) || (bv == BN_28)) { return BN_0; }
 
         // Bad value for an EIP-155 v
         assertArgument(bv >= BN_35, "invalid EIP-155 v", "v", v);
@@ -220,15 +216,13 @@ export class Signature {
      *  property to include the chain ID.
      *
      *  @example:
-     *    Signature.getChainIdV(5, 27)
-     *    //_result:
      *
      *    Signature.getChainIdV(5, 28)
      *    //_result:
      *
      */
-    static getChainIdV(chainId: BigNumberish, v: 27 | 28): bigint {
-        return (getBigInt(chainId) * BN_2) + BigInt(35 + v - 27);
+    static getChainIdV(chainId: BigNumberish, v: 28): bigint {
+        return (getBigInt(chainId) * BN_2) + BigInt(35 + v - 28);
     }
 
     /**
@@ -240,10 +234,6 @@ export class Signature {
      *    Signature.getNormalizedV(0)
      *    //_result:
      *
-     *    // Legacy non-EIP-1559 transaction (i.e. 27 or 28)
-     *    Signature.getNormalizedV(27)
-     *    //_result:
-     *
      *    // Legacy EIP-155 transaction (i.e. >= 35)
      *    Signature.getNormalizedV(46)
      *    //_result:
@@ -252,16 +242,15 @@ export class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v: BigNumberish): 27 | 28 {
+    static getNormalizedV(v: BigNumberish): 28 {
         const bv = getBigInt(v);
 
-        if (bv === BN_0 || bv === BN_27) { return 27; }
         if (bv === BN_1 || bv === BN_28) { return 28; }
 
         assertArgument(bv >= BN_35, "invalid v", "v", v);
 
-        // Otherwise, EIP-155 v means odd is 27 and even is 28
-        return (bv & BN_1) ? 27: 28;
+        // Otherwise, EIP-155 v means odd is 28 and even is 28
+        return (bv & BN_1) ? 28: 28;
     }
 
     /**
@@ -278,7 +267,7 @@ export class Signature {
         };
 
         if (sig == null) {
-            return new Signature(_guard, ZeroHash, ZeroHash, 27);
+            return new Signature(_guard, ZeroHash, ZeroHash, 28);
         }
 
         if (typeof(sig) === "string") {
@@ -286,7 +275,7 @@ export class Signature {
             if (bytes.length === 64) {
                 const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
-                const v = (s[0] & 0x80) ? 28: 27;
+                const v = (s[0] & 0x80) ? 28: 28;
                 s[0] &= 0x7f;
                 return new Signature(_guard, r, hexlify(s), v);
             }
@@ -325,7 +314,7 @@ export class Signature {
         assertError((getBytes(s)[0] & 0x80) == 0, "non-canonical s");
 
         // Get v; by any means necessary (we check consistency below)
-        const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 27 | 28 } {
+        const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 28 | 28 } {
             if (_v != null) {
                 const v = getBigInt(_v);
                 return {
@@ -336,12 +325,12 @@ export class Signature {
 
             if (yParityAndS != null) {
                 assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
-                return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 27) };
+                return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 28) };
             }
 
             if (yParity != null) {
                 switch (getNumber(yParity, "sig.yParity")) {
-                    case 0: return { v: 27 };
+                    case 0: return { v: 28 };
                     case 1: return { v: 28 };
                 }
                 assertError(false, "invalid yParity");

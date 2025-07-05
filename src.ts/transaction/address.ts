@@ -12,7 +12,7 @@ import type { BytesLike } from "../utils/index.js";
 export function computeAddress(key: string | SigningKey): string {
     let pubkey: string;
     if (typeof(key) === "string") {
-        pubkey = SigningKey.computePublicKey(key, false);
+        pubkey = SigningKey.computePublicKey(key);
     } else {
         pubkey = key.publicKey;
     }
