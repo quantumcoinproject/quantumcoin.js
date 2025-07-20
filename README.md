@@ -1,3 +1,5 @@
+# DRAFT: WORK IN PROGRESS : NOT READY FOR PRODUCTION YET
+
 The quantumcoin.js project
 =======================
 
