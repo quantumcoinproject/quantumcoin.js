@@ -11,7 +11,7 @@ const index_js_2 = require("../crypto/index.js");
 function computeAddress(key) {
     let pubkey;
     if (typeof (key) === "string") {
-        pubkey = index_js_2.SigningKey.computePublicKey(key, false);
+        pubkey = index_js_2.SigningKey.computePublicKey(key);
     }
     else {
         pubkey = key.publicKey;

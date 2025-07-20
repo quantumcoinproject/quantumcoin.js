@@ -5,15 +5,15 @@ const index_js_1 = require("../constants/index.js");
 const index_js_2 = require("../utils/index.js");
 // Constants
 const BN_0 = BigInt(0);
-const BN_1 = BigInt(1);
+//const BN_1 = BigInt(1);
 const BN_2 = BigInt(2);
-const BN_27 = BigInt(27);
 const BN_28 = BigInt(28);
 const BN_35 = BigInt(35);
 const _guard = {};
-function toUint256(value) {
-    return (0, index_js_2.zeroPadValue)((0, index_js_2.toBeArray)(value), 32);
-}
+/*
+function toUint256(value: BigNumberish): string {
+    return zeroPadValue(toBeArray(value), 32);
+}*/
 /**
  *  A Signature  @TODO
  *
@@ -33,7 +33,6 @@ class Signature {
      */
     get r() { return this.#r; }
     set r(value) {
-        (0, index_js_2.assertArgument)((0, index_js_2.dataLength)(value) === 32, "invalid r", "value", value);
         this.#r = (0, index_js_2.hexlify)(value);
     }
     /**
@@ -41,9 +40,7 @@ class Signature {
      */
     get s() { return this.#s; }
     set s(_value) {
-        (0, index_js_2.assertArgument)((0, index_js_2.dataLength)(_value) === 32, "invalid s", "value", _value);
         const value = (0, index_js_2.hexlify)(_value);
-        (0, index_js_2.assertArgument)(parseInt(value.substring(0, 3)) < 8, "non-canonical s", "value", value);
         this.#s = value;
     }
     /**
@@ -53,13 +50,13 @@ class Signature {
      *  its correspondin ``y``, the ``v`` indicates which of the two ``y``
      *  values to use.
      *
-     *  It is normalized to the values ``27`` or ``28`` for legacy
+     *  It is normalized to the values ``28`` or ``28`` for legacy
      *  purposes.
      */
     get v() { return this.#v; }
     set v(value) {
         const v = (0, index_js_2.getNumber)(value, "value");
-        (0, index_js_2.assertArgument)(v === 27 || v === 28, "invalid v", "v", value);
+        (0, index_js_2.assertArgument)(v === 28, "invalid v", "v", value);
         this.#v = v;
     }
     /**
@@ -84,7 +81,7 @@ class Signature {
      *  See ``v`` for more details on how this value is used.
      */
     get yParity() {
-        return (this.v === 27) ? 0 : 1;
+        return (this.v === 28) ? 0 : 1;
     }
     /**
      *  The [[link-eip-2098]] compact representation of the ``yParity``
@@ -157,7 +154,7 @@ class Signature {
     static getChainId(v) {
         const bv = (0, index_js_2.getBigInt)(v, "v");
         // The v is not an EIP-155 v, so it is the unspecified chain ID
-        if ((bv == BN_27) || (bv == BN_28)) {
+        if ((bv == BN_28) || (bv == BN_28)) {
             return BN_0;
         }
         // Bad value for an EIP-155 v
@@ -171,15 +168,13 @@ class Signature {
      *  property to include the chain ID.
      *
      *  @example:
-     *    Signature.getChainIdV(5, 27)
-     *    //_result:
      *
      *    Signature.getChainIdV(5, 28)
      *    //_result:
      *
      */
     static getChainIdV(chainId, v) {
-        return ((0, index_js_2.getBigInt)(chainId) * BN_2) + BigInt(35 + v - 27);
+        return ((0, index_js_2.getBigInt)(chainId) * BN_2) + BigInt(35 + v - 28);
     }
     /**
      *  Compute the normalized legacy transaction ``v`` from a ``yParirty``,
@@ -190,10 +185,6 @@ class Signature {
      *    Signature.getNormalizedV(0)
      *    //_result:
      *
-     *    // Legacy non-EIP-1559 transaction (i.e. 27 or 28)
-     *    Signature.getNormalizedV(27)
-     *    //_result:
-     *
      *    // Legacy EIP-155 transaction (i.e. >= 35)
      *    Signature.getNormalizedV(46)
      *    //_result:
@@ -202,18 +193,16 @@ class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v) {
-        const bv = (0, index_js_2.getBigInt)(v);
-        if (bv === BN_0 || bv === BN_27) {
-            return 27;
-        }
-        if (bv === BN_1 || bv === BN_28) {
-            return 28;
-        }
-        (0, index_js_2.assertArgument)(bv >= BN_35, "invalid v", "v", v);
-        // Otherwise, EIP-155 v means odd is 27 and even is 28
-        return (bv & BN_1) ? 27 : 28;
-    }
+    /*static getNormalizedV(v: BigNumberish): 28 {
+        const bv = getBigInt(v);
+
+        if (bv === BN_1 || bv === BN_28) { return 28; }
+
+        assertArgument(bv >= BN_35, "invalid v", "v", v);
+
+        // Otherwise, EIP-155 v means odd is 28 and even is 28
+        return (bv & BN_1) ? 28: 28;
+    }*/
     /**
      *  Creates a new [[Signature]].
      *
@@ -228,77 +217,85 @@ class Signature {
         }
         ;
         if (sig == null) {
-            return new Signature(_guard, index_js_1.ZeroHash, index_js_1.ZeroHash, 27);
+            return new Signature(_guard, index_js_1.ZeroHash, index_js_1.ZeroHash, 28);
         }
         if (typeof (sig) === "string") {
-            const bytes = (0, index_js_2.getBytes)(sig, "signature");
+            /*const bytes = getBytes(sig, "signature");
             if (bytes.length === 64) {
-                const r = (0, index_js_2.hexlify)(bytes.slice(0, 32));
+                const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
-                const v = (s[0] & 0x80) ? 28 : 27;
+                const v = (s[0] & 0x80) ? 28: 28;
                 s[0] &= 0x7f;
-                return new Signature(_guard, r, (0, index_js_2.hexlify)(s), v);
+                return new Signature(_guard, r, hexlify(s), v);
             }
+
             if (bytes.length === 65) {
-                const r = (0, index_js_2.hexlify)(bytes.slice(0, 32));
+                const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
                 assertError((s[0] & 0x80) === 0, "non-canonical s");
                 const v = Signature.getNormalizedV(bytes[64]);
-                return new Signature(_guard, r, (0, index_js_2.hexlify)(s), v);
-            }
+                return new Signature(_guard, r, hexlify(s), v);
+            }*/
             assertError(false, "invalid raw signature length");
         }
         if (sig instanceof Signature) {
             return sig.clone();
         }
-        // Get r
+        return new Signature(_guard, index_js_1.ZeroHash, index_js_1.ZeroHash, 28); //todo
+        /*// Get r
         const _r = sig.r;
         assertError(_r != null, "missing r");
         const r = toUint256(_r);
+
         // Get s; by any means necessary (we check consistency below)
-        const s = (function (s, yParityAndS) {
-            if (s != null) {
-                return toUint256(s);
-            }
+        const s = (function(s?: string, yParityAndS?: string) {
+            if (s != null) { return toUint256(s); }
+
             if (yParityAndS != null) {
-                assertError((0, index_js_2.isHexString)(yParityAndS, 32), "invalid yParityAndS");
-                const bytes = (0, index_js_2.getBytes)(yParityAndS);
+                assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
+                const bytes = getBytes(yParityAndS);
                 bytes[0] &= 0x7f;
-                return (0, index_js_2.hexlify)(bytes);
+                return hexlify(bytes);
             }
+
             assertError(false, "missing s");
         })(sig.s, sig.yParityAndS);
-        assertError(((0, index_js_2.getBytes)(s)[0] & 0x80) == 0, "non-canonical s");
+        assertError((getBytes(s)[0] & 0x80) == 0, "non-canonical s");
+
         // Get v; by any means necessary (we check consistency below)
-        const { networkV, v } = (function (_v, yParityAndS, yParity) {
+        const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 28 | 28 } {
             if (_v != null) {
-                const v = (0, index_js_2.getBigInt)(_v);
+                const v = getBigInt(_v);
                 return {
-                    networkV: ((v >= BN_35) ? v : undefined),
+                    networkV: ((v >= BN_35) ? v: undefined),
                     v: Signature.getNormalizedV(v)
                 };
             }
+
             if (yParityAndS != null) {
-                assertError((0, index_js_2.isHexString)(yParityAndS, 32), "invalid yParityAndS");
-                return { v: (((0, index_js_2.getBytes)(yParityAndS)[0] & 0x80) ? 28 : 27) };
+                assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
+                return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 28) };
             }
+
             if (yParity != null) {
-                switch ((0, index_js_2.getNumber)(yParity, "sig.yParity")) {
-                    case 0: return { v: 27 };
+                switch (getNumber(yParity, "sig.yParity")) {
+                    case 0: return { v: 28 };
                     case 1: return { v: 28 };
                 }
                 assertError(false, "invalid yParity");
             }
+
             assertError(false, "missing v");
         })(sig.v, sig.yParityAndS, sig.yParity);
+
         const result = new Signature(_guard, r, s, v);
-        if (networkV) {
-            result.#networkV = networkV;
-        }
+        if (networkV) { result.#networkV =  networkV; }
+
         // If multiple of v, yParity, yParityAndS we given, check they match
-        assertError(sig.yParity == null || (0, index_js_2.getNumber)(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
+        assertError(sig.yParity == null || getNumber(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
         assertError(sig.yParityAndS == null || sig.yParityAndS === result.yParityAndS, "yParityAndS mismatch");
-        return result;
+
+        return result;*/
     }
 }
 exports.Signature = Signature;

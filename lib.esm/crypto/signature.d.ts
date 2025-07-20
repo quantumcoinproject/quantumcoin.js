@@ -8,20 +8,14 @@ export type SignatureLike = Signature | string | {
     r: string;
     s: string;
     v: BigNumberish;
-    yParity?: 0 | 1;
-    yParityAndS?: string;
 } | {
     r: string;
-    yParityAndS: string;
-    yParity?: 0 | 1;
     s?: string;
     v?: number;
 } | {
     r: string;
     s: string;
-    yParity: 0 | 1;
     v?: BigNumberish;
-    yParityAndS?: string;
 };
 /**
  *  A Signature  @TODO
@@ -138,7 +132,6 @@ export declare class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v: BigNumberish): 28;
     /**
      *  Creates a new [[Signature]].
      *

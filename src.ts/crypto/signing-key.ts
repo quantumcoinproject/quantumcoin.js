@@ -5,9 +5,11 @@
  */
 
 import pqc = require('quantum-coin-pqc-js-sdk');
+import qcsdk = require('quantum-coin-js-sdk');
 
 import {
-    dataLength, getBytes, getBytesCopy, hexlify,
+    getBytes,
+    dataLength, getBytesCopy, hexlify,
     assertArgument
 } from "../utils/index.js";
 
@@ -17,6 +19,7 @@ import type { BytesLike } from "../utils/index.js";
 
 import type { SignatureLike } from "./index.js";
 
+const CRYPTO_MESSAGE_LENGTH = 32;
 const CRYPTO_SECRETKEY_BYTES = 64 + 2560 + 1312 + 128;
 //const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
 
@@ -40,7 +43,7 @@ export class SigningKey {
     get privateKey(): string { return this.#privateKey; }
 
     /**
-     *  The uncompressed public key.
+     *  The public key.
      *
      */
     get publicKey(): string { return SigningKey.computePublicKey(this.#privateKey); }
@@ -61,33 +64,23 @@ export class SigningKey {
     }
 
     /**
-     *  Compute the public key for %%key%%. The %%compressed%% parameter is ignored.
+     *  Compute the public key for a private %%key%%.
      *
      *
      *  @example:
      *    sign = new SigningKey(id("some-secret"));
      *
-     *    // Compute the uncompressed public key for a private key
+     *    // Compute the public key for a private key
      *    SigningKey.computePublicKey(sign.privateKey)
      *    //_result:
      */
     static computePublicKey(key: BytesLike): string {
         assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
-        let bytes = getBytes(key, "key");
+        let priBytes: any = getBytes(key, "key");
 
-        //const pub = new Uint8Array(CRYPTO_PUBLICKEY_BYTES);
+        let pubKey: any = qcsdk.publicKeyFromPrivateKey(priBytes);
 
-        // private key
-        if (bytes.length === 32) {
-
-        }
-
-        // raw public key; use uncompressed key with 0x04 prefix
-        if (bytes.length === 64) {
-
-        }
-
-        return "";
+        return hexlify(pubKey);
     }
 
     /**
@@ -109,11 +102,15 @@ export class SigningKey {
      *
      */
     static recoverPublicKey(digest: BytesLike, signature: SignatureLike): string {
-        assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
+        assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
 
-        //const sig = Signature.from(signature);
+        const sig = Signature.from(signature);
+        let sigBytes: any = getBytes(sig.s);
+        let digestBytes: any = digest;
 
-       return "";
+        let publicKeyBytes: any = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+
+        return hexlify(publicKeyBytes);
     }
 }
 

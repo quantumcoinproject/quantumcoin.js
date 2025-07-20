@@ -148,7 +148,7 @@ class HDNodeWallet extends base_wallet_js_1.BaseWallet {
     constructor(guard, signingKey, parentFingerprint, chainCode, path, index, depth, mnemonic, provider) {
         super(signingKey, provider);
         (0, index_js_4.assertPrivate)(guard, _guard, "HDNodeWallet");
-        (0, index_js_4.defineProperties)(this, { publicKey: signingKey.compressedPublicKey });
+        (0, index_js_4.defineProperties)(this, { publicKey: signingKey.publicKey });
         const fingerprint = (0, index_js_4.dataSlice)((0, index_js_1.ripemd160)((0, index_js_1.sha256)(this.publicKey)), 0, 4);
         (0, index_js_4.defineProperties)(this, {
             parentFingerprint, fingerprint,
@@ -445,10 +445,9 @@ class HDNodeVoidWallet extends index_js_2.VoidSigner {
                 path += "'";
             }
         }
-        const { IR, IL } = ser_I(index, this.chainCode, this.publicKey, null);
-        const Ki = index_js_1.SigningKey.addPoints(IL, this.publicKey, true);
-        const address = (0, index_js_3.computeAddress)(Ki);
-        return new HDNodeVoidWallet(_guard, address, Ki, this.fingerprint, (0, index_js_4.hexlify)(IR), path, index, this.depth + 1, this.provider);
+        const Ki = "";
+        const address = "";
+        return new HDNodeVoidWallet(_guard, address, Ki, this.fingerprint, (0, index_js_4.hexlify)(""), path, index, this.depth + 1, this.provider);
     }
     /**
      *  Return the signer for %%path%% from this node.

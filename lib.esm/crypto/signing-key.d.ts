@@ -20,7 +20,7 @@ export declare class SigningKey {
      */
     get privateKey(): string;
     /**
-     *  The uncompressed public key.
+     *  The public key.
      *
      */
     get publicKey(): string;
@@ -29,13 +29,13 @@ export declare class SigningKey {
      */
     sign(digest: BytesLike): Signature;
     /**
-     *  Compute the public key for %%key%%. The %%compressed%% parameter is ignored.
+     *  Compute the public key for a private %%key%%.
      *
      *
      *  @example:
      *    sign = new SigningKey(id("some-secret"));
      *
-     *    // Compute the uncompressed public key for a private key
+     *    // Compute the public key for a private key
      *    SigningKey.computePublicKey(sign.privateKey)
      *    //_result:
      */

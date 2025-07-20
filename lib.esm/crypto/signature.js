@@ -1,15 +1,18 @@
 import { ZeroHash } from "../constants/index.js";
-import { concat, getBigInt, getBytes, getNumber, hexlify, toBeArray, isHexString, zeroPadValue, assertArgument, assertPrivate } from "../utils/index.js";
+import { 
+//isHexString,     toBeArray, zeroPadValue,
+concat, getBigInt, getBytes, getNumber, hexlify, assertArgument, assertPrivate } from "../utils/index.js";
 // Constants
 const BN_0 = BigInt(0);
-const BN_1 = BigInt(1);
+//const BN_1 = BigInt(1);
 const BN_2 = BigInt(2);
 const BN_28 = BigInt(28);
 const BN_35 = BigInt(35);
 const _guard = {};
-function toUint256(value) {
+/*
+function toUint256(value: BigNumberish): string {
     return zeroPadValue(toBeArray(value), 32);
-}
+}*/
 /**
  *  A Signature  @TODO
  *
@@ -189,15 +192,16 @@ export class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v) {
+    /*static getNormalizedV(v: BigNumberish): 28 {
         const bv = getBigInt(v);
-        if (bv === BN_1 || bv === BN_28) {
-            return 28;
-        }
+
+        if (bv === BN_1 || bv === BN_28) { return 28; }
+
         assertArgument(bv >= BN_35, "invalid v", "v", v);
+
         // Otherwise, EIP-155 v means odd is 28 and even is 28
-        return (bv & BN_1) ? 28 : 28;
-    }
+        return (bv & BN_1) ? 28: 28;
+    }*/
     /**
      *  Creates a new [[Signature]].
      *
@@ -215,57 +219,63 @@ export class Signature {
             return new Signature(_guard, ZeroHash, ZeroHash, 28);
         }
         if (typeof (sig) === "string") {
-            const bytes = getBytes(sig, "signature");
+            /*const bytes = getBytes(sig, "signature");
             if (bytes.length === 64) {
                 const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
-                const v = (s[0] & 0x80) ? 28 : 28;
+                const v = (s[0] & 0x80) ? 28: 28;
                 s[0] &= 0x7f;
                 return new Signature(_guard, r, hexlify(s), v);
             }
+
             if (bytes.length === 65) {
                 const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
                 assertError((s[0] & 0x80) === 0, "non-canonical s");
                 const v = Signature.getNormalizedV(bytes[64]);
                 return new Signature(_guard, r, hexlify(s), v);
-            }
+            }*/
             assertError(false, "invalid raw signature length");
         }
         if (sig instanceof Signature) {
             return sig.clone();
         }
-        // Get r
+        return new Signature(_guard, ZeroHash, ZeroHash, 28); //todo
+        /*// Get r
         const _r = sig.r;
         assertError(_r != null, "missing r");
         const r = toUint256(_r);
+
         // Get s; by any means necessary (we check consistency below)
-        const s = (function (s, yParityAndS) {
-            if (s != null) {
-                return toUint256(s);
-            }
+        const s = (function(s?: string, yParityAndS?: string) {
+            if (s != null) { return toUint256(s); }
+
             if (yParityAndS != null) {
                 assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
                 const bytes = getBytes(yParityAndS);
                 bytes[0] &= 0x7f;
                 return hexlify(bytes);
             }
+
             assertError(false, "missing s");
         })(sig.s, sig.yParityAndS);
         assertError((getBytes(s)[0] & 0x80) == 0, "non-canonical s");
+
         // Get v; by any means necessary (we check consistency below)
-        const { networkV, v } = (function (_v, yParityAndS, yParity) {
+        const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 28 | 28 } {
             if (_v != null) {
                 const v = getBigInt(_v);
                 return {
-                    networkV: ((v >= BN_35) ? v : undefined),
+                    networkV: ((v >= BN_35) ? v: undefined),
                     v: Signature.getNormalizedV(v)
                 };
             }
+
             if (yParityAndS != null) {
                 assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
-                return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28 : 28) };
+                return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 28) };
             }
+
             if (yParity != null) {
                 switch (getNumber(yParity, "sig.yParity")) {
                     case 0: return { v: 28 };
@@ -273,16 +283,18 @@ export class Signature {
                 }
                 assertError(false, "invalid yParity");
             }
+
             assertError(false, "missing v");
         })(sig.v, sig.yParityAndS, sig.yParity);
+
         const result = new Signature(_guard, r, s, v);
-        if (networkV) {
-            result.#networkV = networkV;
-        }
+        if (networkV) { result.#networkV =  networkV; }
+
         // If multiple of v, yParity, yParityAndS we given, check they match
         assertError(sig.yParity == null || getNumber(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
         assertError(sig.yParityAndS == null || sig.yParityAndS === result.yParityAndS, "yParityAndS mismatch");
-        return result;
+
+        return result;*/
     }
 }
 //# sourceMappingURL=signature.js.map

@@ -1,19 +1,20 @@
 
 import { ZeroHash } from "../constants/index.js";
 import {
+    //isHexString,     toBeArray, zeroPadValue,
     concat, getBigInt, getBytes, getNumber, hexlify,
-    toBeArray, isHexString, zeroPadValue,
     assertArgument, assertPrivate
 } from "../utils/index.js";
 
 import type {
-    BigNumberish, BytesLike, Numeric
+    //Numeric
+    BigNumberish, BytesLike,
 } from "../utils/index.js";
 
 
 // Constants
 const BN_0 = BigInt(0);
-const BN_1 = BigInt(1);
+//const BN_1 = BigInt(1);
 const BN_2 = BigInt(2);
 const BN_28 = BigInt(28);
 const BN_35 = BigInt(35);
@@ -32,25 +33,19 @@ export type SignatureLike = Signature | string | {
     r: string;
     s: string;
     v: BigNumberish;
-    yParity?: 0 | 1;
-    yParityAndS?: string;
 } | {
     r: string;
-    yParityAndS: string;
-    yParity?: 0 | 1;
     s?: string;
     v?: number;
 } | {
     r: string;
     s: string;
-    yParity: 0 | 1;
     v?: BigNumberish;
-    yParityAndS?: string;
 };
-
+/*
 function toUint256(value: BigNumberish): string {
     return zeroPadValue(toBeArray(value), 32);
-}
+}*/
 
 /**
  *  A Signature  @TODO
@@ -242,7 +237,7 @@ export class Signature {
      *    Signature.getNormalizedV(5)
      *    //_error:
      */
-    static getNormalizedV(v: BigNumberish): 28 {
+    /*static getNormalizedV(v: BigNumberish): 28 {
         const bv = getBigInt(v);
 
         if (bv === BN_1 || bv === BN_28) { return 28; }
@@ -251,7 +246,7 @@ export class Signature {
 
         // Otherwise, EIP-155 v means odd is 28 and even is 28
         return (bv & BN_1) ? 28: 28;
-    }
+    }*/
 
     /**
      *  Creates a new [[Signature]].
@@ -271,7 +266,7 @@ export class Signature {
         }
 
         if (typeof(sig) === "string") {
-            const bytes = getBytes(sig, "signature");
+            /*const bytes = getBytes(sig, "signature");
             if (bytes.length === 64) {
                 const r = hexlify(bytes.slice(0, 32));
                 const s = bytes.slice(32, 64);
@@ -286,14 +281,16 @@ export class Signature {
                 assertError((s[0] & 0x80) === 0, "non-canonical s");
                 const v = Signature.getNormalizedV(bytes[64]);
                 return new Signature(_guard, r, hexlify(s), v);
-            }
+            }*/
 
             assertError(false, "invalid raw signature length");
         }
 
         if (sig instanceof Signature) { return sig.clone(); }
 
-        // Get r
+        return new Signature(_guard, ZeroHash, ZeroHash, 28); //todo
+
+        /*// Get r
         const _r = sig.r;
         assertError(_r != null, "missing r");
         const r = toUint256(_r);
@@ -346,7 +343,7 @@ export class Signature {
         assertError(sig.yParity == null || getNumber(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
         assertError(sig.yParityAndS == null || sig.yParityAndS === result.yParityAndS, "yParityAndS mismatch");
 
-        return result;
+        return result;*/
     }
 }
 

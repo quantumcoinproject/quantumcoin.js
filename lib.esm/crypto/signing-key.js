@@ -3,8 +3,9 @@
  *
  *  @_subsection: api/crypto:Signing  [about-signing]
  */
-import { dataLength, getBytes, getBytesCopy, hexlify, assertArgument } from "../utils/index.js";
+import { getBytes, dataLength, getBytesCopy, hexlify, assertArgument } from "../utils/index.js";
 import { Signature } from "./signature.js";
+const CRYPTO_MESSAGE_LENGTH = 32;
 const CRYPTO_SECRETKEY_BYTES = 64 + 2560 + 1312 + 128;
 //const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
 /**
@@ -24,7 +25,7 @@ export class SigningKey {
      */
     get privateKey() { return this.#privateKey; }
     /**
-     *  The uncompressed public key.
+     *  The public key.
      *
      */
     get publicKey() { return SigningKey.computePublicKey(this.#privateKey); }
@@ -41,27 +42,21 @@ export class SigningKey {
         });
     }
     /**
-     *  Compute the public key for %%key%%. The %%compressed%% parameter is ignored.
+     *  Compute the public key for a private %%key%%.
      *
      *
      *  @example:
      *    sign = new SigningKey(id("some-secret"));
      *
-     *    // Compute the uncompressed public key for a private key
+     *    // Compute the public key for a private key
      *    SigningKey.computePublicKey(sign.privateKey)
      *    //_result:
      */
     static computePublicKey(key) {
         assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
-        let bytes = getBytes(key, "key");
-        //const pub = new Uint8Array(CRYPTO_PUBLICKEY_BYTES);
-        // private key
-        if (bytes.length === 32) {
-        }
-        // raw public key; use uncompressed key with 0x04 prefix
-        if (bytes.length === 64) {
-        }
-        return "";
+        let priBytes = getBytes(key, "key");
+        let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
+        return hexlify(pubKey);
     }
     /**
      *  Returns the public key for the private key which produced the
@@ -82,9 +77,12 @@ export class SigningKey {
      *
      */
     static recoverPublicKey(digest, signature) {
-        assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
-        //const sig = Signature.from(signature);
-        return "";
+        assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
+        const sig = Signature.from(signature);
+        let sigBytes = getBytes(sig.s);
+        let digestBytes = digest;
+        let publicKeyBytes = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+        return hexlify(publicKeyBytes);
     }
 }
 //# sourceMappingURL=signing-key.js.map
