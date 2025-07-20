@@ -2,7 +2,7 @@
 //
 export { version } from "./_version.js";
 export { decodeBytes32String, encodeBytes32String, AbiCoder, ConstructorFragment, ErrorFragment, EventFragment, Fragment, FallbackFragment, FunctionFragment, NamedFragment, ParamType, StructFragment, checkResultErrors, ErrorDescription, Indexed, Interface, LogDescription, Result, TransactionDescription, Typed, } from "./abi/index.js";
-export { getAddress, getIcapAddress, getCreateAddress, getCreate2Address, isAddressable, isAddress, resolveAddress } from "./address/index.js";
+export { getAddress, getCreateAddress, getCreate2Address, isAddressable, isAddress, resolveAddress } from "./address/index.js";
 export { ZeroAddress, WeiPerEther, MaxUint256, MinInt256, MaxInt256, N, ZeroHash, EtherSymbol, MessagePrefix } from "./constants/index.js";
 export { BaseContract, Contract, ContractFactory, ContractEventPayload, ContractTransactionReceipt, ContractTransactionResponse, ContractUnknownEventPayload, EventLog, UndecodedEventLog } from "./contract/index.js";
 export { computeHmac, randomBytes, keccak256, ripemd160, sha256, sha512, pbkdf2, scrypt, scryptSync, lock, Signature, SigningKey } from "./crypto/index.js";

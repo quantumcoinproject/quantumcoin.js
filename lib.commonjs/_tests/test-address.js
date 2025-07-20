@@ -57,16 +57,6 @@ describe("computes checksum address", function () {
         });
     });
 });
-describe("computes ICAP address", function () {
-    const tests = (0, utils_js_1.loadTests)("accounts");
-    for (const test of tests) {
-        it(`computes the ICAP address: ${test.name}`, function () {
-            assert_1.default.equal((0, index_js_1.getIcapAddress)(test.address), test.icap);
-            assert_1.default.equal((0, index_js_1.getAddress)(test.address.toLowerCase()), test.address);
-            assert_1.default.equal((0, index_js_1.getAddress)("0x" + test.address.substring(2).toUpperCase()), test.address);
-        });
-    }
-});
 describe("computes create address", function () {
     const tests = (0, utils_js_1.loadTests)("create");
     for (const { sender, creates } of tests) {

@@ -16,7 +16,7 @@ export {
 } from "./abi/index.js";
 
 export {
-    getAddress, getIcapAddress,
+    getAddress,
     getCreateAddress, getCreate2Address,
     isAddressable, isAddress, resolveAddress
 } from "./address/index.js";

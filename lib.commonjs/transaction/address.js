@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.recoverAddress = exports.computeAddress = void 0;
 //import { getAddress } from "../address/index.js";
-// keccak256, 
+// keccak256,
 const index_js_1 = require("../crypto/index.js");
 const index_js_2 = require("../utils/index.js");
 const qcsdk = require("quantum-coin-js-sdk");

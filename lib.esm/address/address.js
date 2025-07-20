@@ -70,8 +70,7 @@ function fromBase36(value) {
 }
 /**
  *  Returns a normalized and checksumed address for %%address%%.
- *  This accepts non-checksum addresses, checksum addresses and
- *  [[getIcapAddress]] formats.
+ *  This accepts non-checksum addresses, checksum addresses formats.
  *
  *  The checksum in Ethereum uses the capitalization (upper-case
  *  vs lower-case) of the characters within an address to encode
@@ -126,31 +125,5 @@ export function getAddress(address) {
         return getChecksumAddress("0x" + result);
     }
     assertArgument(false, "invalid address", "address", address);
-}
-/**
- *  The [ICAP Address format](link-icap) format is an early checksum
- *  format which attempts to be compatible with the banking
- *  industry [IBAN format](link-wiki-iban) for bank accounts.
- *
- *  It is no longer common or a recommended format.
- *
- *  @example:
- *    getIcapAddress("0x8ba1f109551bd432803012645ac136ddd64dba72");
- *    //_result:
- *
- *    getIcapAddress("XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK36");
- *    //_result:
- *
- *    // Throws an error if the ICAP checksum is wrong
- *    getIcapAddress("XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK37");
- *    //_error:
- */
-export function getIcapAddress(address) {
-    //let base36 = _base16To36(getAddress(address).substring(2)).toUpperCase();
-    let base36 = BigInt(getAddress(address)).toString(36).toUpperCase();
-    while (base36.length < 30) {
-        base36 = "0" + base36;
-    }
-    return "XE" + ibanChecksum("XE00" + base36) + base36;
 }
 //# sourceMappingURL=address.js.map

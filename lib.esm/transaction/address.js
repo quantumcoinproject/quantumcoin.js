@@ -1,5 +1,5 @@
 //import { getAddress } from "../address/index.js";
-// keccak256, 
+// keccak256,
 import { SigningKey } from "../crypto/index.js";
 import { getBytes } from "../utils/index.js";
 /**

@@ -1,6 +1,6 @@
 import assert from "assert";
 import { loadTests } from "./utils.js";
-import { getAddress, getIcapAddress, getCreateAddress, getCreate2Address } from "../index.js";
+import { getAddress, getCreateAddress, getCreate2Address } from "../index.js";
 describe("computes checksum address", function () {
     const tests = loadTests("accounts");
     for (const test of tests) {
@@ -53,16 +53,6 @@ describe("computes checksum address", function () {
                 error.value === value);
         });
     });
-});
-describe("computes ICAP address", function () {
-    const tests = loadTests("accounts");
-    for (const test of tests) {
-        it(`computes the ICAP address: ${test.name}`, function () {
-            assert.equal(getIcapAddress(test.address), test.icap);
-            assert.equal(getAddress(test.address.toLowerCase()), test.address);
-            assert.equal(getAddress("0x" + test.address.substring(2).toUpperCase()), test.address);
-        });
-    }
 });
 describe("computes create address", function () {
     const tests = loadTests("create");
