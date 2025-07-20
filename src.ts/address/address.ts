@@ -1,7 +1,6 @@
 import { keccak256 } from "../crypto/index.js";
 import { getBytes, assertArgument } from "../utils/index.js";
 
-
 const BN_0 = BigInt(0);
 const BN_36 = BigInt(36);
 

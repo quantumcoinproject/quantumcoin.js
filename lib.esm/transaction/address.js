@@ -1,5 +1,7 @@
-import { getAddress } from "../address/index.js";
-import { keccak256, SigningKey } from "../crypto/index.js";
+//import { getAddress } from "../address/index.js";
+// keccak256, 
+import { SigningKey } from "../crypto/index.js";
+import { getBytes } from "../utils/index.js";
 /**
  *  Returns the address for the %%key%%.
  *
@@ -13,7 +15,8 @@ export function computeAddress(key) {
     else {
         pubkey = key.publicKey;
     }
-    return getAddress(keccak256("0x" + pubkey.substring(4)).substring(26));
+    let pubKeyBytes = getBytes(pubkey);
+    return qcsdk.addressFromPublicKey(pubKeyBytes);
 }
 /**
  *  Returns the recovered address for the private key that was

@@ -1,6 +1,6 @@
 import { SigningKey } from "../crypto/index.js";
 import type { SignatureLike } from "../crypto/index.js";
-import type { BytesLike } from "../utils/index.js";
+import { BytesLike } from "../utils/index.js";
 /**
  *  Returns the address for the %%key%%.
  *
