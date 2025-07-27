@@ -108,7 +108,7 @@
   },
   "scripts": {
     "_build-dist": "rollup -c && uglifyjs ./dist/quantumcoin.js -o ./dist/quantumcoin.min.js && uglifyjs ./dist/quantumcoin.umd.js -o ./dist/quantumcoin.umd.min.js && uglifyjs ./dist/wordlists-extra.js -o ./dist/wordlists-extra.min.js",
-    "_dist-stats": "gzip -k9f -S '.gz' ./dist/quantumcoin.min.js && gzip -k9f -S '.gz' ./dist/quantumcoin.umd.min.js && gzip -k9f -S '.gz' ./dist/wordlists-extra.min.js && du -hs ./dist/*.gz && echo '' && du -hs ./dist/*.js",
+    "_dist-stats": "gzip -k9f -S '.gz' ./dist/quantumcoin.min.js && gzip -k9f -S '.gz' ./dist/quantumcoin.umd.min.js && gzip -k9f -S '.gz' ./dist/wordlists-extra.min.js",
     "auto-build": "npm run build -- -w",
     "build": "tsc --project tsconfig.esm.json",
     "build-all": "npm run build && npm run build-commonjs",
@@ -125,5 +125,5 @@
     "test-esm": "mocha --trace-warnings --reporter ./reporter.cjs ./lib.esm/_tests/test-*.js"
   },
   "sideEffects": false,
-  "version": "6.14.1"
+  "version": "6.14.2"
 }
