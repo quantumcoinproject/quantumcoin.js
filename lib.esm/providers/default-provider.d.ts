@@ -21,14 +21,6 @@ import { WebSocketLike } from "./provider-websocket.js";
  *  will whitelist **only** those backends.
  *
  *  Current backend strings supported are:
- *  - ``"alchemy"``
- *  - ``"ankr"``
- *  - ``"cloudflare"``
- *  - ``"chainstack"``
- *  - ``"etherscan"``
- *  - ``"infura"``
- *  - ``"publicPolygon"``
- *  - ``"quicknode"``
  *
  *  @example:
  *    // Connect to a local Geth node
