@@ -1,13 +1,4 @@
 import {
-    AlchemyProvider,
-    BlockscoutProvider,
-//    AnkrProvider,
-//    CloudflareProvider,
-    ChainstackProvider,
-    EtherscanProvider,
-    InfuraProvider,
-//    PocketProvider,
-//    QuickNodeProvider,
     JsonRpcProvider,
 
     FallbackProvider,
@@ -18,8 +9,6 @@ import { inspect } from "./utils-debug.js";
 
 import type { AbstractProvider } from "../index.js";
 
-import { INFURA_APIKEY } from "./utils.js";
-
 interface ProviderCreator {
     name: string;
     networks: Array<string>;
@@ -27,97 +16,14 @@ interface ProviderCreator {
 };
 
 const ethNetworks = [ "default", "mainnet", "sepolia" ];
-//const maticNetworks = [ "matic", "maticmum" ];
 
 const ProviderCreators: Array<ProviderCreator> = [
-    {
-        name: "AlchemyProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return new AlchemyProvider(network, "YrPw6SWb20vJDRFkhWq8aKnTQ8JRNRHM");
-        }
-    },
-    {
-        name: "BlockscoutProvider",
-        //networks: ethNetworks,  // @TODO: they are backfilling some Sepolia txs
-        networks: [ "mainnet" ],
-        create: function(network: string) {
-            //return new BlockscoutProvider(network);
-            return new BlockscoutProvider(network, "fdbfa288-1695-454e-a369-4501253a120");
-        }
-    },
-    /*
-    {
-        name: "AnkrProvider",
-        networks: ethNetworks.concat([ "matic", "arbitrum" ]),
-        create: function(network: string) {
-            return new AnkrProvider(network);
-        }
-    },
-    */
-    /*
-    {
-        name: "CloudflareProvider",
-        networks: [ "default", "mainnet" ],
-        create: function(network: string) {
-            return new CloudflareProvider(network);
-        }
-    },
-    */
-    {
-        name: "ChainstackProvider",
-        networks: [ "default", "mainnet", "arbitrum", "bnb", "matic" ],
-        create: function(network: string) {
-            return new ChainstackProvider(network);
-        }
-    },
-    {
-        name: "EtherscanProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return new EtherscanProvider(network, "FPFGK6JSW2UHJJ2666FG93KP7WC999MNW7");
-        }
-    },
-    {
-        name: "InfuraProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return new InfuraProvider(network, INFURA_APIKEY || undefined);
-        }
-    },
-    /*
-    {
-        name: "InfuraWebsocketProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return InfuraProvider.getWebSocketProvider(network, "49a0efa3aaee4fd99797bfa94d8ce2f1");
-        }
-    },
-    */
-/*
-    {
-        name: "PocketProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return new PocketProvider(network);
-        }
-    },
-*/
-/*
-    {
-        name: "QuickNodeProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return new QuickNodeProvider(network);
-        }
-    },
-*/
     {
         name: "FallbackProvider",
         networks: ethNetworks,
         create: function(network: string) {
             const providers: Array<AbstractProvider> = [];
-            for (const providerName of [ "AlchemyProvider", "AnkrProvider", "EtherscanProvider", "InfuraProvider" ]) {
+            for (const providerName of [ ]) {
                 const provider = getProvider(providerName, network);
                 if (provider) { providers.push(provider); }
             }

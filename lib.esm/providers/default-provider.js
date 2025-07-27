@@ -1,13 +1,4 @@
 import { assert } from "../utils/index.js";
-import { AnkrProvider } from "./provider-ankr.js";
-import { AlchemyProvider } from "./provider-alchemy.js";
-//import { BlockscoutProvider } from "./provider-blockscout.js";
-import { ChainstackProvider } from "./provider-chainstack.js";
-import { CloudflareProvider } from "./provider-cloudflare.js";
-import { EtherscanProvider } from "./provider-etherscan.js";
-import { InfuraProvider } from "./provider-infura.js";
-//import { PocketProvider } from "./provider-pocket.js";
-import { QuickNodeProvider } from "./provider-quicknode.js";
 import { FallbackProvider } from "./provider-fallback.js";
 import { JsonRpcProvider } from "./provider-jsonrpc.js";
 import { Network } from "./network.js";
@@ -37,14 +28,6 @@ const Testnets = "goerli kovan sepolia classicKotti optimism-goerli arbitrum-goe
  *  will whitelist **only** those backends.
  *
  *  Current backend strings supported are:
- *  - ``"alchemy"``
- *  - ``"ankr"``
- *  - ``"cloudflare"``
- *  - ``"chainstack"``
- *  - ``"etherscan"``
- *  - ``"infura"``
- *  - ``"publicPolygon"``
- *  - ``"quicknode"``
  *
  *  @example:
  *    // Connect to a local Geth node
@@ -65,18 +48,6 @@ export function getDefaultProvider(network, options) {
     if (options == null) {
         options = {};
     }
-    const allowService = (name) => {
-        if (options[name] === "-") {
-            return false;
-        }
-        if (typeof (options.exclusive) === "string") {
-            return (name === options.exclusive);
-        }
-        if (Array.isArray(options.exclusive)) {
-            return (options.exclusive.indexOf(name) !== -1);
-        }
-        return true;
-    };
     if (typeof (network) === "string" && network.match(/^https?:/)) {
         return new JsonRpcProvider(network);
     }
@@ -90,85 +61,6 @@ export function getDefaultProvider(network, options) {
     }
     catch (error) { }
     const providers = [];
-    if (allowService("publicPolygon") && staticNetwork) {
-        if (staticNetwork.name === "matic") {
-            providers.push(new JsonRpcProvider("https:/\/polygon-rpc.com/", staticNetwork, { staticNetwork }));
-        }
-        else if (staticNetwork.name === "matic-amoy") {
-            providers.push(new JsonRpcProvider("https:/\/rpc-amoy.polygon.technology/", staticNetwork, { staticNetwork }));
-        }
-    }
-    if (allowService("alchemy")) {
-        try {
-            providers.push(new AlchemyProvider(network, options.alchemy));
-        }
-        catch (error) { }
-    }
-    if (allowService("ankr") && options.ankr != null) {
-        try {
-            providers.push(new AnkrProvider(network, options.ankr));
-        }
-        catch (error) { }
-    }
-    /* Temporarily remove until custom error issue is fixed
-        if (allowService("blockscout")) {
-            try {
-                providers.push(new BlockscoutProvider(network, options.blockscout));
-            } catch (error) { }
-        }
-    */
-    if (allowService("chainstack")) {
-        try {
-            providers.push(new ChainstackProvider(network, options.chainstack));
-        }
-        catch (error) { }
-    }
-    if (allowService("cloudflare")) {
-        try {
-            providers.push(new CloudflareProvider(network));
-        }
-        catch (error) { }
-    }
-    if (allowService("etherscan")) {
-        try {
-            providers.push(new EtherscanProvider(network, options.etherscan));
-        }
-        catch (error) { }
-    }
-    if (allowService("infura")) {
-        try {
-            let projectId = options.infura;
-            let projectSecret = undefined;
-            if (typeof (projectId) === "object") {
-                projectSecret = projectId.projectSecret;
-                projectId = projectId.projectId;
-            }
-            providers.push(new InfuraProvider(network, projectId, projectSecret));
-        }
-        catch (error) { }
-    }
-    /*
-        if (options.pocket !== "-") {
-            try {
-                let appId = options.pocket;
-                let secretKey: undefined | string = undefined;
-                let loadBalancer: undefined | boolean = undefined;
-                if (typeof(appId) === "object") {
-                    loadBalancer = !!appId.loadBalancer;
-                    secretKey = appId.secretKey;
-                    appId = appId.appId;
-                }
-                providers.push(new PocketProvider(network, appId, secretKey, loadBalancer));
-            } catch (error) { console.log(error); }
-        }
-    */
-    if (allowService("quicknode")) {
-        try {
-            let token = options.quicknode;
-            providers.push(new QuickNodeProvider(network, token));
-        }
-        catch (error) { }
-    }
     assert(providers.length, "unsupported default network", "UNSUPPORTED_OPERATION", {
         operation: "getDefaultProvider"
     });

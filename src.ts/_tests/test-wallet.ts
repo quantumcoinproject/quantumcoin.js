@@ -9,9 +9,6 @@ import type {
 
 import { hexlify, randomBytes, Wallet } from "../index.js";
 
-import type { HDNodeWallet } from "../index.js";
-
-
 describe("Test Private Key Wallet", function() {
     const tests = loadTests<TestCaseAccount>("accounts");
 
@@ -92,7 +89,7 @@ describe("Test Wallet Encryption", function() {
     //  2 : Wallet using private key (uses Wallet explicitly)
 
     for (let i = 0; i < 2; i++) {
-        let wallet: Wallet | HDNodeWallet = Wallet.createRandom();
+        let wallet: Wallet = Wallet.createRandom();
 
         it("encrypts a random wallet: sync", function() {
             this.timeout(30000);

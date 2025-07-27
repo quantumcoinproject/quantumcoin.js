@@ -16,7 +16,7 @@ export {
 } from "./abi/index.js";
 
 export {
-    getAddress, getIcapAddress,
+    getAddress,
     getCreateAddress, getCreate2Address,
     isAddressable, isAddress, resolveAddress
 } from "./address/index.js";
@@ -70,16 +70,12 @@ export {
 
     BrowserProvider,
 
-    AlchemyProvider, AnkrProvider, BlockscoutProvider, ChainstackProvider,
-    CloudflareProvider, EtherscanProvider, InfuraProvider,
-    InfuraWebSocketProvider, PocketProvider, QuickNodeProvider,
-
     IpcSocketProvider, SocketProvider, WebSocketProvider,
 
     EnsResolver,
     Network,
 
-    EnsPlugin, EtherscanPlugin,
+    EnsPlugin,
     FeeDataNetworkPlugin, FetchUrlFeeDataNetworkPlugin,
     GasCostPlugin, NetworkPlugin, MulticoinProviderPlugin,
 
@@ -117,17 +113,11 @@ export {
 } from "./utils/index.js";
 
 export {
-    Mnemonic,
-    BaseWallet, HDNodeWallet, HDNodeVoidWallet,
+    BaseWallet,
     Wallet,
-
-    defaultPath,
-
-    getAccountPath, getIndexedAccountPath,
-    isCrowdsaleJson, isKeystoreJson,
-
-    decryptCrowdsaleJson, decryptKeystoreJsonSync, decryptKeystoreJson,
-    encryptKeystoreJson, encryptKeystoreJsonSync,
+    isKeystoreJson,
+    decryptKeystoreJsonSync,
+    encryptKeystoreJsonSync,
 } from "./wallet/index.js";
 
 export {
@@ -215,7 +205,7 @@ export type {
 } from "./utils/index.js";
 
 export type {
-    CrowdsaleAccount, KeystoreAccount, EncryptOptions
+    KeystoreAccount
 } from "./wallet/index.js";
 
 // dummy change; to pick-up ws security issue changes

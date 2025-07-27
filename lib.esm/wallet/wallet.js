@@ -1,13 +1,9 @@
 import { SigningKey } from "../crypto/index.js";
-import { assertArgument } from "../utils/index.js";
+import { assertArgument, hexlify } from "../utils/index.js";
 import { BaseWallet } from "./base-wallet.js";
-import { HDNodeWallet } from "./hdwallet.js";
-import { decryptCrowdsaleJson, isCrowdsaleJson } from "./json-crowdsale.js";
-import { decryptKeystoreJson, decryptKeystoreJsonSync, encryptKeystoreJson, encryptKeystoreJsonSync, isKeystoreJson } from "./json-keystore.js";
-import { Mnemonic } from "./mnemonic.js";
-function stall(duration) {
-    return new Promise((resolve) => { setTimeout(() => { resolve(); }, duration); });
-}
+//import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
+import { decryptKeystoreJsonSync, encryptKeystoreJsonSync, isKeystoreJson } from "./json-keystore.js";
+//import {newWallet} from "quantum-coin-js-sdk";
 /**
  *  A **Wallet** manages a single private key which is used to sign
  *  transactions, messages and other common payloads.
@@ -40,9 +36,9 @@ export class Wallet extends BaseWallet {
      *  If %%progressCallback%% is specified, it will receive periodic
      *  updates as the encryption process progreses.
      */
-    async encrypt(password, progressCallback) {
+    async encrypt(password) {
         const account = { address: this.address, privateKey: this.privateKey };
-        return await encryptKeystoreJson(account, password, { progressCallback });
+        return encryptKeystoreJsonSync(account, password);
     }
     /**
      *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
@@ -60,14 +56,6 @@ export class Wallet extends BaseWallet {
     }
     static #fromAccount(account) {
         assertArgument(account, "invalid JSON wallet", "json", "[ REDACTED ]");
-        if ("mnemonic" in account && account.mnemonic && account.mnemonic.locale === "en") {
-            const mnemonic = Mnemonic.fromEntropy(account.mnemonic.entropy);
-            const wallet = HDNodeWallet.fromMnemonic(mnemonic, account.mnemonic.path);
-            if (wallet.address === account.address && wallet.privateKey === account.privateKey) {
-                return wallet;
-            }
-            console.log("WARNING: JSON mismatch address/privateKey != mnemonic; fallback onto private key");
-        }
         const wallet = new Wallet(account.privateKey);
         assertArgument(wallet.address === account.address, "address/privateKey mismatch", "json", "[ REDACTED ]");
         return wallet;
@@ -75,25 +63,11 @@ export class Wallet extends BaseWallet {
     /**
      *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
      *  with %%password%%.
-     *
-     *  If %%progress%% is provided, it is called periodically during
-     *  decryption so that any UI can be updated.
      */
-    static async fromEncryptedJson(json, password, progress) {
+    static async fromEncryptedJson(json, password) {
         let account = null;
         if (isKeystoreJson(json)) {
-            account = await decryptKeystoreJson(json, password, progress);
-        }
-        else if (isCrowdsaleJson(json)) {
-            if (progress) {
-                progress(0);
-                await stall(0);
-            }
-            account = decryptCrowdsaleJson(json, password);
-            if (progress) {
-                progress(1);
-                await stall(0);
-            }
+            account = decryptKeystoreJsonSync(json, password);
         }
         return Wallet.#fromAccount(account);
     }
@@ -109,36 +83,21 @@ export class Wallet extends BaseWallet {
         if (isKeystoreJson(json)) {
             account = decryptKeystoreJsonSync(json, password);
         }
-        else if (isCrowdsaleJson(json)) {
-            account = decryptCrowdsaleJson(json, password);
-        }
         else {
             assertArgument(false, "invalid JSON wallet", "json", "[ REDACTED ]");
         }
         return Wallet.#fromAccount(account);
     }
     /**
-     *  Creates a new random [[HDNodeWallet]] using the available
+     *  Creates a new random [[Wallet]] using the available
      *  [cryptographic random source](randomBytes).
      *
      *  If there is no crytographic random source, this will throw.
      */
     static createRandom(provider) {
-        const wallet = HDNodeWallet.createRandom();
-        if (provider) {
-            return wallet.connect(provider);
-        }
-        return wallet;
-    }
-    /**
-     *  Creates a [[HDNodeWallet]] for %%phrase%%.
-     */
-    static fromPhrase(phrase, provider) {
-        const wallet = HDNodeWallet.fromPhrase(phrase);
-        if (provider) {
-            return wallet.connect(provider);
-        }
-        return wallet;
+        let wal = qcsdk.newWallet();
+        let privKey = wal.privateKey;
+        return new Wallet(hexlify(privKey));
     }
 }
 //# sourceMappingURL=wallet.js.map

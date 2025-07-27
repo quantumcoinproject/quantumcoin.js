@@ -3,99 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.connect = exports.getDevProvider = exports.checkProvider = exports.getProvider = exports.getProviderNetworks = exports.providerNames = exports.setupProviders = void 0;
 const index_js_1 = require("../index.js");
 const utils_debug_js_1 = require("./utils-debug.js");
-const utils_js_1 = require("./utils.js");
 ;
 const ethNetworks = ["default", "mainnet", "sepolia"];
-//const maticNetworks = [ "matic", "maticmum" ];
 const ProviderCreators = [
-    {
-        name: "AlchemyProvider",
-        networks: ethNetworks,
-        create: function (network) {
-            return new index_js_1.AlchemyProvider(network, "YrPw6SWb20vJDRFkhWq8aKnTQ8JRNRHM");
-        }
-    },
-    {
-        name: "BlockscoutProvider",
-        //networks: ethNetworks,  // @TODO: they are backfilling some Sepolia txs
-        networks: ["mainnet"],
-        create: function (network) {
-            //return new BlockscoutProvider(network);
-            return new index_js_1.BlockscoutProvider(network, "fdbfa288-1695-454e-a369-4501253a120");
-        }
-    },
-    /*
-    {
-        name: "AnkrProvider",
-        networks: ethNetworks.concat([ "matic", "arbitrum" ]),
-        create: function(network: string) {
-            return new AnkrProvider(network);
-        }
-    },
-    */
-    /*
-    {
-        name: "CloudflareProvider",
-        networks: [ "default", "mainnet" ],
-        create: function(network: string) {
-            return new CloudflareProvider(network);
-        }
-    },
-    */
-    {
-        name: "ChainstackProvider",
-        networks: ["default", "mainnet", "arbitrum", "bnb", "matic"],
-        create: function (network) {
-            return new index_js_1.ChainstackProvider(network);
-        }
-    },
-    {
-        name: "EtherscanProvider",
-        networks: ethNetworks,
-        create: function (network) {
-            return new index_js_1.EtherscanProvider(network, "FPFGK6JSW2UHJJ2666FG93KP7WC999MNW7");
-        }
-    },
-    {
-        name: "InfuraProvider",
-        networks: ethNetworks,
-        create: function (network) {
-            return new index_js_1.InfuraProvider(network, utils_js_1.INFURA_APIKEY || undefined);
-        }
-    },
-    /*
-    {
-        name: "InfuraWebsocketProvider",
-        networks: ethNetworks,
-        create: function(network: string) {
-            return InfuraProvider.getWebSocketProvider(network, "49a0efa3aaee4fd99797bfa94d8ce2f1");
-        }
-    },
-    */
-    /*
-        {
-            name: "PocketProvider",
-            networks: ethNetworks,
-            create: function(network: string) {
-                return new PocketProvider(network);
-            }
-        },
-    */
-    /*
-        {
-            name: "QuickNodeProvider",
-            networks: ethNetworks,
-            create: function(network: string) {
-                return new QuickNodeProvider(network);
-            }
-        },
-    */
     {
         name: "FallbackProvider",
         networks: ethNetworks,
         create: function (network) {
             const providers = [];
-            for (const providerName of ["AlchemyProvider", "AnkrProvider", "EtherscanProvider", "InfuraProvider"]) {
+            for (const providerName of []) {
                 const provider = getProvider(providerName, network);
                 if (provider) {
                     providers.push(provider);

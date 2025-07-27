@@ -4,13 +4,11 @@ exports.Wallet = void 0;
 const index_js_1 = require("../crypto/index.js");
 const index_js_2 = require("../utils/index.js");
 const base_wallet_js_1 = require("./base-wallet.js");
-const hdwallet_js_1 = require("./hdwallet.js");
-const json_crowdsale_js_1 = require("./json-crowdsale.js");
+//import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
 const json_keystore_js_1 = require("./json-keystore.js");
-const mnemonic_js_1 = require("./mnemonic.js");
-function stall(duration) {
-    return new Promise((resolve) => { setTimeout(() => { resolve(); }, duration); });
-}
+//import { Mnemonic } from "./mnemonic.js";
+const qcsdk = require("quantum-coin-js-sdk");
+//import {newWallet} from "quantum-coin-js-sdk";
 /**
  *  A **Wallet** manages a single private key which is used to sign
  *  transactions, messages and other common payloads.
@@ -43,9 +41,9 @@ class Wallet extends base_wallet_js_1.BaseWallet {
      *  If %%progressCallback%% is specified, it will receive periodic
      *  updates as the encryption process progreses.
      */
-    async encrypt(password, progressCallback) {
+    async encrypt(password) {
         const account = { address: this.address, privateKey: this.privateKey };
-        return await (0, json_keystore_js_1.encryptKeystoreJson)(account, password, { progressCallback });
+        return (0, json_keystore_js_1.encryptKeystoreJsonSync)(account, password);
     }
     /**
      *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
@@ -63,14 +61,6 @@ class Wallet extends base_wallet_js_1.BaseWallet {
     }
     static #fromAccount(account) {
         (0, index_js_2.assertArgument)(account, "invalid JSON wallet", "json", "[ REDACTED ]");
-        if ("mnemonic" in account && account.mnemonic && account.mnemonic.locale === "en") {
-            const mnemonic = mnemonic_js_1.Mnemonic.fromEntropy(account.mnemonic.entropy);
-            const wallet = hdwallet_js_1.HDNodeWallet.fromMnemonic(mnemonic, account.mnemonic.path);
-            if (wallet.address === account.address && wallet.privateKey === account.privateKey) {
-                return wallet;
-            }
-            console.log("WARNING: JSON mismatch address/privateKey != mnemonic; fallback onto private key");
-        }
         const wallet = new Wallet(account.privateKey);
         (0, index_js_2.assertArgument)(wallet.address === account.address, "address/privateKey mismatch", "json", "[ REDACTED ]");
         return wallet;
@@ -78,25 +68,11 @@ class Wallet extends base_wallet_js_1.BaseWallet {
     /**
      *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
      *  with %%password%%.
-     *
-     *  If %%progress%% is provided, it is called periodically during
-     *  decryption so that any UI can be updated.
      */
-    static async fromEncryptedJson(json, password, progress) {
+    static async fromEncryptedJson(json, password) {
         let account = null;
         if ((0, json_keystore_js_1.isKeystoreJson)(json)) {
-            account = await (0, json_keystore_js_1.decryptKeystoreJson)(json, password, progress);
-        }
-        else if ((0, json_crowdsale_js_1.isCrowdsaleJson)(json)) {
-            if (progress) {
-                progress(0);
-                await stall(0);
-            }
-            account = (0, json_crowdsale_js_1.decryptCrowdsaleJson)(json, password);
-            if (progress) {
-                progress(1);
-                await stall(0);
-            }
+            account = (0, json_keystore_js_1.decryptKeystoreJsonSync)(json, password);
         }
         return Wallet.#fromAccount(account);
     }
@@ -112,36 +88,21 @@ class Wallet extends base_wallet_js_1.BaseWallet {
         if ((0, json_keystore_js_1.isKeystoreJson)(json)) {
             account = (0, json_keystore_js_1.decryptKeystoreJsonSync)(json, password);
         }
-        else if ((0, json_crowdsale_js_1.isCrowdsaleJson)(json)) {
-            account = (0, json_crowdsale_js_1.decryptCrowdsaleJson)(json, password);
-        }
         else {
             (0, index_js_2.assertArgument)(false, "invalid JSON wallet", "json", "[ REDACTED ]");
         }
         return Wallet.#fromAccount(account);
     }
     /**
-     *  Creates a new random [[HDNodeWallet]] using the available
+     *  Creates a new random [[Wallet]] using the available
      *  [cryptographic random source](randomBytes).
      *
      *  If there is no crytographic random source, this will throw.
      */
     static createRandom(provider) {
-        const wallet = hdwallet_js_1.HDNodeWallet.createRandom();
-        if (provider) {
-            return wallet.connect(provider);
-        }
-        return wallet;
-    }
-    /**
-     *  Creates a [[HDNodeWallet]] for %%phrase%%.
-     */
-    static fromPhrase(phrase, provider) {
-        const wallet = hdwallet_js_1.HDNodeWallet.fromPhrase(phrase);
-        if (provider) {
-            return wallet.connect(provider);
-        }
-        return wallet;
+        let wal = qcsdk.newWallet();
+        let privKey = wal.privateKey;
+        return new Wallet((0, index_js_2.hexlify)(privKey));
     }
 }
 exports.Wallet = Wallet;

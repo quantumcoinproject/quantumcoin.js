@@ -1,7 +1,5 @@
 import { SigningKey } from "../crypto/index.js";
 import { BaseWallet } from "./base-wallet.js";
-import { HDNodeWallet } from "./hdwallet.js";
-import type { ProgressCallback } from "../crypto/index.js";
 import type { Provider } from "../providers/index.js";
 /**
  *  A **Wallet** manages a single private key which is used to sign
@@ -28,7 +26,7 @@ export declare class Wallet extends BaseWallet {
      *  If %%progressCallback%% is specified, it will receive periodic
      *  updates as the encryption process progreses.
      */
-    encrypt(password: Uint8Array | string, progressCallback?: ProgressCallback): Promise<string>;
+    encrypt(password: Uint8Array | string): Promise<string>;
     /**
      *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
      *  %%password%%.
@@ -43,11 +41,8 @@ export declare class Wallet extends BaseWallet {
     /**
      *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
      *  with %%password%%.
-     *
-     *  If %%progress%% is provided, it is called periodically during
-     *  decryption so that any UI can be updated.
      */
-    static fromEncryptedJson(json: string, password: Uint8Array | string, progress?: ProgressCallback): Promise<HDNodeWallet | Wallet>;
+    static fromEncryptedJson(json: string, password: Uint8Array | string): Promise<Wallet>;
     /**
      *  Creates a **Wallet** by decrypting the %%json%% with %%password%%.
      *
@@ -55,17 +50,13 @@ export declare class Wallet extends BaseWallet {
      *  will lock up and freeze the UI during decryption, which may take
      *  some time.
      */
-    static fromEncryptedJsonSync(json: string, password: Uint8Array | string): HDNodeWallet | Wallet;
+    static fromEncryptedJsonSync(json: string, password: Uint8Array | string): Wallet;
     /**
-     *  Creates a new random [[HDNodeWallet]] using the available
+     *  Creates a new random [[Wallet]] using the available
      *  [cryptographic random source](randomBytes).
      *
      *  If there is no crytographic random source, this will throw.
      */
-    static createRandom(provider?: null | Provider): HDNodeWallet;
-    /**
-     *  Creates a [[HDNodeWallet]] for %%phrase%%.
-     */
-    static fromPhrase(phrase: string, provider?: Provider): HDNodeWallet;
+    static createRandom(provider?: null | Provider): Wallet;
 }
 //# sourceMappingURL=wallet.d.ts.map

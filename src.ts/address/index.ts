@@ -49,7 +49,7 @@ export interface NameResolver {
     resolveName(name: string): Promise<null | string>;
 }
 
-export { getAddress, getIcapAddress } from "./address.js";
+export { getAddress } from "./address.js";
 
 export { getCreateAddress, getCreate2Address } from "./contract-address.js";
 

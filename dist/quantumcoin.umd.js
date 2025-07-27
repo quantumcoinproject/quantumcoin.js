@@ -462,7 +462,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  @_subsection: api/utils:Math Helpers  [about-maths]
      */
     const BN_0$a = BigInt(0);
-    const BN_1$5 = BigInt(1);
+    const BN_1$4 = BigInt(1);
     //const BN_Max256 = (BN_1 << BigInt(256)) - BN_1;
     // IEEE 754 support 53-bits of mantissa
     const maxValue = 0x1fffffffffffff;
@@ -479,9 +479,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             operation: "fromTwos", fault: "overflow", value: _value
         });
         // Top bit set; treat as a negative value
-        if (value >> (width - BN_1$5)) {
-            const mask = (BN_1$5 << width) - BN_1$5;
-            return -(((~value) & mask) + BN_1$5);
+        if (value >> (width - BN_1$4)) {
+            const mask = (BN_1$4 << width) - BN_1$4;
+            return -(((~value) & mask) + BN_1$4);
         }
         return value;
     }
@@ -494,14 +494,14 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function toTwos(_value, _width) {
         let value = getBigInt(_value, "value");
         const width = BigInt(getNumber(_width, "width"));
-        const limit = (BN_1$5 << (width - BN_1$5));
+        const limit = (BN_1$4 << (width - BN_1$4));
         if (value < BN_0$a) {
             value = -value;
             assert(value <= limit, "too low", "NUMERIC_FAULT", {
                 operation: "toTwos", fault: "overflow", value: _value
             });
-            const mask = (BN_1$5 << width) - BN_1$5;
-            return ((~value) & mask) + BN_1$5;
+            const mask = (BN_1$4 << width) - BN_1$4;
+            return ((~value) & mask) + BN_1$4;
         }
         else {
             assert(value < limit, "too high", "NUMERIC_FAULT", {
@@ -516,7 +516,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function mask(_value, _bits) {
         const value = getUint(_value, "value");
         const bits = BigInt(getNumber(_bits, "bits"));
-        return value & ((BN_1$5 << bits) - BN_1$5);
+        return value & ((BN_1$4 << bits) - BN_1$4);
     }
     /**
      *  Gets a BigInt from %%value%%. If it is an invalid value for
@@ -556,7 +556,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         });
         return result;
     }
-    const Nibbles$1 = "0123456789abcdef";
+    const Nibbles = "0123456789abcdef";
     /*
      * Converts %%value%% to a BigInt. If %%value%% is a Uint8Array, it
      * is treated as Big Endian data.
@@ -565,8 +565,8 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         if (value instanceof Uint8Array) {
             let result = "0x0";
             for (const v of value) {
-                result += Nibbles$1[v >> 4];
-                result += Nibbles$1[v & 0x0f];
+                result += Nibbles[v >> 4];
+                result += Nibbles[v & 0x0f];
             }
             return BigInt(result);
         }
@@ -1916,9 +1916,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      */
     const BN_N1 = BigInt(-1);
     const BN_0$8 = BigInt(0);
-    const BN_1$4 = BigInt(1);
+    const BN_1$3 = BigInt(1);
     const BN_5 = BigInt(5);
-    const _guard$5 = {};
+    const _guard$3 = {};
     // Constant to pull zeros from for multipliers
     let Zeros$1 = "0000";
     while (Zeros$1.length < 80) {
@@ -1935,7 +1935,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function checkValue(val, format, safeOp) {
         const width = BigInt(format.width);
         if (format.signed) {
-            const limit = (BN_1$4 << (width - BN_1$4));
+            const limit = (BN_1$3 << (width - BN_1$3));
             assert(safeOp == null || (val >= -limit && val < limit), "overflow", "NUMERIC_FAULT", {
                 operation: safeOp, fault: "overflow", value: val
             });
@@ -1947,11 +1947,11 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             }
         }
         else {
-            const limit = (BN_1$4 << width);
+            const limit = (BN_1$3 << width);
             assert(safeOp == null || (val >= 0 && val < limit), "overflow", "NUMERIC_FAULT", {
                 operation: safeOp, fault: "overflow", value: val
             });
-            val = (((val % limit) + limit) % limit) & (limit - BN_1$4);
+            val = (((val % limit) + limit) % limit) & (limit - BN_1$3);
         }
         return val;
     }
@@ -2081,7 +2081,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  @private
          */
         constructor(guard, value, format) {
-            assertPrivate(guard, _guard$5, "FixedNumber");
+            assertPrivate(guard, _guard$3, "FixedNumber");
             this.#val = value;
             this.#format = format;
             const _value = toString(value, format.decimals);
@@ -2133,7 +2133,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     }
             */
             val = checkValue(val, this.#format, safeOp);
-            return new FixedNumber(_guard$5, val, this.#format);
+            return new FixedNumber(_guard$3, val, this.#format);
         }
         #add(o, safeOp) {
             this.#checkFormat(o);
@@ -2283,7 +2283,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         floor() {
             let val = this.#val;
             if (this.#val < BN_0$8) {
-                val -= this.#tens - BN_1$4;
+                val -= this.#tens - BN_1$3;
             }
             val = (this.#val / this.#tens) * this.#tens;
             return this.#checkValue(val, "floor");
@@ -2297,7 +2297,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         ceiling() {
             let val = this.#val;
             if (this.#val > BN_0$8) {
-                val += this.#tens - BN_1$4;
+                val += this.#tens - BN_1$3;
             }
             val = (this.#val / this.#tens) * this.#tens;
             return this.#checkValue(val, "ceiling");
@@ -2320,7 +2320,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             const tens = getTens(delta);
             value = (value / tens) * tens;
             checkValue(value, this.#format, "round");
-            return new FixedNumber(_guard$5, value, this.#format);
+            return new FixedNumber(_guard$3, value, this.#format);
         }
         /**
          *  Returns true if %%this%% is equal to ``0``.
@@ -2375,7 +2375,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 value *= getTens(-delta);
             }
             checkValue(value, format, "fromValue");
-            return new FixedNumber(_guard$5, value, format);
+            return new FixedNumber(_guard$3, value, format);
         }
         /**
          *  Creates a new [[FixedNumber]] for %%value%% with %%format%%.
@@ -2400,7 +2400,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             decimal = decimal.substring(0, format.decimals);
             const value = BigInt(match[1] + whole + decimal);
             checkValue(value, format, "fromString");
-            return new FixedNumber(_guard$5, value, format);
+            return new FixedNumber(_guard$3, value, format);
         }
         /**
          *  Creates a new [[FixedNumber]] with the big-endian representation
@@ -2416,7 +2416,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 value = fromTwos(value, format.width);
             }
             checkValue(value, format, "fromBytes");
-            return new FixedNumber(_guard$5, value, format);
+            return new FixedNumber(_guard$3, value, format);
         }
     }
     //const f1 = FixedNumber.fromString("12.56", "fixed16x2");
@@ -2601,7 +2601,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  %%unit%% decimal places. The %%unit%% may the number of decimal places
      *  or the name of a unit (e.g. ``"gwei"`` for 9 decimal places).
      */
-    function parseUnits$1(value, unit) {
+    function parseUnits(value, unit) {
         assertArgument(typeof (value) === "string", "value must be a string", "value", value);
         let decimals = 18;
         if (typeof (unit) === "string") {
@@ -2625,7 +2625,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  decimal places.
      */
     function parseEther(ether) {
-        return parseUnits$1(ether, 18);
+        return parseUnits(ether, 18);
     }
 
     /**
@@ -2665,7 +2665,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     // Properties used to immediate pass through to the underlying object
     // - `then` is used to detect if an object is a Promise for await
     const passProperties$1 = ["then"];
-    const _guard$4 = {};
+    const _guard$2 = {};
     const resultNames = new WeakMap();
     function getNames(result) {
         return resultNames.get(result);
@@ -2724,7 +2724,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             let items = args[1];
             let names = (args[2] || []).slice();
             let wrap = true;
-            if (guard !== _guard$4) {
+            if (guard !== _guard$2) {
                 items = args;
                 names = [];
                 wrap = false;
@@ -2865,7 +2865,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 result.push(this[i]);
                 names.push(_names[i]);
             }
-            return new Result(_guard$4, result, names);
+            return new Result(_guard$2, result, names);
         }
         /**
          *  @_ignore
@@ -2883,7 +2883,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     names.push(_names[i]);
                 }
             }
-            return new Result(_guard$4, result, names);
+            return new Result(_guard$2, result, names);
         }
         /**
          *  @_ignore
@@ -2923,7 +2923,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  also accessible by its corresponding name in %%keys%%.
          */
         static fromItems(items, keys) {
-            return new Result(_guard$4, items, keys);
+            return new Result(_guard$2, items, keys);
         }
     }
     /**
@@ -3150,8 +3150,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
     }
 
-    const crypto$1 = typeof globalThis === 'object' && 'crypto' in globalThis ? globalThis.crypto : undefined;
-
     /*! noble-hashes - MIT License (c) 2022 Paul Miller (paulmillr.com) */
     // We use WebCrypto aka globalThis.crypto, which exists in browsers and node.js 16+.
     // node.js versions earlier than v19 don't declare it in global scope.
@@ -3159,7 +3157,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     // from `crypto` to `cryptoNode`, which imports native module.
     // Makes the utils un-importable in browsers without a bundler.
     // Once node.js 18 is deprecated, we can just drop the import.
-    const u8a$1 = (a) => a instanceof Uint8Array;
+    const u8a = (a) => a instanceof Uint8Array;
     const u32 = (arr) => new Uint32Array(arr.buffer, arr.byteOffset, Math.floor(arr.byteLength / 4));
     // Cast array to view
     const createView = (arr) => new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
@@ -3190,7 +3188,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     /**
      * @example utf8ToBytes('abc') // new Uint8Array([97, 98, 99])
      */
-    function utf8ToBytes$1(str) {
+    function utf8ToBytes(str) {
         if (typeof str !== 'string')
             throw new Error(`utf8ToBytes expected string, got ${typeof str}`);
         return new Uint8Array(new TextEncoder().encode(str)); // https://bugzil.la/1681809
@@ -3202,24 +3200,10 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      */
     function toBytes(data) {
         if (typeof data === 'string')
-            data = utf8ToBytes$1(data);
-        if (!u8a$1(data))
+            data = utf8ToBytes(data);
+        if (!u8a(data))
             throw new Error(`expected Uint8Array, got ${typeof data}`);
         return data;
-    }
-    /**
-     * Copies several Uint8Arrays into one.
-     */
-    function concatBytes$1(...arrays) {
-        const r = new Uint8Array(arrays.reduce((sum, a) => sum + a.length, 0));
-        let pad = 0; // walk through each item, ensure they have proper type
-        arrays.forEach((a) => {
-            if (!u8a$1(a))
-                throw new Error('Uint8Array expected');
-            r.set(a, pad);
-            pad += a.length;
-        });
-        return r;
     }
     // For runtime check if class implements interface
     class Hash {
@@ -3242,15 +3226,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         hashC.blockLen = tmp.blockLen;
         hashC.create = () => hashCons();
         return hashC;
-    }
-    /**
-     * Secure PRNG. Uses `crypto.getRandomValues`, which defers to OS.
-     */
-    function randomBytes$2(bytesLength = 32) {
-        if (crypto$1 && typeof crypto$1.getRandomValues === 'function') {
-            return crypto$1.getRandomValues(new Uint8Array(bytesLength));
-        }
-        throw new Error('crypto.getRandomValues must be defined');
     }
 
     // HMAC (RFC 2104)
@@ -3913,24 +3888,24 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     // It's called a sponge function.
     // Various per round constants calculations
     const [SHA3_PI, SHA3_ROTL, _SHA3_IOTA] = [[], [], []];
-    const _0n$4 = /* @__PURE__ */ BigInt(0);
-    const _1n$5 = /* @__PURE__ */ BigInt(1);
-    const _2n$3 = /* @__PURE__ */ BigInt(2);
+    const _0n = /* @__PURE__ */ BigInt(0);
+    const _1n = /* @__PURE__ */ BigInt(1);
+    const _2n = /* @__PURE__ */ BigInt(2);
     const _7n = /* @__PURE__ */ BigInt(7);
     const _256n = /* @__PURE__ */ BigInt(256);
     const _0x71n = /* @__PURE__ */ BigInt(0x71);
-    for (let round = 0, R = _1n$5, x = 1, y = 0; round < 24; round++) {
+    for (let round = 0, R = _1n, x = 1, y = 0; round < 24; round++) {
         // Pi
         [x, y] = [y, (2 * x + 3 * y) % 5];
         SHA3_PI.push(2 * (5 * y + x));
         // Rotational
         SHA3_ROTL.push((((round + 1) * (round + 2)) / 2) % 64);
         // Iota
-        let t = _0n$4;
+        let t = _0n;
         for (let j = 0; j < 7; j++) {
-            R = ((R << _1n$5) ^ ((R >> _7n) * _0x71n)) % _256n;
-            if (R & _2n$3)
-                t ^= _1n$5 << ((_1n$5 << /* @__PURE__ */ BigInt(j)) - _1n$5);
+            R = ((R << _1n) ^ ((R >> _7n) * _0x71n)) % _256n;
+            if (R & _2n)
+                t ^= _1n << ((_1n << /* @__PURE__ */ BigInt(j)) - _1n);
         }
         _SHA3_IOTA.push(t);
     }
@@ -4744,1827 +4719,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     };
     Object.freeze(sha256);
 
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    // 100 lines of code in the file are duplicated from noble-hashes (utils).
-    // This is OK: `abstract` directory does not use noble-hashes.
-    // User may opt-in into using different hashing library. This way, noble-hashes
-    // won't be included into their bundle.
-    const _0n$3 = BigInt(0);
-    const _1n$4 = BigInt(1);
-    const _2n$2 = BigInt(2);
-    const u8a = (a) => a instanceof Uint8Array;
-    const hexes = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
-    /**
-     * @example bytesToHex(Uint8Array.from([0xca, 0xfe, 0x01, 0x23])) // 'cafe0123'
-     */
-    function bytesToHex(bytes) {
-        if (!u8a(bytes))
-            throw new Error('Uint8Array expected');
-        // pre-caching improves the speed 6x
-        let hex = '';
-        for (let i = 0; i < bytes.length; i++) {
-            hex += hexes[bytes[i]];
-        }
-        return hex;
-    }
-    function numberToHexUnpadded(num) {
-        const hex = num.toString(16);
-        return hex.length & 1 ? `0${hex}` : hex;
-    }
-    function hexToNumber(hex) {
-        if (typeof hex !== 'string')
-            throw new Error('hex string expected, got ' + typeof hex);
-        // Big Endian
-        return BigInt(hex === '' ? '0' : `0x${hex}`);
-    }
-    /**
-     * @example hexToBytes('cafe0123') // Uint8Array.from([0xca, 0xfe, 0x01, 0x23])
-     */
-    function hexToBytes(hex) {
-        if (typeof hex !== 'string')
-            throw new Error('hex string expected, got ' + typeof hex);
-        const len = hex.length;
-        if (len % 2)
-            throw new Error('padded hex string expected, got unpadded hex of length ' + len);
-        const array = new Uint8Array(len / 2);
-        for (let i = 0; i < array.length; i++) {
-            const j = i * 2;
-            const hexByte = hex.slice(j, j + 2);
-            const byte = Number.parseInt(hexByte, 16);
-            if (Number.isNaN(byte) || byte < 0)
-                throw new Error('Invalid byte sequence');
-            array[i] = byte;
-        }
-        return array;
-    }
-    // BE: Big Endian, LE: Little Endian
-    function bytesToNumberBE(bytes) {
-        return hexToNumber(bytesToHex(bytes));
-    }
-    function bytesToNumberLE(bytes) {
-        if (!u8a(bytes))
-            throw new Error('Uint8Array expected');
-        return hexToNumber(bytesToHex(Uint8Array.from(bytes).reverse()));
-    }
-    function numberToBytesBE(n, len) {
-        return hexToBytes(n.toString(16).padStart(len * 2, '0'));
-    }
-    function numberToBytesLE(n, len) {
-        return numberToBytesBE(n, len).reverse();
-    }
-    // Unpadded, rarely used
-    function numberToVarBytesBE(n) {
-        return hexToBytes(numberToHexUnpadded(n));
-    }
-    /**
-     * Takes hex string or Uint8Array, converts to Uint8Array.
-     * Validates output length.
-     * Will throw error for other types.
-     * @param title descriptive title for an error e.g. 'private key'
-     * @param hex hex string or Uint8Array
-     * @param expectedLength optional, will compare to result array's length
-     * @returns
-     */
-    function ensureBytes(title, hex, expectedLength) {
-        let res;
-        if (typeof hex === 'string') {
-            try {
-                res = hexToBytes(hex);
-            }
-            catch (e) {
-                throw new Error(`${title} must be valid hex string, got "${hex}". Cause: ${e}`);
-            }
-        }
-        else if (u8a(hex)) {
-            // Uint8Array.from() instead of hash.slice() because node.js Buffer
-            // is instance of Uint8Array, and its slice() creates **mutable** copy
-            res = Uint8Array.from(hex);
-        }
-        else {
-            throw new Error(`${title} must be hex string or Uint8Array`);
-        }
-        const len = res.length;
-        if (typeof expectedLength === 'number' && len !== expectedLength)
-            throw new Error(`${title} expected ${expectedLength} bytes, got ${len}`);
-        return res;
-    }
-    /**
-     * Copies several Uint8Arrays into one.
-     */
-    function concatBytes(...arrays) {
-        const r = new Uint8Array(arrays.reduce((sum, a) => sum + a.length, 0));
-        let pad = 0; // walk through each item, ensure they have proper type
-        arrays.forEach((a) => {
-            if (!u8a(a))
-                throw new Error('Uint8Array expected');
-            r.set(a, pad);
-            pad += a.length;
-        });
-        return r;
-    }
-    function equalBytes(b1, b2) {
-        // We don't care about timing attacks here
-        if (b1.length !== b2.length)
-            return false;
-        for (let i = 0; i < b1.length; i++)
-            if (b1[i] !== b2[i])
-                return false;
-        return true;
-    }
-    /**
-     * @example utf8ToBytes('abc') // new Uint8Array([97, 98, 99])
-     */
-    function utf8ToBytes(str) {
-        if (typeof str !== 'string')
-            throw new Error(`utf8ToBytes expected string, got ${typeof str}`);
-        return new Uint8Array(new TextEncoder().encode(str)); // https://bugzil.la/1681809
-    }
-    // Bit operations
-    /**
-     * Calculates amount of bits in a bigint.
-     * Same as `n.toString(2).length`
-     */
-    function bitLen(n) {
-        let len;
-        for (len = 0; n > _0n$3; n >>= _1n$4, len += 1)
-            ;
-        return len;
-    }
-    /**
-     * Gets single bit at position.
-     * NOTE: first bit position is 0 (same as arrays)
-     * Same as `!!+Array.from(n.toString(2)).reverse()[pos]`
-     */
-    function bitGet(n, pos) {
-        return (n >> BigInt(pos)) & _1n$4;
-    }
-    /**
-     * Sets single bit at position.
-     */
-    const bitSet = (n, pos, value) => {
-        return n | ((value ? _1n$4 : _0n$3) << BigInt(pos));
-    };
-    /**
-     * Calculate mask for N bits. Not using ** operator with bigints because of old engines.
-     * Same as BigInt(`0b${Array(i).fill('1').join('')}`)
-     */
-    const bitMask = (n) => (_2n$2 << BigInt(n - 1)) - _1n$4;
-    // DRBG
-    const u8n = (data) => new Uint8Array(data); // creates Uint8Array
-    const u8fr = (arr) => Uint8Array.from(arr); // another shortcut
-    /**
-     * Minimal HMAC-DRBG from NIST 800-90 for RFC6979 sigs.
-     * @returns function that will call DRBG until 2nd arg returns something meaningful
-     * @example
-     *   const drbg = createHmacDRBG<Key>(32, 32, hmac);
-     *   drbg(seed, bytesToKey); // bytesToKey must return Key or undefined
-     */
-    function createHmacDrbg(hashLen, qByteLen, hmacFn) {
-        if (typeof hashLen !== 'number' || hashLen < 2)
-            throw new Error('hashLen must be a number');
-        if (typeof qByteLen !== 'number' || qByteLen < 2)
-            throw new Error('qByteLen must be a number');
-        if (typeof hmacFn !== 'function')
-            throw new Error('hmacFn must be a function');
-        // Step B, Step C: set hashLen to 8*ceil(hlen/8)
-        let v = u8n(hashLen); // Minimal non-full-spec HMAC-DRBG from NIST 800-90 for RFC6979 sigs.
-        let k = u8n(hashLen); // Steps B and C of RFC6979 3.2: set hashLen, in our case always same
-        let i = 0; // Iterations counter, will throw when over 1000
-        const reset = () => {
-            v.fill(1);
-            k.fill(0);
-            i = 0;
-        };
-        const h = (...b) => hmacFn(k, v, ...b); // hmac(k)(v, ...values)
-        const reseed = (seed = u8n()) => {
-            // HMAC-DRBG reseed() function. Steps D-G
-            k = h(u8fr([0x00]), seed); // k = hmac(k || v || 0x00 || seed)
-            v = h(); // v = hmac(k || v)
-            if (seed.length === 0)
-                return;
-            k = h(u8fr([0x01]), seed); // k = hmac(k || v || 0x01 || seed)
-            v = h(); // v = hmac(k || v)
-        };
-        const gen = () => {
-            // HMAC-DRBG generate() function
-            if (i++ >= 1000)
-                throw new Error('drbg: tried 1000 values');
-            let len = 0;
-            const out = [];
-            while (len < qByteLen) {
-                v = h();
-                const sl = v.slice();
-                out.push(sl);
-                len += v.length;
-            }
-            return concatBytes(...out);
-        };
-        const genUntil = (seed, pred) => {
-            reset();
-            reseed(seed); // Steps D-G
-            let res = undefined; // Step H: grind until k is in [1..n-1]
-            while (!(res = pred(gen())))
-                reseed();
-            reset();
-            return res;
-        };
-        return genUntil;
-    }
-    // Validating curves and fields
-    const validatorFns = {
-        bigint: (val) => typeof val === 'bigint',
-        function: (val) => typeof val === 'function',
-        boolean: (val) => typeof val === 'boolean',
-        string: (val) => typeof val === 'string',
-        stringOrUint8Array: (val) => typeof val === 'string' || val instanceof Uint8Array,
-        isSafeInteger: (val) => Number.isSafeInteger(val),
-        array: (val) => Array.isArray(val),
-        field: (val, object) => object.Fp.isValid(val),
-        hash: (val) => typeof val === 'function' && Number.isSafeInteger(val.outputLen),
-    };
-    // type Record<K extends string | number | symbol, T> = { [P in K]: T; }
-    function validateObject(object, validators, optValidators = {}) {
-        const checkField = (fieldName, type, isOptional) => {
-            const checkVal = validatorFns[type];
-            if (typeof checkVal !== 'function')
-                throw new Error(`Invalid validator "${type}", expected function`);
-            const val = object[fieldName];
-            if (isOptional && val === undefined)
-                return;
-            if (!checkVal(val, object)) {
-                throw new Error(`Invalid param ${String(fieldName)}=${val} (${typeof val}), expected ${type}`);
-            }
-        };
-        for (const [fieldName, type] of Object.entries(validators))
-            checkField(fieldName, type, false);
-        for (const [fieldName, type] of Object.entries(optValidators))
-            checkField(fieldName, type, true);
-        return object;
-    }
-    // validate type tests
-    // const o: { a: number; b: number; c: number } = { a: 1, b: 5, c: 6 };
-    // const z0 = validateObject(o, { a: 'isSafeInteger' }, { c: 'bigint' }); // Ok!
-    // // Should fail type-check
-    // const z1 = validateObject(o, { a: 'tmp' }, { c: 'zz' });
-    // const z2 = validateObject(o, { a: 'isSafeInteger' }, { c: 'zz' });
-    // const z3 = validateObject(o, { test: 'boolean', z: 'bug' });
-    // const z4 = validateObject(o, { a: 'boolean', z: 'bug' });
-
-    var ut = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        bitGet: bitGet,
-        bitLen: bitLen,
-        bitMask: bitMask,
-        bitSet: bitSet,
-        bytesToHex: bytesToHex,
-        bytesToNumberBE: bytesToNumberBE,
-        bytesToNumberLE: bytesToNumberLE,
-        concatBytes: concatBytes,
-        createHmacDrbg: createHmacDrbg,
-        ensureBytes: ensureBytes,
-        equalBytes: equalBytes,
-        hexToBytes: hexToBytes,
-        hexToNumber: hexToNumber,
-        numberToBytesBE: numberToBytesBE,
-        numberToBytesLE: numberToBytesLE,
-        numberToHexUnpadded: numberToHexUnpadded,
-        numberToVarBytesBE: numberToVarBytesBE,
-        utf8ToBytes: utf8ToBytes,
-        validateObject: validateObject
-    });
-
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    // Utilities for modular arithmetics and finite fields
-    // prettier-ignore
-    const _0n$2 = BigInt(0), _1n$3 = BigInt(1), _2n$1 = BigInt(2), _3n$1 = BigInt(3);
-    // prettier-ignore
-    const _4n = BigInt(4), _5n = BigInt(5), _8n = BigInt(8);
-    // prettier-ignore
-    BigInt(9); BigInt(16);
-    // Calculates a modulo b
-    function mod(a, b) {
-        const result = a % b;
-        return result >= _0n$2 ? result : b + result;
-    }
-    /**
-     * Efficiently raise num to power and do modular division.
-     * Unsafe in some contexts: uses ladder, so can expose bigint bits.
-     * @example
-     * pow(2n, 6n, 11n) // 64n % 11n == 9n
-     */
-    // TODO: use field version && remove
-    function pow(num, power, modulo) {
-        if (modulo <= _0n$2 || power < _0n$2)
-            throw new Error('Expected power/modulo > 0');
-        if (modulo === _1n$3)
-            return _0n$2;
-        let res = _1n$3;
-        while (power > _0n$2) {
-            if (power & _1n$3)
-                res = (res * num) % modulo;
-            num = (num * num) % modulo;
-            power >>= _1n$3;
-        }
-        return res;
-    }
-    // Does x ^ (2 ^ power) mod p. pow2(30, 4) == 30 ^ (2 ^ 4)
-    function pow2(x, power, modulo) {
-        let res = x;
-        while (power-- > _0n$2) {
-            res *= res;
-            res %= modulo;
-        }
-        return res;
-    }
-    // Inverses number over modulo
-    function invert(number, modulo) {
-        if (number === _0n$2 || modulo <= _0n$2) {
-            throw new Error(`invert: expected positive integers, got n=${number} mod=${modulo}`);
-        }
-        // Euclidean GCD https://brilliant.org/wiki/extended-euclidean-algorithm/
-        // Fermat's little theorem "CT-like" version inv(n) = n^(m-2) mod m is 30x slower.
-        let a = mod(number, modulo);
-        let b = modulo;
-        // prettier-ignore
-        let x = _0n$2, u = _1n$3;
-        while (a !== _0n$2) {
-            // JIT applies optimization if those two lines follow each other
-            const q = b / a;
-            const r = b % a;
-            const m = x - u * q;
-            // prettier-ignore
-            b = a, a = r, x = u, u = m;
-        }
-        const gcd = b;
-        if (gcd !== _1n$3)
-            throw new Error('invert: does not exist');
-        return mod(x, modulo);
-    }
-    /**
-     * Tonelli-Shanks square root search algorithm.
-     * 1. https://eprint.iacr.org/2012/685.pdf (page 12)
-     * 2. Square Roots from 1; 24, 51, 10 to Dan Shanks
-     * Will start an infinite loop if field order P is not prime.
-     * @param P field order
-     * @returns function that takes field Fp (created from P) and number n
-     */
-    function tonelliShanks(P) {
-        // Legendre constant: used to calculate Legendre symbol (a | p),
-        // which denotes the value of a^((p-1)/2) (mod p).
-        // (a | p) ≡ 1    if a is a square (mod p)
-        // (a | p) ≡ -1   if a is not a square (mod p)
-        // (a | p) ≡ 0    if a ≡ 0 (mod p)
-        const legendreC = (P - _1n$3) / _2n$1;
-        let Q, S, Z;
-        // Step 1: By factoring out powers of 2 from p - 1,
-        // find q and s such that p - 1 = q*(2^s) with q odd
-        for (Q = P - _1n$3, S = 0; Q % _2n$1 === _0n$2; Q /= _2n$1, S++)
-            ;
-        // Step 2: Select a non-square z such that (z | p) ≡ -1 and set c ≡ zq
-        for (Z = _2n$1; Z < P && pow(Z, legendreC, P) !== P - _1n$3; Z++)
-            ;
-        // Fast-path
-        if (S === 1) {
-            const p1div4 = (P + _1n$3) / _4n;
-            return function tonelliFast(Fp, n) {
-                const root = Fp.pow(n, p1div4);
-                if (!Fp.eql(Fp.sqr(root), n))
-                    throw new Error('Cannot find square root');
-                return root;
-            };
-        }
-        // Slow-path
-        const Q1div2 = (Q + _1n$3) / _2n$1;
-        return function tonelliSlow(Fp, n) {
-            // Step 0: Check that n is indeed a square: (n | p) should not be ≡ -1
-            if (Fp.pow(n, legendreC) === Fp.neg(Fp.ONE))
-                throw new Error('Cannot find square root');
-            let r = S;
-            // TODO: will fail at Fp2/etc
-            let g = Fp.pow(Fp.mul(Fp.ONE, Z), Q); // will update both x and b
-            let x = Fp.pow(n, Q1div2); // first guess at the square root
-            let b = Fp.pow(n, Q); // first guess at the fudge factor
-            while (!Fp.eql(b, Fp.ONE)) {
-                if (Fp.eql(b, Fp.ZERO))
-                    return Fp.ZERO; // https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm (4. If t = 0, return r = 0)
-                // Find m such b^(2^m)==1
-                let m = 1;
-                for (let t2 = Fp.sqr(b); m < r; m++) {
-                    if (Fp.eql(t2, Fp.ONE))
-                        break;
-                    t2 = Fp.sqr(t2); // t2 *= t2
-                }
-                // NOTE: r-m-1 can be bigger than 32, need to convert to bigint before shift, otherwise there will be overflow
-                const ge = Fp.pow(g, _1n$3 << BigInt(r - m - 1)); // ge = 2^(r-m-1)
-                g = Fp.sqr(ge); // g = ge * ge
-                x = Fp.mul(x, ge); // x *= ge
-                b = Fp.mul(b, g); // b *= g
-                r = m;
-            }
-            return x;
-        };
-    }
-    function FpSqrt(P) {
-        // NOTE: different algorithms can give different roots, it is up to user to decide which one they want.
-        // For example there is FpSqrtOdd/FpSqrtEven to choice root based on oddness (used for hash-to-curve).
-        // P ≡ 3 (mod 4)
-        // √n = n^((P+1)/4)
-        if (P % _4n === _3n$1) {
-            // Not all roots possible!
-            // const ORDER =
-            //   0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaabn;
-            // const NUM = 72057594037927816n;
-            const p1div4 = (P + _1n$3) / _4n;
-            return function sqrt3mod4(Fp, n) {
-                const root = Fp.pow(n, p1div4);
-                // Throw if root**2 != n
-                if (!Fp.eql(Fp.sqr(root), n))
-                    throw new Error('Cannot find square root');
-                return root;
-            };
-        }
-        // Atkin algorithm for q ≡ 5 (mod 8), https://eprint.iacr.org/2012/685.pdf (page 10)
-        if (P % _8n === _5n) {
-            const c1 = (P - _5n) / _8n;
-            return function sqrt5mod8(Fp, n) {
-                const n2 = Fp.mul(n, _2n$1);
-                const v = Fp.pow(n2, c1);
-                const nv = Fp.mul(n, v);
-                const i = Fp.mul(Fp.mul(nv, _2n$1), v);
-                const root = Fp.mul(nv, Fp.sub(i, Fp.ONE));
-                if (!Fp.eql(Fp.sqr(root), n))
-                    throw new Error('Cannot find square root');
-                return root;
-            };
-        }
-        // Other cases: Tonelli-Shanks algorithm
-        return tonelliShanks(P);
-    }
-    // prettier-ignore
-    const FIELD_FIELDS = [
-        'create', 'isValid', 'is0', 'neg', 'inv', 'sqrt', 'sqr',
-        'eql', 'add', 'sub', 'mul', 'pow', 'div',
-        'addN', 'subN', 'mulN', 'sqrN'
-    ];
-    function validateField(field) {
-        const initial = {
-            ORDER: 'bigint',
-            MASK: 'bigint',
-            BYTES: 'isSafeInteger',
-            BITS: 'isSafeInteger',
-        };
-        const opts = FIELD_FIELDS.reduce((map, val) => {
-            map[val] = 'function';
-            return map;
-        }, initial);
-        return validateObject(field, opts);
-    }
-    // Generic field functions
-    /**
-     * Same as `pow` but for Fp: non-constant-time.
-     * Unsafe in some contexts: uses ladder, so can expose bigint bits.
-     */
-    function FpPow(f, num, power) {
-        // Should have same speed as pow for bigints
-        // TODO: benchmark!
-        if (power < _0n$2)
-            throw new Error('Expected power > 0');
-        if (power === _0n$2)
-            return f.ONE;
-        if (power === _1n$3)
-            return num;
-        let p = f.ONE;
-        let d = num;
-        while (power > _0n$2) {
-            if (power & _1n$3)
-                p = f.mul(p, d);
-            d = f.sqr(d);
-            power >>= _1n$3;
-        }
-        return p;
-    }
-    /**
-     * Efficiently invert an array of Field elements.
-     * `inv(0)` will return `undefined` here: make sure to throw an error.
-     */
-    function FpInvertBatch(f, nums) {
-        const tmp = new Array(nums.length);
-        // Walk from first to last, multiply them by each other MOD p
-        const lastMultiplied = nums.reduce((acc, num, i) => {
-            if (f.is0(num))
-                return acc;
-            tmp[i] = acc;
-            return f.mul(acc, num);
-        }, f.ONE);
-        // Invert last element
-        const inverted = f.inv(lastMultiplied);
-        // Walk from last to first, multiply them by inverted each other MOD p
-        nums.reduceRight((acc, num, i) => {
-            if (f.is0(num))
-                return acc;
-            tmp[i] = f.mul(acc, tmp[i]);
-            return f.mul(acc, num);
-        }, inverted);
-        return tmp;
-    }
-    // CURVE.n lengths
-    function nLength(n, nBitLength) {
-        // Bit size, byte size of CURVE.n
-        const _nBitLength = nBitLength !== undefined ? nBitLength : n.toString(2).length;
-        const nByteLength = Math.ceil(_nBitLength / 8);
-        return { nBitLength: _nBitLength, nByteLength };
-    }
-    /**
-     * Initializes a finite field over prime. **Non-primes are not supported.**
-     * Do not init in loop: slow. Very fragile: always run a benchmark on a change.
-     * Major performance optimizations:
-     * * a) denormalized operations like mulN instead of mul
-     * * b) same object shape: never add or remove keys
-     * * c) Object.freeze
-     * @param ORDER prime positive bigint
-     * @param bitLen how many bits the field consumes
-     * @param isLE (def: false) if encoding / decoding should be in little-endian
-     * @param redef optional faster redefinitions of sqrt and other methods
-     */
-    function Field(ORDER, bitLen, isLE = false, redef = {}) {
-        if (ORDER <= _0n$2)
-            throw new Error(`Expected Field ORDER > 0, got ${ORDER}`);
-        const { nBitLength: BITS, nByteLength: BYTES } = nLength(ORDER, bitLen);
-        if (BYTES > 2048)
-            throw new Error('Field lengths over 2048 bytes are not supported');
-        const sqrtP = FpSqrt(ORDER);
-        const f = Object.freeze({
-            ORDER,
-            BITS,
-            BYTES,
-            MASK: bitMask(BITS),
-            ZERO: _0n$2,
-            ONE: _1n$3,
-            create: (num) => mod(num, ORDER),
-            isValid: (num) => {
-                if (typeof num !== 'bigint')
-                    throw new Error(`Invalid field element: expected bigint, got ${typeof num}`);
-                return _0n$2 <= num && num < ORDER; // 0 is valid element, but it's not invertible
-            },
-            is0: (num) => num === _0n$2,
-            isOdd: (num) => (num & _1n$3) === _1n$3,
-            neg: (num) => mod(-num, ORDER),
-            eql: (lhs, rhs) => lhs === rhs,
-            sqr: (num) => mod(num * num, ORDER),
-            add: (lhs, rhs) => mod(lhs + rhs, ORDER),
-            sub: (lhs, rhs) => mod(lhs - rhs, ORDER),
-            mul: (lhs, rhs) => mod(lhs * rhs, ORDER),
-            pow: (num, power) => FpPow(f, num, power),
-            div: (lhs, rhs) => mod(lhs * invert(rhs, ORDER), ORDER),
-            // Same as above, but doesn't normalize
-            sqrN: (num) => num * num,
-            addN: (lhs, rhs) => lhs + rhs,
-            subN: (lhs, rhs) => lhs - rhs,
-            mulN: (lhs, rhs) => lhs * rhs,
-            inv: (num) => invert(num, ORDER),
-            sqrt: redef.sqrt || ((n) => sqrtP(f, n)),
-            invertBatch: (lst) => FpInvertBatch(f, lst),
-            // TODO: do we really need constant cmov?
-            // We don't have const-time bigints anyway, so probably will be not very useful
-            cmov: (a, b, c) => (c ? b : a),
-            toBytes: (num) => (isLE ? numberToBytesLE(num, BYTES) : numberToBytesBE(num, BYTES)),
-            fromBytes: (bytes) => {
-                if (bytes.length !== BYTES)
-                    throw new Error(`Fp.fromBytes: expected ${BYTES}, got ${bytes.length}`);
-                return isLE ? bytesToNumberLE(bytes) : bytesToNumberBE(bytes);
-            },
-        });
-        return Object.freeze(f);
-    }
-    /**
-     * Returns total number of bytes consumed by the field element.
-     * For example, 32 bytes for usual 256-bit weierstrass curve.
-     * @param fieldOrder number of field elements, usually CURVE.n
-     * @returns byte length of field
-     */
-    function getFieldBytesLength(fieldOrder) {
-        if (typeof fieldOrder !== 'bigint')
-            throw new Error('field order must be bigint');
-        const bitLength = fieldOrder.toString(2).length;
-        return Math.ceil(bitLength / 8);
-    }
-    /**
-     * Returns minimal amount of bytes that can be safely reduced
-     * by field order.
-     * Should be 2^-128 for 128-bit curve such as P256.
-     * @param fieldOrder number of field elements, usually CURVE.n
-     * @returns byte length of target hash
-     */
-    function getMinHashLength(fieldOrder) {
-        const length = getFieldBytesLength(fieldOrder);
-        return length + Math.ceil(length / 2);
-    }
-    /**
-     * "Constant-time" private key generation utility.
-     * Can take (n + n/2) or more bytes of uniform input e.g. from CSPRNG or KDF
-     * and convert them into private scalar, with the modulo bias being negligible.
-     * Needs at least 48 bytes of input for 32-byte private key.
-     * https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/
-     * FIPS 186-5, A.2 https://csrc.nist.gov/publications/detail/fips/186/5/final
-     * RFC 9380, https://www.rfc-editor.org/rfc/rfc9380#section-5
-     * @param hash hash output from SHA3 or a similar function
-     * @param groupOrder size of subgroup - (e.g. secp256k1.CURVE.n)
-     * @param isLE interpret hash bytes as LE num
-     * @returns valid private scalar
-     */
-    function mapHashToField(key, fieldOrder, isLE = false) {
-        const len = key.length;
-        const fieldLen = getFieldBytesLength(fieldOrder);
-        const minLen = getMinHashLength(fieldOrder);
-        // No small numbers: need to understand bias story. No huge numbers: easier to detect JS timings.
-        if (len < 16 || len < minLen || len > 1024)
-            throw new Error(`expected ${minLen}-1024 bytes of input, got ${len}`);
-        const num = isLE ? bytesToNumberBE(key) : bytesToNumberLE(key);
-        // `mod(x, 11)` can sometimes produce 0. `mod(x, 10) + 1` is the same, but no 0
-        const reduced = mod(num, fieldOrder - _1n$3) + _1n$3;
-        return isLE ? numberToBytesLE(reduced, fieldLen) : numberToBytesBE(reduced, fieldLen);
-    }
-
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    // Abelian group utilities
-    const _0n$1 = BigInt(0);
-    const _1n$2 = BigInt(1);
-    // Elliptic curve multiplication of Point by scalar. Fragile.
-    // Scalars should always be less than curve order: this should be checked inside of a curve itself.
-    // Creates precomputation tables for fast multiplication:
-    // - private scalar is split by fixed size windows of W bits
-    // - every window point is collected from window's table & added to accumulator
-    // - since windows are different, same point inside tables won't be accessed more than once per calc
-    // - each multiplication is 'Math.ceil(CURVE_ORDER / 𝑊) + 1' point additions (fixed for any scalar)
-    // - +1 window is neccessary for wNAF
-    // - wNAF reduces table size: 2x less memory + 2x faster generation, but 10% slower multiplication
-    // TODO: Research returning 2d JS array of windows, instead of a single window. This would allow
-    // windows to be in different memory locations
-    function wNAF(c, bits) {
-        const constTimeNegate = (condition, item) => {
-            const neg = item.negate();
-            return condition ? neg : item;
-        };
-        const opts = (W) => {
-            const windows = Math.ceil(bits / W) + 1; // +1, because
-            const windowSize = 2 ** (W - 1); // -1 because we skip zero
-            return { windows, windowSize };
-        };
-        return {
-            constTimeNegate,
-            // non-const time multiplication ladder
-            unsafeLadder(elm, n) {
-                let p = c.ZERO;
-                let d = elm;
-                while (n > _0n$1) {
-                    if (n & _1n$2)
-                        p = p.add(d);
-                    d = d.double();
-                    n >>= _1n$2;
-                }
-                return p;
-            },
-            /**
-             * Creates a wNAF precomputation window. Used for caching.
-             * Default window size is set by `utils.precompute()` and is equal to 8.
-             * Number of precomputed points depends on the curve size:
-             * 2^(𝑊−1) * (Math.ceil(𝑛 / 𝑊) + 1), where:
-             * - 𝑊 is the window size
-             * - 𝑛 is the bitlength of the curve order.
-             * For a 256-bit curve and window size 8, the number of precomputed points is 128 * 33 = 4224.
-             * @returns precomputed point tables flattened to a single array
-             */
-            precomputeWindow(elm, W) {
-                const { windows, windowSize } = opts(W);
-                const points = [];
-                let p = elm;
-                let base = p;
-                for (let window = 0; window < windows; window++) {
-                    base = p;
-                    points.push(base);
-                    // =1, because we skip zero
-                    for (let i = 1; i < windowSize; i++) {
-                        base = base.add(p);
-                        points.push(base);
-                    }
-                    p = base.double();
-                }
-                return points;
-            },
-            /**
-             * Implements ec multiplication using precomputed tables and w-ary non-adjacent form.
-             * @param W window size
-             * @param precomputes precomputed tables
-             * @param n scalar (we don't check here, but should be less than curve order)
-             * @returns real and fake (for const-time) points
-             */
-            wNAF(W, precomputes, n) {
-                // TODO: maybe check that scalar is less than group order? wNAF behavious is undefined otherwise
-                // But need to carefully remove other checks before wNAF. ORDER == bits here
-                const { windows, windowSize } = opts(W);
-                let p = c.ZERO;
-                let f = c.BASE;
-                const mask = BigInt(2 ** W - 1); // Create mask with W ones: 0b1111 for W=4 etc.
-                const maxNumber = 2 ** W;
-                const shiftBy = BigInt(W);
-                for (let window = 0; window < windows; window++) {
-                    const offset = window * windowSize;
-                    // Extract W bits.
-                    let wbits = Number(n & mask);
-                    // Shift number by W bits.
-                    n >>= shiftBy;
-                    // If the bits are bigger than max size, we'll split those.
-                    // +224 => 256 - 32
-                    if (wbits > windowSize) {
-                        wbits -= maxNumber;
-                        n += _1n$2;
-                    }
-                    // This code was first written with assumption that 'f' and 'p' will never be infinity point:
-                    // since each addition is multiplied by 2 ** W, it cannot cancel each other. However,
-                    // there is negate now: it is possible that negated element from low value
-                    // would be the same as high element, which will create carry into next window.
-                    // It's not obvious how this can fail, but still worth investigating later.
-                    // Check if we're onto Zero point.
-                    // Add random point inside current window to f.
-                    const offset1 = offset;
-                    const offset2 = offset + Math.abs(wbits) - 1; // -1 because we skip zero
-                    const cond1 = window % 2 !== 0;
-                    const cond2 = wbits < 0;
-                    if (wbits === 0) {
-                        // The most important part for const-time getPublicKey
-                        f = f.add(constTimeNegate(cond1, precomputes[offset1]));
-                    }
-                    else {
-                        p = p.add(constTimeNegate(cond2, precomputes[offset2]));
-                    }
-                }
-                // JIT-compiler should not eliminate f here, since it will later be used in normalizeZ()
-                // Even if the variable is still unused, there are some checks which will
-                // throw an exception, so compiler needs to prove they won't happen, which is hard.
-                // At this point there is a way to F be infinity-point even if p is not,
-                // which makes it less const-time: around 1 bigint multiply.
-                return { p, f };
-            },
-            wNAFCached(P, precomputesMap, n, transform) {
-                // @ts-ignore
-                const W = P._WINDOW_SIZE || 1;
-                // Calculate precomputes on a first run, reuse them after
-                let comp = precomputesMap.get(P);
-                if (!comp) {
-                    comp = this.precomputeWindow(P, W);
-                    if (W !== 1) {
-                        precomputesMap.set(P, transform(comp));
-                    }
-                }
-                return this.wNAF(W, comp, n);
-            },
-        };
-    }
-    function validateBasic(curve) {
-        validateField(curve.Fp);
-        validateObject(curve, {
-            n: 'bigint',
-            h: 'bigint',
-            Gx: 'field',
-            Gy: 'field',
-        }, {
-            nBitLength: 'isSafeInteger',
-            nByteLength: 'isSafeInteger',
-        });
-        // Set defaults
-        return Object.freeze({
-            ...nLength(curve.n, curve.nBitLength),
-            ...curve,
-            ...{ p: curve.Fp.ORDER },
-        });
-    }
-
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    // Short Weierstrass curve. The formula is: y² = x³ + ax + b
-    function validatePointOpts(curve) {
-        const opts = validateBasic(curve);
-        validateObject(opts, {
-            a: 'field',
-            b: 'field',
-        }, {
-            allowedPrivateKeyLengths: 'array',
-            wrapPrivateKey: 'boolean',
-            isTorsionFree: 'function',
-            clearCofactor: 'function',
-            allowInfinityPoint: 'boolean',
-            fromBytes: 'function',
-            toBytes: 'function',
-        });
-        const { endo, Fp, a } = opts;
-        if (endo) {
-            if (!Fp.eql(a, Fp.ZERO)) {
-                throw new Error('Endomorphism can only be defined for Koblitz curves that have a=0');
-            }
-            if (typeof endo !== 'object' ||
-                typeof endo.beta !== 'bigint' ||
-                typeof endo.splitScalar !== 'function') {
-                throw new Error('Expected endomorphism with beta: bigint and splitScalar: function');
-            }
-        }
-        return Object.freeze({ ...opts });
-    }
-    // ASN.1 DER encoding utilities
-    const { bytesToNumberBE: b2n, hexToBytes: h2b } = ut;
-    const DER = {
-        // asn.1 DER encoding utils
-        Err: class DERErr extends Error {
-            constructor(m = '') {
-                super(m);
-            }
-        },
-        _parseInt(data) {
-            const { Err: E } = DER;
-            if (data.length < 2 || data[0] !== 0x02)
-                throw new E('Invalid signature integer tag');
-            const len = data[1];
-            const res = data.subarray(2, len + 2);
-            if (!len || res.length !== len)
-                throw new E('Invalid signature integer: wrong length');
-            // https://crypto.stackexchange.com/a/57734 Leftmost bit of first byte is 'negative' flag,
-            // since we always use positive integers here. It must always be empty:
-            // - add zero byte if exists
-            // - if next byte doesn't have a flag, leading zero is not allowed (minimal encoding)
-            if (res[0] & 0b10000000)
-                throw new E('Invalid signature integer: negative');
-            if (res[0] === 0x00 && !(res[1] & 0b10000000))
-                throw new E('Invalid signature integer: unnecessary leading zero');
-            return { d: b2n(res), l: data.subarray(len + 2) }; // d is data, l is left
-        },
-        toSig(hex) {
-            // parse DER signature
-            const { Err: E } = DER;
-            const data = typeof hex === 'string' ? h2b(hex) : hex;
-            if (!(data instanceof Uint8Array))
-                throw new Error('ui8a expected');
-            let l = data.length;
-            if (l < 2 || data[0] != 0x30)
-                throw new E('Invalid signature tag');
-            if (data[1] !== l - 2)
-                throw new E('Invalid signature: incorrect length');
-            const { d: r, l: sBytes } = DER._parseInt(data.subarray(2));
-            const { d: s, l: rBytesLeft } = DER._parseInt(sBytes);
-            if (rBytesLeft.length)
-                throw new E('Invalid signature: left bytes after parsing');
-            return { r, s };
-        },
-        hexFromSig(sig) {
-            // Add leading zero if first byte has negative bit enabled. More details in '_parseInt'
-            const slice = (s) => (Number.parseInt(s[0], 16) & 0b1000 ? '00' + s : s);
-            const h = (num) => {
-                const hex = num.toString(16);
-                return hex.length & 1 ? `0${hex}` : hex;
-            };
-            const s = slice(h(sig.s));
-            const r = slice(h(sig.r));
-            const shl = s.length / 2;
-            const rhl = r.length / 2;
-            const sl = h(shl);
-            const rl = h(rhl);
-            return `30${h(rhl + shl + 4)}02${rl}${r}02${sl}${s}`;
-        },
-    };
-    // Be friendly to bad ECMAScript parsers by not using bigint literals
-    // prettier-ignore
-    const _0n = BigInt(0), _1n$1 = BigInt(1); BigInt(2); const _3n = BigInt(3); BigInt(4);
-    function weierstrassPoints(opts) {
-        const CURVE = validatePointOpts(opts);
-        const { Fp } = CURVE; // All curves has same field / group length as for now, but they can differ
-        const toBytes = CURVE.toBytes ||
-            ((_c, point, _isCompressed) => {
-                const a = point.toAffine();
-                return concatBytes(Uint8Array.from([0x04]), Fp.toBytes(a.x), Fp.toBytes(a.y));
-            });
-        const fromBytes = CURVE.fromBytes ||
-            ((bytes) => {
-                // const head = bytes[0];
-                const tail = bytes.subarray(1);
-                // if (head !== 0x04) throw new Error('Only non-compressed encoding is supported');
-                const x = Fp.fromBytes(tail.subarray(0, Fp.BYTES));
-                const y = Fp.fromBytes(tail.subarray(Fp.BYTES, 2 * Fp.BYTES));
-                return { x, y };
-            });
-        /**
-         * y² = x³ + ax + b: Short weierstrass curve formula
-         * @returns y²
-         */
-        function weierstrassEquation(x) {
-            const { a, b } = CURVE;
-            const x2 = Fp.sqr(x); // x * x
-            const x3 = Fp.mul(x2, x); // x2 * x
-            return Fp.add(Fp.add(x3, Fp.mul(x, a)), b); // x3 + a * x + b
-        }
-        // Validate whether the passed curve params are valid.
-        // We check if curve equation works for generator point.
-        // `assertValidity()` won't work: `isTorsionFree()` is not available at this point in bls12-381.
-        // ProjectivePoint class has not been initialized yet.
-        if (!Fp.eql(Fp.sqr(CURVE.Gy), weierstrassEquation(CURVE.Gx)))
-            throw new Error('bad generator point: equation left != right');
-        // Valid group elements reside in range 1..n-1
-        function isWithinCurveOrder(num) {
-            return typeof num === 'bigint' && _0n < num && num < CURVE.n;
-        }
-        function assertGE(num) {
-            if (!isWithinCurveOrder(num))
-                throw new Error('Expected valid bigint: 0 < bigint < curve.n');
-        }
-        // Validates if priv key is valid and converts it to bigint.
-        // Supports options allowedPrivateKeyLengths and wrapPrivateKey.
-        function normPrivateKeyToScalar(key) {
-            const { allowedPrivateKeyLengths: lengths, nByteLength, wrapPrivateKey, n } = CURVE;
-            if (lengths && typeof key !== 'bigint') {
-                if (key instanceof Uint8Array)
-                    key = bytesToHex(key);
-                // Normalize to hex string, pad. E.g. P521 would norm 130-132 char hex to 132-char bytes
-                if (typeof key !== 'string' || !lengths.includes(key.length))
-                    throw new Error('Invalid key');
-                key = key.padStart(nByteLength * 2, '0');
-            }
-            let num;
-            try {
-                num =
-                    typeof key === 'bigint'
-                        ? key
-                        : bytesToNumberBE(ensureBytes('private key', key, nByteLength));
-            }
-            catch (error) {
-                throw new Error(`private key must be ${nByteLength} bytes, hex or bigint, not ${typeof key}`);
-            }
-            if (wrapPrivateKey)
-                num = mod(num, n); // disabled by default, enabled for BLS
-            assertGE(num); // num in range [1..N-1]
-            return num;
-        }
-        const pointPrecomputes = new Map();
-        function assertPrjPoint(other) {
-            if (!(other instanceof Point))
-                throw new Error('ProjectivePoint expected');
-        }
-        /**
-         * Projective Point works in 3d / projective (homogeneous) coordinates: (x, y, z) ∋ (x=x/z, y=y/z)
-         * Default Point works in 2d / affine coordinates: (x, y)
-         * We're doing calculations in projective, because its operations don't require costly inversion.
-         */
-        class Point {
-            constructor(px, py, pz) {
-                this.px = px;
-                this.py = py;
-                this.pz = pz;
-                if (px == null || !Fp.isValid(px))
-                    throw new Error('x required');
-                if (py == null || !Fp.isValid(py))
-                    throw new Error('y required');
-                if (pz == null || !Fp.isValid(pz))
-                    throw new Error('z required');
-            }
-            // Does not validate if the point is on-curve.
-            // Use fromHex instead, or call assertValidity() later.
-            static fromAffine(p) {
-                const { x, y } = p || {};
-                if (!p || !Fp.isValid(x) || !Fp.isValid(y))
-                    throw new Error('invalid affine point');
-                if (p instanceof Point)
-                    throw new Error('projective point not allowed');
-                const is0 = (i) => Fp.eql(i, Fp.ZERO);
-                // fromAffine(x:0, y:0) would produce (x:0, y:0, z:1), but we need (x:0, y:1, z:0)
-                if (is0(x) && is0(y))
-                    return Point.ZERO;
-                return new Point(x, y, Fp.ONE);
-            }
-            get x() {
-                return this.toAffine().x;
-            }
-            get y() {
-                return this.toAffine().y;
-            }
-            /**
-             * Takes a bunch of Projective Points but executes only one
-             * inversion on all of them. Inversion is very slow operation,
-             * so this improves performance massively.
-             * Optimization: converts a list of projective points to a list of identical points with Z=1.
-             */
-            static normalizeZ(points) {
-                const toInv = Fp.invertBatch(points.map((p) => p.pz));
-                return points.map((p, i) => p.toAffine(toInv[i])).map(Point.fromAffine);
-            }
-            /**
-             * Converts hash string or Uint8Array to Point.
-             * @param hex short/long ECDSA hex
-             */
-            static fromHex(hex) {
-                const P = Point.fromAffine(fromBytes(ensureBytes('pointHex', hex)));
-                P.assertValidity();
-                return P;
-            }
-            // Multiplies generator point by privateKey.
-            static fromPrivateKey(privateKey) {
-                return Point.BASE.multiply(normPrivateKeyToScalar(privateKey));
-            }
-            // "Private method", don't use it directly
-            _setWindowSize(windowSize) {
-                this._WINDOW_SIZE = windowSize;
-                pointPrecomputes.delete(this);
-            }
-            // A point on curve is valid if it conforms to equation.
-            assertValidity() {
-                if (this.is0()) {
-                    // (0, 1, 0) aka ZERO is invalid in most contexts.
-                    // In BLS, ZERO can be serialized, so we allow it.
-                    // (0, 0, 0) is wrong representation of ZERO and is always invalid.
-                    if (CURVE.allowInfinityPoint && !Fp.is0(this.py))
-                        return;
-                    throw new Error('bad point: ZERO');
-                }
-                // Some 3rd-party test vectors require different wording between here & `fromCompressedHex`
-                const { x, y } = this.toAffine();
-                // Check if x, y are valid field elements
-                if (!Fp.isValid(x) || !Fp.isValid(y))
-                    throw new Error('bad point: x or y not FE');
-                const left = Fp.sqr(y); // y²
-                const right = weierstrassEquation(x); // x³ + ax + b
-                if (!Fp.eql(left, right))
-                    throw new Error('bad point: equation left != right');
-                if (!this.isTorsionFree())
-                    throw new Error('bad point: not in prime-order subgroup');
-            }
-            hasEvenY() {
-                const { y } = this.toAffine();
-                if (Fp.isOdd)
-                    return !Fp.isOdd(y);
-                throw new Error("Field doesn't support isOdd");
-            }
-            /**
-             * Compare one point to another.
-             */
-            equals(other) {
-                assertPrjPoint(other);
-                const { px: X1, py: Y1, pz: Z1 } = this;
-                const { px: X2, py: Y2, pz: Z2 } = other;
-                const U1 = Fp.eql(Fp.mul(X1, Z2), Fp.mul(X2, Z1));
-                const U2 = Fp.eql(Fp.mul(Y1, Z2), Fp.mul(Y2, Z1));
-                return U1 && U2;
-            }
-            /**
-             * Flips point to one corresponding to (x, -y) in Affine coordinates.
-             */
-            negate() {
-                return new Point(this.px, Fp.neg(this.py), this.pz);
-            }
-            // Renes-Costello-Batina exception-free doubling formula.
-            // There is 30% faster Jacobian formula, but it is not complete.
-            // https://eprint.iacr.org/2015/1060, algorithm 3
-            // Cost: 8M + 3S + 3*a + 2*b3 + 15add.
-            double() {
-                const { a, b } = CURVE;
-                const b3 = Fp.mul(b, _3n);
-                const { px: X1, py: Y1, pz: Z1 } = this;
-                let X3 = Fp.ZERO, Y3 = Fp.ZERO, Z3 = Fp.ZERO; // prettier-ignore
-                let t0 = Fp.mul(X1, X1); // step 1
-                let t1 = Fp.mul(Y1, Y1);
-                let t2 = Fp.mul(Z1, Z1);
-                let t3 = Fp.mul(X1, Y1);
-                t3 = Fp.add(t3, t3); // step 5
-                Z3 = Fp.mul(X1, Z1);
-                Z3 = Fp.add(Z3, Z3);
-                X3 = Fp.mul(a, Z3);
-                Y3 = Fp.mul(b3, t2);
-                Y3 = Fp.add(X3, Y3); // step 10
-                X3 = Fp.sub(t1, Y3);
-                Y3 = Fp.add(t1, Y3);
-                Y3 = Fp.mul(X3, Y3);
-                X3 = Fp.mul(t3, X3);
-                Z3 = Fp.mul(b3, Z3); // step 15
-                t2 = Fp.mul(a, t2);
-                t3 = Fp.sub(t0, t2);
-                t3 = Fp.mul(a, t3);
-                t3 = Fp.add(t3, Z3);
-                Z3 = Fp.add(t0, t0); // step 20
-                t0 = Fp.add(Z3, t0);
-                t0 = Fp.add(t0, t2);
-                t0 = Fp.mul(t0, t3);
-                Y3 = Fp.add(Y3, t0);
-                t2 = Fp.mul(Y1, Z1); // step 25
-                t2 = Fp.add(t2, t2);
-                t0 = Fp.mul(t2, t3);
-                X3 = Fp.sub(X3, t0);
-                Z3 = Fp.mul(t2, t1);
-                Z3 = Fp.add(Z3, Z3); // step 30
-                Z3 = Fp.add(Z3, Z3);
-                return new Point(X3, Y3, Z3);
-            }
-            // Renes-Costello-Batina exception-free addition formula.
-            // There is 30% faster Jacobian formula, but it is not complete.
-            // https://eprint.iacr.org/2015/1060, algorithm 1
-            // Cost: 12M + 0S + 3*a + 3*b3 + 23add.
-            add(other) {
-                assertPrjPoint(other);
-                const { px: X1, py: Y1, pz: Z1 } = this;
-                const { px: X2, py: Y2, pz: Z2 } = other;
-                let X3 = Fp.ZERO, Y3 = Fp.ZERO, Z3 = Fp.ZERO; // prettier-ignore
-                const a = CURVE.a;
-                const b3 = Fp.mul(CURVE.b, _3n);
-                let t0 = Fp.mul(X1, X2); // step 1
-                let t1 = Fp.mul(Y1, Y2);
-                let t2 = Fp.mul(Z1, Z2);
-                let t3 = Fp.add(X1, Y1);
-                let t4 = Fp.add(X2, Y2); // step 5
-                t3 = Fp.mul(t3, t4);
-                t4 = Fp.add(t0, t1);
-                t3 = Fp.sub(t3, t4);
-                t4 = Fp.add(X1, Z1);
-                let t5 = Fp.add(X2, Z2); // step 10
-                t4 = Fp.mul(t4, t5);
-                t5 = Fp.add(t0, t2);
-                t4 = Fp.sub(t4, t5);
-                t5 = Fp.add(Y1, Z1);
-                X3 = Fp.add(Y2, Z2); // step 15
-                t5 = Fp.mul(t5, X3);
-                X3 = Fp.add(t1, t2);
-                t5 = Fp.sub(t5, X3);
-                Z3 = Fp.mul(a, t4);
-                X3 = Fp.mul(b3, t2); // step 20
-                Z3 = Fp.add(X3, Z3);
-                X3 = Fp.sub(t1, Z3);
-                Z3 = Fp.add(t1, Z3);
-                Y3 = Fp.mul(X3, Z3);
-                t1 = Fp.add(t0, t0); // step 25
-                t1 = Fp.add(t1, t0);
-                t2 = Fp.mul(a, t2);
-                t4 = Fp.mul(b3, t4);
-                t1 = Fp.add(t1, t2);
-                t2 = Fp.sub(t0, t2); // step 30
-                t2 = Fp.mul(a, t2);
-                t4 = Fp.add(t4, t2);
-                t0 = Fp.mul(t1, t4);
-                Y3 = Fp.add(Y3, t0);
-                t0 = Fp.mul(t5, t4); // step 35
-                X3 = Fp.mul(t3, X3);
-                X3 = Fp.sub(X3, t0);
-                t0 = Fp.mul(t3, t1);
-                Z3 = Fp.mul(t5, Z3);
-                Z3 = Fp.add(Z3, t0); // step 40
-                return new Point(X3, Y3, Z3);
-            }
-            subtract(other) {
-                return this.add(other.negate());
-            }
-            is0() {
-                return this.equals(Point.ZERO);
-            }
-            wNAF(n) {
-                return wnaf.wNAFCached(this, pointPrecomputes, n, (comp) => {
-                    const toInv = Fp.invertBatch(comp.map((p) => p.pz));
-                    return comp.map((p, i) => p.toAffine(toInv[i])).map(Point.fromAffine);
-                });
-            }
-            /**
-             * Non-constant-time multiplication. Uses double-and-add algorithm.
-             * It's faster, but should only be used when you don't care about
-             * an exposed private key e.g. sig verification, which works over *public* keys.
-             */
-            multiplyUnsafe(n) {
-                const I = Point.ZERO;
-                if (n === _0n)
-                    return I;
-                assertGE(n); // Will throw on 0
-                if (n === _1n$1)
-                    return this;
-                const { endo } = CURVE;
-                if (!endo)
-                    return wnaf.unsafeLadder(this, n);
-                // Apply endomorphism
-                let { k1neg, k1, k2neg, k2 } = endo.splitScalar(n);
-                let k1p = I;
-                let k2p = I;
-                let d = this;
-                while (k1 > _0n || k2 > _0n) {
-                    if (k1 & _1n$1)
-                        k1p = k1p.add(d);
-                    if (k2 & _1n$1)
-                        k2p = k2p.add(d);
-                    d = d.double();
-                    k1 >>= _1n$1;
-                    k2 >>= _1n$1;
-                }
-                if (k1neg)
-                    k1p = k1p.negate();
-                if (k2neg)
-                    k2p = k2p.negate();
-                k2p = new Point(Fp.mul(k2p.px, endo.beta), k2p.py, k2p.pz);
-                return k1p.add(k2p);
-            }
-            /**
-             * Constant time multiplication.
-             * Uses wNAF method. Windowed method may be 10% faster,
-             * but takes 2x longer to generate and consumes 2x memory.
-             * Uses precomputes when available.
-             * Uses endomorphism for Koblitz curves.
-             * @param scalar by which the point would be multiplied
-             * @returns New point
-             */
-            multiply(scalar) {
-                assertGE(scalar);
-                let n = scalar;
-                let point, fake; // Fake point is used to const-time mult
-                const { endo } = CURVE;
-                if (endo) {
-                    const { k1neg, k1, k2neg, k2 } = endo.splitScalar(n);
-                    let { p: k1p, f: f1p } = this.wNAF(k1);
-                    let { p: k2p, f: f2p } = this.wNAF(k2);
-                    k1p = wnaf.constTimeNegate(k1neg, k1p);
-                    k2p = wnaf.constTimeNegate(k2neg, k2p);
-                    k2p = new Point(Fp.mul(k2p.px, endo.beta), k2p.py, k2p.pz);
-                    point = k1p.add(k2p);
-                    fake = f1p.add(f2p);
-                }
-                else {
-                    const { p, f } = this.wNAF(n);
-                    point = p;
-                    fake = f;
-                }
-                // Normalize `z` for both points, but return only real one
-                return Point.normalizeZ([point, fake])[0];
-            }
-            /**
-             * Efficiently calculate `aP + bQ`. Unsafe, can expose private key, if used incorrectly.
-             * Not using Strauss-Shamir trick: precomputation tables are faster.
-             * The trick could be useful if both P and Q are not G (not in our case).
-             * @returns non-zero affine point
-             */
-            multiplyAndAddUnsafe(Q, a, b) {
-                const G = Point.BASE; // No Strauss-Shamir trick: we have 10% faster G precomputes
-                const mul = (P, a // Select faster multiply() method
-                ) => (a === _0n || a === _1n$1 || !P.equals(G) ? P.multiplyUnsafe(a) : P.multiply(a));
-                const sum = mul(this, a).add(mul(Q, b));
-                return sum.is0() ? undefined : sum;
-            }
-            // Converts Projective point to affine (x, y) coordinates.
-            // Can accept precomputed Z^-1 - for example, from invertBatch.
-            // (x, y, z) ∋ (x=x/z, y=y/z)
-            toAffine(iz) {
-                const { px: x, py: y, pz: z } = this;
-                const is0 = this.is0();
-                // If invZ was 0, we return zero point. However we still want to execute
-                // all operations, so we replace invZ with a random number, 1.
-                if (iz == null)
-                    iz = is0 ? Fp.ONE : Fp.inv(z);
-                const ax = Fp.mul(x, iz);
-                const ay = Fp.mul(y, iz);
-                const zz = Fp.mul(z, iz);
-                if (is0)
-                    return { x: Fp.ZERO, y: Fp.ZERO };
-                if (!Fp.eql(zz, Fp.ONE))
-                    throw new Error('invZ was invalid');
-                return { x: ax, y: ay };
-            }
-            isTorsionFree() {
-                const { h: cofactor, isTorsionFree } = CURVE;
-                if (cofactor === _1n$1)
-                    return true; // No subgroups, always torsion-free
-                if (isTorsionFree)
-                    return isTorsionFree(Point, this);
-                throw new Error('isTorsionFree() has not been declared for the elliptic curve');
-            }
-            clearCofactor() {
-                const { h: cofactor, clearCofactor } = CURVE;
-                if (cofactor === _1n$1)
-                    return this; // Fast-path
-                if (clearCofactor)
-                    return clearCofactor(Point, this);
-                return this.multiplyUnsafe(CURVE.h);
-            }
-            toRawBytes(isCompressed = true) {
-                this.assertValidity();
-                return toBytes(Point, this, isCompressed);
-            }
-            toHex(isCompressed = true) {
-                return bytesToHex(this.toRawBytes(isCompressed));
-            }
-        }
-        Point.BASE = new Point(CURVE.Gx, CURVE.Gy, Fp.ONE);
-        Point.ZERO = new Point(Fp.ZERO, Fp.ONE, Fp.ZERO);
-        const _bits = CURVE.nBitLength;
-        const wnaf = wNAF(Point, CURVE.endo ? Math.ceil(_bits / 2) : _bits);
-        // Validate if generator point is on curve
-        return {
-            CURVE,
-            ProjectivePoint: Point,
-            normPrivateKeyToScalar,
-            weierstrassEquation,
-            isWithinCurveOrder,
-        };
-    }
-    function validateOpts(curve) {
-        const opts = validateBasic(curve);
-        validateObject(opts, {
-            hash: 'hash',
-            hmac: 'function',
-            randomBytes: 'function',
-        }, {
-            bits2int: 'function',
-            bits2int_modN: 'function',
-            lowS: 'boolean',
-        });
-        return Object.freeze({ lowS: true, ...opts });
-    }
-    function weierstrass(curveDef) {
-        const CURVE = validateOpts(curveDef);
-        const { Fp, n: CURVE_ORDER } = CURVE;
-        const compressedLen = Fp.BYTES + 1; // e.g. 33 for 32
-        const uncompressedLen = 2 * Fp.BYTES + 1; // e.g. 65 for 32
-        function isValidFieldElement(num) {
-            return _0n < num && num < Fp.ORDER; // 0 is banned since it's not invertible FE
-        }
-        function modN(a) {
-            return mod(a, CURVE_ORDER);
-        }
-        function invN(a) {
-            return invert(a, CURVE_ORDER);
-        }
-        const { ProjectivePoint: Point, normPrivateKeyToScalar, weierstrassEquation, isWithinCurveOrder, } = weierstrassPoints({
-            ...CURVE,
-            toBytes(_c, point, isCompressed) {
-                const a = point.toAffine();
-                const x = Fp.toBytes(a.x);
-                const cat = concatBytes;
-                if (isCompressed) {
-                    return cat(Uint8Array.from([point.hasEvenY() ? 0x02 : 0x03]), x);
-                }
-                else {
-                    return cat(Uint8Array.from([0x04]), x, Fp.toBytes(a.y));
-                }
-            },
-            fromBytes(bytes) {
-                const len = bytes.length;
-                const head = bytes[0];
-                const tail = bytes.subarray(1);
-                // this.assertValidity() is done inside of fromHex
-                if (len === compressedLen && (head === 0x02 || head === 0x03)) {
-                    const x = bytesToNumberBE(tail);
-                    if (!isValidFieldElement(x))
-                        throw new Error('Point is not on curve');
-                    const y2 = weierstrassEquation(x); // y² = x³ + ax + b
-                    let y = Fp.sqrt(y2); // y = y² ^ (p+1)/4
-                    const isYOdd = (y & _1n$1) === _1n$1;
-                    // ECDSA
-                    const isHeadOdd = (head & 1) === 1;
-                    if (isHeadOdd !== isYOdd)
-                        y = Fp.neg(y);
-                    return { x, y };
-                }
-                else if (len === uncompressedLen && head === 0x04) {
-                    const x = Fp.fromBytes(tail.subarray(0, Fp.BYTES));
-                    const y = Fp.fromBytes(tail.subarray(Fp.BYTES, 2 * Fp.BYTES));
-                    return { x, y };
-                }
-                else {
-                    throw new Error(`Point of length ${len} was invalid. Expected ${compressedLen} compressed bytes or ${uncompressedLen} uncompressed bytes`);
-                }
-            },
-        });
-        const numToNByteStr = (num) => bytesToHex(numberToBytesBE(num, CURVE.nByteLength));
-        function isBiggerThanHalfOrder(number) {
-            const HALF = CURVE_ORDER >> _1n$1;
-            return number > HALF;
-        }
-        function normalizeS(s) {
-            return isBiggerThanHalfOrder(s) ? modN(-s) : s;
-        }
-        // slice bytes num
-        const slcNum = (b, from, to) => bytesToNumberBE(b.slice(from, to));
-        /**
-         * ECDSA signature with its (r, s) properties. Supports DER & compact representations.
-         */
-        class Signature {
-            constructor(r, s, recovery) {
-                this.r = r;
-                this.s = s;
-                this.recovery = recovery;
-                this.assertValidity();
-            }
-            // pair (bytes of r, bytes of s)
-            static fromCompact(hex) {
-                const l = CURVE.nByteLength;
-                hex = ensureBytes('compactSignature', hex, l * 2);
-                return new Signature(slcNum(hex, 0, l), slcNum(hex, l, 2 * l));
-            }
-            // DER encoded ECDSA signature
-            // https://bitcoin.stackexchange.com/questions/57644/what-are-the-parts-of-a-bitcoin-transaction-input-script
-            static fromDER(hex) {
-                const { r, s } = DER.toSig(ensureBytes('DER', hex));
-                return new Signature(r, s);
-            }
-            assertValidity() {
-                // can use assertGE here
-                if (!isWithinCurveOrder(this.r))
-                    throw new Error('r must be 0 < r < CURVE.n');
-                if (!isWithinCurveOrder(this.s))
-                    throw new Error('s must be 0 < s < CURVE.n');
-            }
-            addRecoveryBit(recovery) {
-                return new Signature(this.r, this.s, recovery);
-            }
-            recoverPublicKey(msgHash) {
-                const { r, s, recovery: rec } = this;
-                const h = bits2int_modN(ensureBytes('msgHash', msgHash)); // Truncate hash
-                if (rec == null || ![0, 1, 2, 3].includes(rec))
-                    throw new Error('recovery id invalid');
-                const radj = rec === 2 || rec === 3 ? r + CURVE.n : r;
-                if (radj >= Fp.ORDER)
-                    throw new Error('recovery id 2 or 3 invalid');
-                const prefix = (rec & 1) === 0 ? '02' : '03';
-                const R = Point.fromHex(prefix + numToNByteStr(radj));
-                const ir = invN(radj); // r^-1
-                const u1 = modN(-h * ir); // -hr^-1
-                const u2 = modN(s * ir); // sr^-1
-                const Q = Point.BASE.multiplyAndAddUnsafe(R, u1, u2); // (sr^-1)R-(hr^-1)G = -(hr^-1)G + (sr^-1)
-                if (!Q)
-                    throw new Error('point at infinify'); // unsafe is fine: no priv data leaked
-                Q.assertValidity();
-                return Q;
-            }
-            // Signatures should be low-s, to prevent malleability.
-            hasHighS() {
-                return isBiggerThanHalfOrder(this.s);
-            }
-            normalizeS() {
-                return this.hasHighS() ? new Signature(this.r, modN(-this.s), this.recovery) : this;
-            }
-            // DER-encoded
-            toDERRawBytes() {
-                return hexToBytes(this.toDERHex());
-            }
-            toDERHex() {
-                return DER.hexFromSig({ r: this.r, s: this.s });
-            }
-            // padded bytes of r, then padded bytes of s
-            toCompactRawBytes() {
-                return hexToBytes(this.toCompactHex());
-            }
-            toCompactHex() {
-                return numToNByteStr(this.r) + numToNByteStr(this.s);
-            }
-        }
-        const utils = {
-            isValidPrivateKey(privateKey) {
-                try {
-                    normPrivateKeyToScalar(privateKey);
-                    return true;
-                }
-                catch (error) {
-                    return false;
-                }
-            },
-            normPrivateKeyToScalar: normPrivateKeyToScalar,
-            /**
-             * Produces cryptographically secure private key from random of size
-             * (groupLen + ceil(groupLen / 2)) with modulo bias being negligible.
-             */
-            randomPrivateKey: () => {
-                const length = getMinHashLength(CURVE.n);
-                return mapHashToField(CURVE.randomBytes(length), CURVE.n);
-            },
-            /**
-             * Creates precompute table for an arbitrary EC point. Makes point "cached".
-             * Allows to massively speed-up `point.multiply(scalar)`.
-             * @returns cached point
-             * @example
-             * const fast = utils.precompute(8, ProjectivePoint.fromHex(someonesPubKey));
-             * fast.multiply(privKey); // much faster ECDH now
-             */
-            precompute(windowSize = 8, point = Point.BASE) {
-                point._setWindowSize(windowSize);
-                point.multiply(BigInt(3)); // 3 is arbitrary, just need any number here
-                return point;
-            },
-        };
-        /**
-         * Computes public key for a private key. Checks for validity of the private key.
-         * @param privateKey private key
-         * @param isCompressed whether to return compact (default), or full key
-         * @returns Public key, full when isCompressed=false; short when isCompressed=true
-         */
-        function getPublicKey(privateKey, isCompressed = true) {
-            return Point.fromPrivateKey(privateKey).toRawBytes(isCompressed);
-        }
-        /**
-         * Quick and dirty check for item being public key. Does not validate hex, or being on-curve.
-         */
-        function isProbPub(item) {
-            const arr = item instanceof Uint8Array;
-            const str = typeof item === 'string';
-            const len = (arr || str) && item.length;
-            if (arr)
-                return len === compressedLen || len === uncompressedLen;
-            if (str)
-                return len === 2 * compressedLen || len === 2 * uncompressedLen;
-            if (item instanceof Point)
-                return true;
-            return false;
-        }
-        /**
-         * ECDH (Elliptic Curve Diffie Hellman).
-         * Computes shared public key from private key and public key.
-         * Checks: 1) private key validity 2) shared key is on-curve.
-         * Does NOT hash the result.
-         * @param privateA private key
-         * @param publicB different public key
-         * @param isCompressed whether to return compact (default), or full key
-         * @returns shared public key
-         */
-        function getSharedSecret(privateA, publicB, isCompressed = true) {
-            if (isProbPub(privateA))
-                throw new Error('first arg must be private key');
-            if (!isProbPub(publicB))
-                throw new Error('second arg must be public key');
-            const b = Point.fromHex(publicB); // check for being on-curve
-            return b.multiply(normPrivateKeyToScalar(privateA)).toRawBytes(isCompressed);
-        }
-        // RFC6979: ensure ECDSA msg is X bytes and < N. RFC suggests optional truncating via bits2octets.
-        // FIPS 186-4 4.6 suggests the leftmost min(nBitLen, outLen) bits, which matches bits2int.
-        // bits2int can produce res>N, we can do mod(res, N) since the bitLen is the same.
-        // int2octets can't be used; pads small msgs with 0: unacceptatble for trunc as per RFC vectors
-        const bits2int = CURVE.bits2int ||
-            function (bytes) {
-                // For curves with nBitLength % 8 !== 0: bits2octets(bits2octets(m)) !== bits2octets(m)
-                // for some cases, since bytes.length * 8 is not actual bitLength.
-                const num = bytesToNumberBE(bytes); // check for == u8 done here
-                const delta = bytes.length * 8 - CURVE.nBitLength; // truncate to nBitLength leftmost bits
-                return delta > 0 ? num >> BigInt(delta) : num;
-            };
-        const bits2int_modN = CURVE.bits2int_modN ||
-            function (bytes) {
-                return modN(bits2int(bytes)); // can't use bytesToNumberBE here
-            };
-        // NOTE: pads output with zero as per spec
-        const ORDER_MASK = bitMask(CURVE.nBitLength);
-        /**
-         * Converts to bytes. Checks if num in `[0..ORDER_MASK-1]` e.g.: `[0..2^256-1]`.
-         */
-        function int2octets(num) {
-            if (typeof num !== 'bigint')
-                throw new Error('bigint expected');
-            if (!(_0n <= num && num < ORDER_MASK))
-                throw new Error(`bigint expected < 2^${CURVE.nBitLength}`);
-            // works with order, can have different size than numToField!
-            return numberToBytesBE(num, CURVE.nByteLength);
-        }
-        // Steps A, D of RFC6979 3.2
-        // Creates RFC6979 seed; converts msg/privKey to numbers.
-        // Used only in sign, not in verify.
-        // NOTE: we cannot assume here that msgHash has same amount of bytes as curve order, this will be wrong at least for P521.
-        // Also it can be bigger for P224 + SHA256
-        function prepSig(msgHash, privateKey, opts = defaultSigOpts) {
-            if (['recovered', 'canonical'].some((k) => k in opts))
-                throw new Error('sign() legacy options not supported');
-            const { hash, randomBytes } = CURVE;
-            let { lowS, prehash, extraEntropy: ent } = opts; // generates low-s sigs by default
-            if (lowS == null)
-                lowS = true; // RFC6979 3.2: we skip step A, because we already provide hash
-            msgHash = ensureBytes('msgHash', msgHash);
-            if (prehash)
-                msgHash = ensureBytes('prehashed msgHash', hash(msgHash));
-            // We can't later call bits2octets, since nested bits2int is broken for curves
-            // with nBitLength % 8 !== 0. Because of that, we unwrap it here as int2octets call.
-            // const bits2octets = (bits) => int2octets(bits2int_modN(bits))
-            const h1int = bits2int_modN(msgHash);
-            const d = normPrivateKeyToScalar(privateKey); // validate private key, convert to bigint
-            const seedArgs = [int2octets(d), int2octets(h1int)];
-            // extraEntropy. RFC6979 3.6: additional k' (optional).
-            if (ent != null) {
-                // K = HMAC_K(V || 0x00 || int2octets(x) || bits2octets(h1) || k')
-                const e = ent === true ? randomBytes(Fp.BYTES) : ent; // generate random bytes OR pass as-is
-                seedArgs.push(ensureBytes('extraEntropy', e)); // check for being bytes
-            }
-            const seed = concatBytes(...seedArgs); // Step D of RFC6979 3.2
-            const m = h1int; // NOTE: no need to call bits2int second time here, it is inside truncateHash!
-            // Converts signature params into point w r/s, checks result for validity.
-            function k2sig(kBytes) {
-                // RFC 6979 Section 3.2, step 3: k = bits2int(T)
-                const k = bits2int(kBytes); // Cannot use fields methods, since it is group element
-                if (!isWithinCurveOrder(k))
-                    return; // Important: all mod() calls here must be done over N
-                const ik = invN(k); // k^-1 mod n
-                const q = Point.BASE.multiply(k).toAffine(); // q = Gk
-                const r = modN(q.x); // r = q.x mod n
-                if (r === _0n)
-                    return;
-                // Can use scalar blinding b^-1(bm + bdr) where b ∈ [1,q−1] according to
-                // https://tches.iacr.org/index.php/TCHES/article/view/7337/6509. We've decided against it:
-                // a) dependency on CSPRNG b) 15% slowdown c) doesn't really help since bigints are not CT
-                const s = modN(ik * modN(m + r * d)); // Not using blinding here
-                if (s === _0n)
-                    return;
-                let recovery = (q.x === r ? 0 : 2) | Number(q.y & _1n$1); // recovery bit (2 or 3, when q.x > n)
-                let normS = s;
-                if (lowS && isBiggerThanHalfOrder(s)) {
-                    normS = normalizeS(s); // if lowS was passed, ensure s is always
-                    recovery ^= 1; // // in the bottom half of N
-                }
-                return new Signature(r, normS, recovery); // use normS, not s
-            }
-            return { seed, k2sig };
-        }
-        const defaultSigOpts = { lowS: CURVE.lowS, prehash: false };
-        const defaultVerOpts = { lowS: CURVE.lowS, prehash: false };
-        /**
-         * Signs message hash with a private key.
-         * ```
-         * sign(m, d, k) where
-         *   (x, y) = G × k
-         *   r = x mod n
-         *   s = (m + dr)/k mod n
-         * ```
-         * @param msgHash NOT message. msg needs to be hashed to `msgHash`, or use `prehash`.
-         * @param privKey private key
-         * @param opts lowS for non-malleable sigs. extraEntropy for mixing randomness into k. prehash will hash first arg.
-         * @returns signature with recovery param
-         */
-        function sign(msgHash, privKey, opts = defaultSigOpts) {
-            const { seed, k2sig } = prepSig(msgHash, privKey, opts); // Steps A, D of RFC6979 3.2.
-            const C = CURVE;
-            const drbg = createHmacDrbg(C.hash.outputLen, C.nByteLength, C.hmac);
-            return drbg(seed, k2sig); // Steps B, C, D, E, F, G
-        }
-        // Enable precomputes. Slows down first publicKey computation by 20ms.
-        Point.BASE._setWindowSize(8);
-        // utils.precompute(8, ProjectivePoint.BASE)
-        /**
-         * Verifies a signature against message hash and public key.
-         * Rejects lowS signatures by default: to override,
-         * specify option `{lowS: false}`. Implements section 4.1.4 from https://www.secg.org/sec1-v2.pdf:
-         *
-         * ```
-         * verify(r, s, h, P) where
-         *   U1 = hs^-1 mod n
-         *   U2 = rs^-1 mod n
-         *   R = U1⋅G - U2⋅P
-         *   mod(R.x, n) == r
-         * ```
-         */
-        function verify(signature, msgHash, publicKey, opts = defaultVerOpts) {
-            const sg = signature;
-            msgHash = ensureBytes('msgHash', msgHash);
-            publicKey = ensureBytes('publicKey', publicKey);
-            if ('strict' in opts)
-                throw new Error('options.strict was renamed to lowS');
-            const { lowS, prehash } = opts;
-            let _sig = undefined;
-            let P;
-            try {
-                if (typeof sg === 'string' || sg instanceof Uint8Array) {
-                    // Signature can be represented in 2 ways: compact (2*nByteLength) & DER (variable-length).
-                    // Since DER can also be 2*nByteLength bytes, we check for it first.
-                    try {
-                        _sig = Signature.fromDER(sg);
-                    }
-                    catch (derError) {
-                        if (!(derError instanceof DER.Err))
-                            throw derError;
-                        _sig = Signature.fromCompact(sg);
-                    }
-                }
-                else if (typeof sg === 'object' && typeof sg.r === 'bigint' && typeof sg.s === 'bigint') {
-                    const { r, s } = sg;
-                    _sig = new Signature(r, s);
-                }
-                else {
-                    throw new Error('PARSE');
-                }
-                P = Point.fromHex(publicKey);
-            }
-            catch (error) {
-                if (error.message === 'PARSE')
-                    throw new Error(`signature must be Signature instance, Uint8Array or hex string`);
-                return false;
-            }
-            if (lowS && _sig.hasHighS())
-                return false;
-            if (prehash)
-                msgHash = CURVE.hash(msgHash);
-            const { r, s } = _sig;
-            const h = bits2int_modN(msgHash); // Cannot use fields methods, since it is group element
-            const is = invN(s); // s^-1
-            const u1 = modN(h * is); // u1 = hs^-1 mod n
-            const u2 = modN(r * is); // u2 = rs^-1 mod n
-            const R = Point.BASE.multiplyAndAddUnsafe(P, u1, u2)?.toAffine(); // R = u1⋅G + u2⋅P
-            if (!R)
-                return false;
-            const v = modN(R.x);
-            return v === r;
-        }
-        return {
-            CURVE,
-            getPublicKey,
-            getSharedSecret,
-            sign,
-            verify,
-            ProjectivePoint: Point,
-            Signature,
-            utils,
-        };
-    }
-
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    // connects noble-curves to noble-hashes
-    function getHash(hash) {
-        return {
-            hash,
-            hmac: (key, ...msgs) => hmac(hash, key, concatBytes$1(...msgs)),
-            randomBytes: randomBytes$2,
-        };
-    }
-    function createCurve(curveDef, defHash) {
-        const create = (hash) => weierstrass({ ...curveDef, ...getHash(hash) });
-        return Object.freeze({ ...create(defHash), create });
-    }
-
-    /*! noble-curves - MIT License (c) 2022 Paul Miller (paulmillr.com) */
-    const secp256k1P = BigInt('0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f');
-    const secp256k1N = BigInt('0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141');
-    const _1n = BigInt(1);
-    const _2n = BigInt(2);
-    const divNearest = (a, b) => (a + b / _2n) / b;
-    /**
-     * √n = n^((p+1)/4) for fields p = 3 mod 4. We unwrap the loop and multiply bit-by-bit.
-     * (P+1n/4n).toString(2) would produce bits [223x 1, 0, 22x 1, 4x 0, 11, 00]
-     */
-    function sqrtMod(y) {
-        const P = secp256k1P;
-        // prettier-ignore
-        const _3n = BigInt(3), _6n = BigInt(6), _11n = BigInt(11), _22n = BigInt(22);
-        // prettier-ignore
-        const _23n = BigInt(23), _44n = BigInt(44), _88n = BigInt(88);
-        const b2 = (y * y * y) % P; // x^3, 11
-        const b3 = (b2 * b2 * y) % P; // x^7
-        const b6 = (pow2(b3, _3n, P) * b3) % P;
-        const b9 = (pow2(b6, _3n, P) * b3) % P;
-        const b11 = (pow2(b9, _2n, P) * b2) % P;
-        const b22 = (pow2(b11, _11n, P) * b11) % P;
-        const b44 = (pow2(b22, _22n, P) * b22) % P;
-        const b88 = (pow2(b44, _44n, P) * b44) % P;
-        const b176 = (pow2(b88, _88n, P) * b88) % P;
-        const b220 = (pow2(b176, _44n, P) * b44) % P;
-        const b223 = (pow2(b220, _3n, P) * b3) % P;
-        const t1 = (pow2(b223, _23n, P) * b22) % P;
-        const t2 = (pow2(t1, _6n, P) * b2) % P;
-        const root = pow2(t2, _2n, P);
-        if (!Fp.eql(Fp.sqr(root), y))
-            throw new Error('Cannot find square root');
-        return root;
-    }
-    const Fp = Field(secp256k1P, undefined, undefined, { sqrt: sqrtMod });
-    const secp256k1 = createCurve({
-        a: BigInt(0),
-        b: BigInt(7),
-        Fp,
-        n: secp256k1N,
-        // Base point (x, y) aka generator point
-        Gx: BigInt('55066263022277343669578718895168534326250603453777594175500187360389116729240'),
-        Gy: BigInt('32670510020758816978083085130507043184471273380659243275938904335757337482424'),
-        h: BigInt(1),
-        lowS: true,
-        /**
-         * secp256k1 belongs to Koblitz curves: it has efficiently computable endomorphism.
-         * Endomorphism uses 2x less RAM, speeds up precomputation by 2x and ECDH / key recovery by 20%.
-         * For precomputed wNAF it trades off 1/2 init time & 1/3 ram for 20% perf hit.
-         * Explanation: https://gist.github.com/paulmillr/eb670806793e84df628a7c434a873066
-         */
-        endo: {
-            beta: BigInt('0x7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee'),
-            splitScalar: (k) => {
-                const n = secp256k1N;
-                const a1 = BigInt('0x3086d221a7d46bcde86c90e49284eb15');
-                const b1 = -_1n * BigInt('0xe4437ed6010e88286f547fa90abfe4c3');
-                const a2 = BigInt('0x114ca50f7a8e2f3f657c1108d9d44cfd8');
-                const b2 = a1;
-                const POW_2_128 = BigInt('0x100000000000000000000000000000000'); // (2n**128n).toString(16)
-                const c1 = divNearest(b2 * k, n);
-                const c2 = divNearest(-b1 * k, n);
-                let k1 = mod(k - c1 * a1 - c2 * a2, n);
-                let k2 = mod(-c1 * b1 - c2 * b2, n);
-                const k1neg = k1 > POW_2_128;
-                const k2neg = k2 > POW_2_128;
-                if (k1neg)
-                    k1 = n - k1;
-                if (k2neg)
-                    k2 = n - k2;
-                if (k1 > POW_2_128 || k2 > POW_2_128) {
-                    throw new Error('splitScalar: Endomorphism failed, k=' + k);
-                }
-                return { k1neg, k1, k2neg, k2 };
-            },
-        },
-    }, sha256$1);
-    // Schnorr signatures are superior to ECDSA from above. Below is Schnorr-specific BIP0340 code.
-    // https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki
-    BigInt(0);
-    secp256k1.ProjectivePoint;
-
     /**
      *  A constant for the zero address.
      *
@@ -6584,7 +4738,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *
      *  (**i.e.** ``0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n``)
      */
-    const N$1 = BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+    const N = BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
     /**
      *  A constant for the number of wei in a single ether.
      *
@@ -6626,15 +4780,15 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
 
     // Constants
     const BN_0$7 = BigInt(0);
-    const BN_1$3 = BigInt(1);
+    //const BN_1 = BigInt(1);
     const BN_2$3 = BigInt(2);
-    const BN_27$1 = BigInt(27);
     const BN_28$1 = BigInt(28);
     const BN_35$1 = BigInt(35);
-    const _guard$3 = {};
-    function toUint256(value) {
+    const _guard$1 = {};
+    /*
+    function toUint256(value: BigNumberish): string {
         return zeroPadValue(toBeArray(value), 32);
-    }
+    }*/
     /**
      *  A Signature  @TODO
      *
@@ -6654,7 +4808,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         get r() { return this.#r; }
         set r(value) {
-            assertArgument(dataLength(value) === 32, "invalid r", "value", value);
             this.#r = hexlify(value);
         }
         /**
@@ -6662,9 +4815,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         get s() { return this.#s; }
         set s(_value) {
-            assertArgument(dataLength(_value) === 32, "invalid s", "value", _value);
             const value = hexlify(_value);
-            assertArgument(parseInt(value.substring(0, 3)) < 8, "non-canonical s", "value", value);
             this.#s = value;
         }
         /**
@@ -6674,13 +4825,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  its correspondin ``y``, the ``v`` indicates which of the two ``y``
          *  values to use.
          *
-         *  It is normalized to the values ``27`` or ``28`` for legacy
+         *  It is normalized to the values ``28`` or ``28`` for legacy
          *  purposes.
          */
         get v() { return this.#v; }
         set v(value) {
             const v = getNumber(value, "value");
-            assertArgument(v === 27 || v === 28, "invalid v", "v", value);
+            assertArgument(v === 28, "invalid v", "v", value);
             this.#v = v;
         }
         /**
@@ -6705,7 +4856,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  See ``v`` for more details on how this value is used.
          */
         get yParity() {
-            return (this.v === 27) ? 0 : 1;
+            return (this.v === 28) ? 0 : 1;
         }
         /**
          *  The [[link-eip-2098]] compact representation of the ``yParity``
@@ -6735,7 +4886,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  @private
          */
         constructor(guard, r, s, v) {
-            assertPrivate(guard, _guard$3, "Signature");
+            assertPrivate(guard, _guard$1, "Signature");
             this.#r = r;
             this.#s = s;
             this.#v = v;
@@ -6748,7 +4899,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  Returns a new identical [[Signature]].
          */
         clone() {
-            const clone = new Signature(_guard$3, this.r, this.s, this.v);
+            const clone = new Signature(_guard$1, this.r, this.s, this.v);
             if (this.networkV) {
                 clone.#networkV = this.networkV;
             }
@@ -6778,7 +4929,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         static getChainId(v) {
             const bv = getBigInt(v, "v");
             // The v is not an EIP-155 v, so it is the unspecified chain ID
-            if ((bv == BN_27$1) || (bv == BN_28$1)) {
+            if ((bv == BN_28$1) || (bv == BN_28$1)) {
                 return BN_0$7;
             }
             // Bad value for an EIP-155 v
@@ -6792,15 +4943,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  property to include the chain ID.
          *
          *  @example:
-         *    Signature.getChainIdV(5, 27)
-         *    //_result:
          *
          *    Signature.getChainIdV(5, 28)
          *    //_result:
          *
          */
         static getChainIdV(chainId, v) {
-            return (getBigInt(chainId) * BN_2$3) + BigInt(35 + v - 27);
+            return (getBigInt(chainId) * BN_2$3) + BigInt(35 + v - 28);
         }
         /**
          *  Compute the normalized legacy transaction ``v`` from a ``yParirty``,
@@ -6811,10 +4960,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *    Signature.getNormalizedV(0)
          *    //_result:
          *
-         *    // Legacy non-EIP-1559 transaction (i.e. 27 or 28)
-         *    Signature.getNormalizedV(27)
-         *    //_result:
-         *
          *    // Legacy EIP-155 transaction (i.e. >= 35)
          *    Signature.getNormalizedV(46)
          *    //_result:
@@ -6823,18 +4968,16 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *    Signature.getNormalizedV(5)
          *    //_error:
          */
-        static getNormalizedV(v) {
+        /*static getNormalizedV(v: BigNumberish): 28 {
             const bv = getBigInt(v);
-            if (bv === BN_0$7 || bv === BN_27$1) {
-                return 27;
-            }
-            if (bv === BN_1$3 || bv === BN_28$1) {
-                return 28;
-            }
-            assertArgument(bv >= BN_35$1, "invalid v", "v", v);
-            // Otherwise, EIP-155 v means odd is 27 and even is 28
-            return (bv & BN_1$3) ? 27 : 28;
-        }
+
+            if (bv === BN_1 || bv === BN_28) { return 28; }
+
+            assertArgument(bv >= BN_35, "invalid v", "v", v);
+
+            // Otherwise, EIP-155 v means odd is 28 and even is 28
+            return (bv & BN_1) ? 28: 28;
+        }*/
         /**
          *  Creates a new [[Signature]].
          *
@@ -6848,77 +4991,85 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 assertArgument(check, message, "signature", sig);
             }
             if (sig == null) {
-                return new Signature(_guard$3, ZeroHash, ZeroHash, 27);
+                return new Signature(_guard$1, ZeroHash, ZeroHash, 28);
             }
             if (typeof (sig) === "string") {
-                const bytes = getBytes(sig, "signature");
+                /*const bytes = getBytes(sig, "signature");
                 if (bytes.length === 64) {
                     const r = hexlify(bytes.slice(0, 32));
                     const s = bytes.slice(32, 64);
-                    const v = (s[0] & 0x80) ? 28 : 27;
+                    const v = (s[0] & 0x80) ? 28: 28;
                     s[0] &= 0x7f;
-                    return new Signature(_guard$3, r, hexlify(s), v);
+                    return new Signature(_guard, r, hexlify(s), v);
                 }
+
                 if (bytes.length === 65) {
                     const r = hexlify(bytes.slice(0, 32));
                     const s = bytes.slice(32, 64);
                     assertError((s[0] & 0x80) === 0, "non-canonical s");
                     const v = Signature.getNormalizedV(bytes[64]);
-                    return new Signature(_guard$3, r, hexlify(s), v);
-                }
+                    return new Signature(_guard, r, hexlify(s), v);
+                }*/
                 assertError(false, "invalid raw signature length");
             }
             if (sig instanceof Signature) {
                 return sig.clone();
             }
-            // Get r
+            return new Signature(_guard$1, ZeroHash, ZeroHash, 28); //todo
+            /*// Get r
             const _r = sig.r;
             assertError(_r != null, "missing r");
             const r = toUint256(_r);
+
             // Get s; by any means necessary (we check consistency below)
-            const s = (function (s, yParityAndS) {
-                if (s != null) {
-                    return toUint256(s);
-                }
+            const s = (function(s?: string, yParityAndS?: string) {
+                if (s != null) { return toUint256(s); }
+
                 if (yParityAndS != null) {
                     assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
                     const bytes = getBytes(yParityAndS);
                     bytes[0] &= 0x7f;
                     return hexlify(bytes);
                 }
+
                 assertError(false, "missing s");
             })(sig.s, sig.yParityAndS);
             assertError((getBytes(s)[0] & 0x80) == 0, "non-canonical s");
+
             // Get v; by any means necessary (we check consistency below)
-            const { networkV, v } = (function (_v, yParityAndS, yParity) {
+            const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 28 | 28 } {
                 if (_v != null) {
                     const v = getBigInt(_v);
                     return {
-                        networkV: ((v >= BN_35$1) ? v : undefined),
+                        networkV: ((v >= BN_35) ? v: undefined),
                         v: Signature.getNormalizedV(v)
                     };
                 }
+
                 if (yParityAndS != null) {
                     assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
-                    return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28 : 27) };
+                    return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 28) };
                 }
+
                 if (yParity != null) {
                     switch (getNumber(yParity, "sig.yParity")) {
-                        case 0: return { v: 27 };
+                        case 0: return { v: 28 };
                         case 1: return { v: 28 };
                     }
                     assertError(false, "invalid yParity");
                 }
+
                 assertError(false, "missing v");
             })(sig.v, sig.yParityAndS, sig.yParity);
-            const result = new Signature(_guard$3, r, s, v);
-            if (networkV) {
-                result.#networkV = networkV;
-            }
+
+            const result = new Signature(_guard, r, s, v);
+            if (networkV) { result.#networkV =  networkV; }
+
             // If multiple of v, yParity, yParityAndS we given, check they match
             assertError(sig.yParity == null || getNumber(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
             assertError(sig.yParityAndS == null || sig.yParityAndS === result.yParityAndS, "yParityAndS mismatch");
-            return result;
+
+            return result;*/
         }
     }
 
@@ -6927,9 +5078,11 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *
      *  @_subsection: api/crypto:Signing  [about-signing]
      */
+    const CRYPTO_MESSAGE_LENGTH = 32;
+    const CRYPTO_SECRETKEY_BYTES = 64 + 2560 + 1312 + 128;
+    //const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
     /**
-     *  A **SigningKey** provides high-level access to the elliptic curve
-     *  cryptography (ECC) operations and key management.
+     *  A **SigningKey** provides high-level access to cryptography operations and key management.
      */
     class SigningKey {
         #privateKey;
@@ -6937,7 +5090,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  Creates a new **SigningKey** for %%privateKey%%.
          */
         constructor(privateKey) {
-            assertArgument(dataLength(privateKey) === 32, "invalid private key", "privateKey", "[REDACTED]");
+            assertArgument(dataLength(privateKey) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
             this.#privateKey = hexlify(privateKey);
         }
         /**
@@ -6945,101 +5098,40 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         get privateKey() { return this.#privateKey; }
         /**
-         *  The uncompressed public key.
+         *  The public key.
          *
-         * This will always begin with the prefix ``0x04`` and be 132
-         * characters long (the ``0x`` prefix and 130 hexadecimal nibbles).
          */
         get publicKey() { return SigningKey.computePublicKey(this.#privateKey); }
-        /**
-         *  The compressed public key.
-         *
-         *  This will always begin with either the prefix ``0x02`` or ``0x03``
-         *  and be 68 characters long (the ``0x`` prefix and 33 hexadecimal
-         *  nibbles)
-         */
-        get compressedPublicKey() { return SigningKey.computePublicKey(this.#privateKey, true); }
         /**
          *  Return the signature of the signed %%digest%%.
          */
         sign(digest) {
-            assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
-            const sig = secp256k1.sign(getBytesCopy(digest), getBytesCopy(this.#privateKey), {
-                lowS: true
-            });
+            assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
+            const sig = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
+            const pubBytes = getBytes(this.publicKey);
+            const combinedSig = qcsdk.combinePublicKeySignature(pubBytes, sig);
             return Signature.from({
-                r: toBeHex(sig.r, 32),
-                s: toBeHex(sig.s, 32),
-                v: (sig.recovery ? 0x1c : 0x1b)
+                r: this.publicKey,
+                s: combinedSig,
+                v: 0x1
             });
         }
         /**
-         *  Returns the [[link-wiki-ecdh]] shared secret between this
-         *  private key and the %%other%% key.
+         *  Compute the public key for a private %%key%%.
          *
-         *  The %%other%% key may be any type of key, a raw public key,
-         *  a compressed/uncompressed pubic key or aprivate key.
-         *
-         *  Best practice is usually to use a cryptographic hash on the
-         *  returned value before using it as a symetric secret.
-         *
-         *  @example:
-         *    sign1 = new SigningKey(id("some-secret-1"))
-         *    sign2 = new SigningKey(id("some-secret-2"))
-         *
-         *    // Notice that privA.computeSharedSecret(pubB)...
-         *    sign1.computeSharedSecret(sign2.publicKey)
-         *    //_result:
-         *
-         *    // ...is equal to privB.computeSharedSecret(pubA).
-         *    sign2.computeSharedSecret(sign1.publicKey)
-         *    //_result:
-         */
-        computeSharedSecret(other) {
-            const pubKey = SigningKey.computePublicKey(other);
-            return hexlify(secp256k1.getSharedSecret(getBytesCopy(this.#privateKey), getBytes(pubKey), false));
-        }
-        /**
-         *  Compute the public key for %%key%%, optionally %%compressed%%.
-         *
-         *  The %%key%% may be any type of key, a raw public key, a
-         *  compressed/uncompressed public key or private key.
          *
          *  @example:
          *    sign = new SigningKey(id("some-secret"));
          *
-         *    // Compute the uncompressed public key for a private key
+         *    // Compute the public key for a private key
          *    SigningKey.computePublicKey(sign.privateKey)
          *    //_result:
-         *
-         *    // Compute the compressed public key for a private key
-         *    SigningKey.computePublicKey(sign.privateKey, true)
-         *    //_result:
-         *
-         *    // Compute the uncompressed public key
-         *    SigningKey.computePublicKey(sign.publicKey, false);
-         *    //_result:
-         *
-         *    // Compute the Compressed a public key
-         *    SigningKey.computePublicKey(sign.publicKey, true);
-         *    //_result:
          */
-        static computePublicKey(key, compressed) {
-            let bytes = getBytes(key, "key");
-            // private key
-            if (bytes.length === 32) {
-                const pubKey = secp256k1.getPublicKey(bytes, !!compressed);
-                return hexlify(pubKey);
-            }
-            // raw public key; use uncompressed key with 0x04 prefix
-            if (bytes.length === 64) {
-                const pub = new Uint8Array(65);
-                pub[0] = 0x04;
-                pub.set(bytes, 1);
-                bytes = pub;
-            }
-            const point = secp256k1.ProjectivePoint.fromHex(bytes);
-            return hexlify(point.toRawBytes(compressed));
+        static computePublicKey(key) {
+            assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
+            let priBytes = getBytes(key, "key");
+            let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
+            return pubKey;
         }
         /**
          *  Returns the public key for the private key which produced the
@@ -7060,28 +5152,12 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *
          */
         static recoverPublicKey(digest, signature) {
-            assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
+            assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
             const sig = Signature.from(signature);
-            let secpSig = secp256k1.Signature.fromCompact(getBytesCopy(concat([sig.r, sig.s])));
-            secpSig = secpSig.addRecoveryBit(sig.yParity);
-            const pubKey = secpSig.recoverPublicKey(getBytesCopy(digest));
-            assertArgument(pubKey != null, "invalid signature for digest", "signature", signature);
-            return "0x" + pubKey.toHex(false);
-        }
-        /**
-         *  Returns the point resulting from adding the ellipic curve points
-         *  %%p0%% and %%p1%%.
-         *
-         *  This is not a common function most developers should require, but
-         *  can be useful for certain privacy-specific techniques.
-         *
-         *  For example, it is used by [[HDNodeWallet]] to compute child
-         *  addresses from parent public keys and chain codes.
-         */
-        static addPoints(p0, p1, compressed) {
-            const pub0 = secp256k1.ProjectivePoint.fromHex(SigningKey.computePublicKey(p0).substring(2));
-            const pub1 = secp256k1.ProjectivePoint.fromHex(SigningKey.computePublicKey(p1).substring(2));
-            return "0x" + pub0.add(pub1).toHex(!!compressed);
+            let sigBytes = getBytes(sig.s);
+            let digestBytes = digest;
+            let publicKey = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+            return publicKey;
         }
     }
 
@@ -7176,8 +5252,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     }
     /**
      *  Returns a normalized and checksumed address for %%address%%.
-     *  This accepts non-checksum addresses, checksum addresses and
-     *  [[getIcapAddress]] formats.
+     *  This accepts non-checksum addresses, checksum addresses formats.
      *
      *  The checksum in Ethereum uses the capitalization (upper-case
      *  vs lower-case) of the characters within an address to encode
@@ -7232,32 +5307,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             return getChecksumAddress("0x" + result);
         }
         assertArgument(false, "invalid address", "address", address);
-    }
-    /**
-     *  The [ICAP Address format](link-icap) format is an early checksum
-     *  format which attempts to be compatible with the banking
-     *  industry [IBAN format](link-wiki-iban) for bank accounts.
-     *
-     *  It is no longer common or a recommended format.
-     *
-     *  @example:
-     *    getIcapAddress("0x8ba1f109551bd432803012645ac136ddd64dba72");
-     *    //_result:
-     *
-     *    getIcapAddress("XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK36");
-     *    //_result:
-     *
-     *    // Throws an error if the ICAP checksum is wrong
-     *    getIcapAddress("XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK37");
-     *    //_error:
-     */
-    function getIcapAddress(address) {
-        //let base36 = _base16To36(getAddress(address).substring(2)).toUpperCase();
-        let base36 = BigInt(getAddress(address)).toString(36).toUpperCase();
-        while (base36.length < 30) {
-            base36 = "0" + base36;
-        }
-        return "XE" + ibanChecksum("XE00" + base36) + base36;
     }
 
     // http://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed
@@ -8501,6 +6550,8 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         };
     }
 
+    //import { getAddress } from "../address/index.js";
+    // keccak256,
     /**
      *  Returns the address for the %%key%%.
      *
@@ -8509,12 +6560,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function computeAddress(key) {
         let pubkey;
         if (typeof (key) === "string") {
-            pubkey = SigningKey.computePublicKey(key, false);
+            pubkey = SigningKey.computePublicKey(key);
         }
         else {
             pubkey = key.publicKey;
         }
-        return getAddress(keccak256("0x" + pubkey.substring(4)).substring(26));
+        let pubKeyBytes = getBytes(pubkey);
+        return qcsdk.addressFromPublicKey(pubKeyBytes);
     }
     /**
      *  Returns the recovered address for the private key that was
@@ -10004,7 +8056,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     const S1 = S0 + S_COUNT;
     const L1 = L0 + L_COUNT;
     const V1 = V0 + V_COUNT;
-    const T1$1 = T0 + T_COUNT;
+    const T1 = T0 + T_COUNT;
 
     function unpack_cc(packed) {
     	return (packed >> 24) & 0xFF;
@@ -10045,7 +8097,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function compose_pair(a, b) {
     	if (a >= L0 && a < L1 && b >= V0 && b < V1) {
     		return S0 + (a - L0) * N_COUNT + (b - V0) * T_COUNT;
-    	} else if (is_hangul(a) && b > T0 && b < T1$1 && (a - S0) % T_COUNT == 0) {
+    	} else if (is_hangul(a) && b > T0 && b < T1 && (a - S0) % T_COUNT == 0) {
     		return a + (b - T0);
     	} else {
     		let recomp = RECOMP.get(a);
@@ -11840,7 +9892,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         return type;
     }
     // Make the Fragment constructors effectively private
-    const _guard$2 = {};
+    const _guard = {};
     const internal$1 = Symbol.for("_ethers_internal");
     const ParamTypeInternal = "_ParamTypeInternal";
     const ErrorFragmentInternal = "_ErrorInternal";
@@ -11894,7 +9946,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  @private
          */
         constructor(guard, name, type, baseType, indexed, components, arrayLength, arrayChildren) {
-            assertPrivate(guard, _guard$2, "ParamType");
+            assertPrivate(guard, _guard, "ParamType");
             Object.defineProperty(this, internal$1, { value: ParamTypeInternal });
             if (components) {
                 components = Object.freeze(components.slice());
@@ -12145,7 +10197,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 let arrayLength = null;
                 while (obj.length && obj.peekType("BRACKET")) {
                     const bracket = obj.pop(); //arrays[i];
-                    arrayChildren = new ParamType(_guard$2, "", type, baseType, null, comps, arrayLength, arrayChildren);
+                    arrayChildren = new ParamType(_guard, "", type, baseType, null, comps, arrayLength, arrayChildren);
                     arrayLength = bracket.value;
                     type += bracket.text;
                     baseType = "array";
@@ -12163,7 +10215,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 if (obj.length) {
                     throw new Error("leftover tokens");
                 }
-                return new ParamType(_guard$2, name, type, baseType, indexed, comps, arrayLength, arrayChildren);
+                return new ParamType(_guard, name, type, baseType, indexed, comps, arrayLength, arrayChildren);
             }
             const name = obj.name;
             assertArgument(!name || (typeof (name) === "string" && name.match(regexId)), "invalid name", "obj.name", name);
@@ -12180,16 +10232,16 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     type: arrayMatch[1],
                     components: obj.components
                 });
-                return new ParamType(_guard$2, name || "", type, "array", indexed, null, arrayLength, arrayChildren);
+                return new ParamType(_guard, name || "", type, "array", indexed, null, arrayLength, arrayChildren);
             }
             if (type === "tuple" || type.startsWith("tuple(" /* fix: ) */) || type.startsWith("(" /* fix: ) */)) {
                 const comps = (obj.components != null) ? obj.components.map((c) => ParamType.from(c)) : null;
-                const tuple = new ParamType(_guard$2, name || "", type, "tuple", indexed, comps, null, null);
+                const tuple = new ParamType(_guard, name || "", type, "tuple", indexed, comps, null, null);
                 // @TODO: use lexer to validate and normalize type
                 return tuple;
             }
             type = verifyBasicType(obj.type);
-            return new ParamType(_guard$2, name || "", type, type, indexed, null, null, null);
+            return new ParamType(_guard, name || "", type, type, indexed, null, null, null);
         }
         /**
          *  Returns true if %%value%% is a **ParamType**.
@@ -12214,7 +10266,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  @private
          */
         constructor(guard, type, inputs) {
-            assertPrivate(guard, _guard$2, "Fragment");
+            assertPrivate(guard, _guard, "Fragment");
             inputs = Object.freeze(inputs.slice());
             defineProperties(this, { type, inputs });
         }
@@ -12369,9 +10421,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 const name = consumeName("error", obj);
                 const inputs = consumeParams(obj);
                 consumeEoi(obj);
-                return new ErrorFragment(_guard$2, name, inputs);
+                return new ErrorFragment(_guard, name, inputs);
             }
-            return new ErrorFragment(_guard$2, obj.name, obj.inputs ? obj.inputs.map(ParamType.from) : []);
+            return new ErrorFragment(_guard, obj.name, obj.inputs ? obj.inputs.map(ParamType.from) : []);
         }
         /**
          *  Returns ``true`` and provides a type guard if %%value%% is an
@@ -12433,7 +10485,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         static getTopicHash(name, params) {
             params = (params || []).map((p) => ParamType.from(p));
-            const fragment = new EventFragment(_guard$2, name, params, false);
+            const fragment = new EventFragment(_guard, name, params, false);
             return fragment.topicHash;
         }
         /**
@@ -12456,9 +10508,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 const inputs = consumeParams(obj, true);
                 const anonymous = !!consumeKeywords(obj, setify(["anonymous"])).has("anonymous");
                 consumeEoi(obj);
-                return new EventFragment(_guard$2, name, inputs, anonymous);
+                return new EventFragment(_guard, name, inputs, anonymous);
             }
-            return new EventFragment(_guard$2, obj.name, obj.inputs ? obj.inputs.map((p) => ParamType.from(p, true)) : [], !!obj.anonymous);
+            return new EventFragment(_guard, obj.name, obj.inputs ? obj.inputs.map((p) => ParamType.from(p, true)) : [], !!obj.anonymous);
         }
         /**
          *  Returns ``true`` and provides a type guard if %%value%% is an
@@ -12532,9 +10584,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 const payable = !!consumeKeywords(obj, KwVisibDeploy).has("payable");
                 const gas = consumeGas(obj);
                 consumeEoi(obj);
-                return new ConstructorFragment(_guard$2, "constructor", inputs, payable, gas);
+                return new ConstructorFragment(_guard, "constructor", inputs, payable, gas);
             }
-            return new ConstructorFragment(_guard$2, "constructor", obj.inputs ? obj.inputs.map(ParamType.from) : [], !!obj.payable, (obj.gas != null) ? obj.gas : null);
+            return new ConstructorFragment(_guard, "constructor", obj.inputs ? obj.inputs.map(ParamType.from) : [], !!obj.payable, (obj.gas != null) ? obj.gas : null);
         }
         /**
          *  Returns ``true`` and provides a type guard if %%value%% is a
@@ -12594,7 +10646,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     assertArgument(inputs.length === 0, `receive cannot have arguments`, "obj.inputs", inputs);
                     consumeKeywords(obj, setify(["payable"]));
                     consumeEoi(obj);
-                    return new FallbackFragment(_guard$2, [], true);
+                    return new FallbackFragment(_guard, [], true);
                 }
                 // fallback() [payable]
                 // fallback(bytes) [payable] returns (bytes)
@@ -12612,15 +10664,15 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     assertArgument(outputs.length === 1 && outputs[0].type === "bytes", "invalid fallback outputs", "obj.outputs", outputs.map((i) => i.format("minimal")).join(", "));
                 }
                 consumeEoi(obj);
-                return new FallbackFragment(_guard$2, inputs, mutability === "payable");
+                return new FallbackFragment(_guard, inputs, mutability === "payable");
             }
             if (obj.type === "receive") {
-                return new FallbackFragment(_guard$2, [], true);
+                return new FallbackFragment(_guard, [], true);
             }
             if (obj.type === "fallback") {
                 const inputs = [ParamType.from("bytes")];
                 const payable = (obj.stateMutability === "payable");
-                return new FallbackFragment(_guard$2, inputs, payable);
+                return new FallbackFragment(_guard, inputs, payable);
             }
             assertArgument(false, "invalid fallback description", "obj", obj);
         }
@@ -12717,7 +10769,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         static getSelector(name, params) {
             params = (params || []).map((p) => ParamType.from(p));
-            const fragment = new FunctionFragment(_guard$2, name, "view", params, [], null);
+            const fragment = new FunctionFragment(_guard, name, "view", params, [], null);
             return fragment.selector;
         }
         /**
@@ -12745,7 +10797,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 }
                 const gas = consumeGas(obj);
                 consumeEoi(obj);
-                return new FunctionFragment(_guard$2, name, mutability, inputs, outputs, gas);
+                return new FunctionFragment(_guard, name, mutability, inputs, outputs, gas);
             }
             let stateMutability = obj.stateMutability;
             // Use legacy Solidity ABI logic if stateMutability is missing
@@ -12766,7 +10818,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             }
             // @TODO: verifyState for stateMutability (e.g. throw if
             //        payable: false but stateMutability is "nonpayable")
-            return new FunctionFragment(_guard$2, obj.name, stateMutability, obj.inputs ? obj.inputs.map(ParamType.from) : [], obj.outputs ? obj.outputs.map(ParamType.from) : [], (obj.gas != null) ? obj.gas : null);
+            return new FunctionFragment(_guard, obj.name, stateMutability, obj.inputs ? obj.inputs.map(ParamType.from) : [], obj.outputs ? obj.outputs.map(ParamType.from) : [], (obj.gas != null) ? obj.gas : null);
         }
         /**
          *  Returns ``true`` and provides a type guard if %%value%% is a
@@ -12809,9 +10861,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 const name = consumeName("struct", obj);
                 const inputs = consumeParams(obj);
                 consumeEoi(obj);
-                return new StructFragment(_guard$2, name, inputs);
+                return new StructFragment(_guard, name, inputs);
             }
-            return new StructFragment(_guard$2, obj.name, obj.inputs ? obj.inputs.map(ParamType.from) : []);
+            return new StructFragment(_guard, obj.name, obj.inputs ? obj.inputs.map(ParamType.from) : []);
         }
         // @TODO: fix this return type
         /**
@@ -17869,63 +15921,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             Networks.set(nameOrChainId, networkFunc);
         }
     }
-    // We don't want to bring in formatUnits because it is backed by
-    // FixedNumber and we want to keep Networks tiny. The values
-    // included by the Gas Stations are also IEEE 754 with lots of
-    // rounding issues and exceed the strict checks formatUnits has.
-    function parseUnits(_value, decimals) {
-        const value = String(_value);
-        if (!value.match(/^[0-9.]+$/)) {
-            throw new Error(`invalid gwei value: ${_value}`);
-        }
-        // Break into [ whole, fraction ]
-        const comps = value.split(".");
-        if (comps.length === 1) {
-            comps.push("");
-        }
-        // More than 1 decimal point or too many fractional positions
-        if (comps.length !== 2) {
-            throw new Error(`invalid gwei value: ${_value}`);
-        }
-        // Pad the fraction to 9 decimalplaces
-        while (comps[1].length < decimals) {
-            comps[1] += "0";
-        }
-        // Too many decimals and some non-zero ending, take the ceiling
-        if (comps[1].length > 9) {
-            let frac = BigInt(comps[1].substring(0, 9));
-            if (!comps[1].substring(9).match(/^0+$/)) {
-                frac++;
-            }
-            comps[1] = frac.toString();
-        }
-        return BigInt(comps[0] + comps[1]);
-    }
-    // Used by Polygon to use a gas station for fee data
-    function getGasStationPlugin(url) {
-        return new FetchUrlFeeDataNetworkPlugin(url, async (fetchFeeData, provider, request) => {
-            // Prevent Cloudflare from blocking our request in node.js
-            request.setHeader("User-Agent", "ethers");
-            let response;
-            try {
-                const [_response, _feeData] = await Promise.all([
-                    request.send(), fetchFeeData()
-                ]);
-                response = _response;
-                const payload = response.bodyJson.standard;
-                const feeData = {
-                    gasPrice: _feeData.gasPrice,
-                    maxFeePerGas: parseUnits(payload.maxFee, 9),
-                    maxPriorityFeePerGas: parseUnits(payload.maxPriorityFee, 9),
-                };
-                return feeData;
-            }
-            catch (error) {
-                assert(false, `error encountered with polygon gas station (${JSON.stringify(request.url)})`, "SERVER_ERROR", { request, response, error });
-            }
-        });
-    }
-    // See: https://chainlist.org
     let injected = false;
     function injectCommonNetworks() {
         if (injected) {
@@ -17955,48 +15950,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 });
             }
         }
-        registerEth("mainnet", 1, { ensNetwork: 1, altNames: ["homestead"] });
-        registerEth("ropsten", 3, { ensNetwork: 3 });
-        registerEth("rinkeby", 4, { ensNetwork: 4 });
-        registerEth("goerli", 5, { ensNetwork: 5 });
-        registerEth("kovan", 42, { ensNetwork: 42 });
-        registerEth("sepolia", 11155111, { ensNetwork: 11155111 });
-        registerEth("holesky", 17000, { ensNetwork: 17000 });
-        registerEth("classic", 61, {});
-        registerEth("classicKotti", 6, {});
-        registerEth("arbitrum", 42161, {
-            ensNetwork: 1,
-        });
-        registerEth("arbitrum-goerli", 421613, {});
-        registerEth("arbitrum-sepolia", 421614, {});
-        registerEth("base", 8453, { ensNetwork: 1 });
-        registerEth("base-goerli", 84531, {});
-        registerEth("base-sepolia", 84532, {});
-        registerEth("bnb", 56, { ensNetwork: 1 });
-        registerEth("bnbt", 97, {});
-        registerEth("linea", 59144, { ensNetwork: 1 });
-        registerEth("linea-goerli", 59140, {});
-        registerEth("linea-sepolia", 59141, {});
-        registerEth("matic", 137, {
-            ensNetwork: 1,
-            plugins: [
-                getGasStationPlugin("https:/\/gasstation.polygon.technology/v2")
-            ]
-        });
-        registerEth("matic-amoy", 80002, {});
-        registerEth("matic-mumbai", 80001, {
-            altNames: ["maticMumbai", "maticmum"],
-            plugins: [
-                getGasStationPlugin("https:/\/gasstation-testnet.polygon.technology/v2")
-            ]
-        });
-        registerEth("optimism", 10, {
-            ensNetwork: 1,
-            plugins: []
-        });
-        registerEth("optimism-goerli", 420, {});
-        registerEth("optimism-sepolia", 11155420, {});
-        registerEth("xdai", 100, { ensNetwork: 1 });
+        registerEth("mainnet", 123123, { ensNetwork: 1, altNames: ["quantumcoin"] });
     }
 
     function copy$2(obj) {
@@ -18291,7 +16245,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     // Constants
     const BN_2$1 = BigInt(2);
     const MAX_CCIP_REDIRECTS = 10;
-    function isPromise$1(value) {
+    function isPromise(value) {
         return (value && typeof (value.then) === "function");
     }
     function getTag(prefix, value) {
@@ -18788,7 +16742,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     return;
                 }
                 const addr = resolveAddress(request[key], this);
-                if (isPromise$1(addr)) {
+                if (isPromise(addr)) {
                     promises.push((async function () { request[key] = await addr; })());
                 }
                 else {
@@ -18797,7 +16751,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             });
             if (request.blockTag != null) {
                 const blockTag = this._getBlockTag(request.blockTag);
-                if (isPromise$1(blockTag)) {
+                if (isPromise(blockTag)) {
                     promises.push((async function () { request.blockTag = await blockTag; })());
                 }
                 else {
@@ -18898,7 +16852,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
         async estimateGas(_tx) {
             let tx = this._getTransactionRequest(_tx);
-            if (isPromise$1(tx)) {
+            if (isPromise(tx)) {
                 tx = await tx;
             }
             return getBigInt(await this.#perform({
@@ -19085,7 +17039,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         // Bloom-filter Queries
         async getLogs(_filter) {
             let filter = this._getFilter(_filter);
-            if (isPromise$1(filter)) {
+            if (isPromise(filter)) {
                 filter = await filter;
             }
             const { network, params } = await resolveProperties({
@@ -19942,6 +17896,622 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         console.log("==========================");
     }
 
+    /**
+     *  A **FallbackProvider** provides resilience, security and performance
+     *  in a way that is customizable and configurable.
+     *
+     *  @_section: api/providers/fallback-provider:Fallback Provider [about-fallback-provider]
+     */
+    const BN_1 = BigInt("1");
+    const BN_2 = BigInt("2");
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+    function stall$1(duration) {
+        return new Promise((resolve) => { setTimeout(resolve, duration); });
+    }
+    function getTime() { return (new Date()).getTime(); }
+    function stringify(value) {
+        return JSON.stringify(value, (key, value) => {
+            if (typeof (value) === "bigint") {
+                return { type: "bigint", value: value.toString() };
+            }
+            return value;
+        });
+    }
+    const defaultConfig = { stallTimeout: 400, priority: 1, weight: 1 };
+    const defaultState = {
+        blockNumber: -2, requests: 0, lateResponses: 0, errorResponses: 0,
+        outOfSync: -1, unsupportedEvents: 0, rollingDuration: 0, score: 0,
+        _network: null, _updateNumber: null, _totalTime: 0,
+        _lastFatalError: null, _lastFatalErrorTimestamp: 0
+    };
+    async function waitForSync(config, blockNumber) {
+        while (config.blockNumber < 0 || config.blockNumber < blockNumber) {
+            if (!config._updateNumber) {
+                config._updateNumber = (async () => {
+                    try {
+                        const blockNumber = await config.provider.getBlockNumber();
+                        if (blockNumber > config.blockNumber) {
+                            config.blockNumber = blockNumber;
+                        }
+                    }
+                    catch (error) {
+                        config.blockNumber = -2;
+                        config._lastFatalError = error;
+                        config._lastFatalErrorTimestamp = getTime();
+                    }
+                    config._updateNumber = null;
+                })();
+            }
+            await config._updateNumber;
+            config.outOfSync++;
+            if (config._lastFatalError) {
+                break;
+            }
+        }
+    }
+    function _normalize(value) {
+        if (value == null) {
+            return "null";
+        }
+        if (Array.isArray(value)) {
+            return "[" + (value.map(_normalize)).join(",") + "]";
+        }
+        if (typeof (value) === "object" && typeof (value.toJSON) === "function") {
+            return _normalize(value.toJSON());
+        }
+        switch (typeof (value)) {
+            case "boolean":
+            case "symbol":
+                return value.toString();
+            case "bigint":
+            case "number":
+                return BigInt(value).toString();
+            case "string":
+                return JSON.stringify(value);
+            case "object": {
+                const keys = Object.keys(value);
+                keys.sort();
+                return "{" + keys.map((k) => `${JSON.stringify(k)}:${_normalize(value[k])}`).join(",") + "}";
+            }
+        }
+        console.log("Could not serialize", value);
+        throw new Error("Hmm...");
+    }
+    function normalizeResult(method, value) {
+        if ("error" in value) {
+            const error = value.error;
+            let tag;
+            if (isError(error, "CALL_EXCEPTION")) {
+                tag = _normalize(Object.assign({}, error, {
+                    shortMessage: undefined, reason: undefined, info: undefined
+                }));
+            }
+            else {
+                tag = _normalize(error);
+            }
+            return { tag, value: error };
+        }
+        const result = value.result;
+        return { tag: _normalize(result), value: result };
+    }
+    // This strategy picks the highest weight result, as long as the weight is
+    // equal to or greater than quorum
+    function checkQuorum(quorum, results) {
+        const tally = new Map();
+        for (const { value, tag, weight } of results) {
+            const t = tally.get(tag) || { value, weight: 0 };
+            t.weight += weight;
+            tally.set(tag, t);
+        }
+        let best = null;
+        for (const r of tally.values()) {
+            if (r.weight >= quorum && (!best || r.weight > best.weight)) {
+                best = r;
+            }
+        }
+        if (best) {
+            return best.value;
+        }
+        return undefined;
+    }
+    function getMedian(quorum, results) {
+        let resultWeight = 0;
+        const errorMap = new Map();
+        let bestError = null;
+        const values = [];
+        for (const { value, tag, weight } of results) {
+            if (value instanceof Error) {
+                const e = errorMap.get(tag) || { value, weight: 0 };
+                e.weight += weight;
+                errorMap.set(tag, e);
+                if (bestError == null || e.weight > bestError.weight) {
+                    bestError = e;
+                }
+            }
+            else {
+                values.push(BigInt(value));
+                resultWeight += weight;
+            }
+        }
+        if (resultWeight < quorum) {
+            // We have quorum for an error
+            if (bestError && bestError.weight >= quorum) {
+                return bestError.value;
+            }
+            // We do not have quorum for a result
+            return undefined;
+        }
+        // Get the sorted values
+        values.sort((a, b) => ((a < b) ? -1 : (b > a) ? 1 : 0));
+        const mid = Math.floor(values.length / 2);
+        // Odd-length; take the middle value
+        if (values.length % 2) {
+            return values[mid];
+        }
+        // Even length; take the ceiling of the mean of the center two values
+        return (values[mid - 1] + values[mid] + BN_1) / BN_2;
+    }
+    function getAnyResult(quorum, results) {
+        // If any value or error meets quorum, that is our preferred result
+        const result = checkQuorum(quorum, results);
+        if (result !== undefined) {
+            return result;
+        }
+        // Otherwise, do we have any result?
+        for (const r of results) {
+            if (r.value) {
+                return r.value;
+            }
+        }
+        // Nope!
+        return undefined;
+    }
+    function getFuzzyMode(quorum, results) {
+        if (quorum === 1) {
+            return getNumber(getMedian(quorum, results), "%internal");
+        }
+        const tally = new Map();
+        const add = (result, weight) => {
+            const t = tally.get(result) || { result, weight: 0 };
+            t.weight += weight;
+            tally.set(result, t);
+        };
+        for (const { weight, value } of results) {
+            const r = getNumber(value);
+            add(r - 1, weight);
+            add(r, weight);
+            add(r + 1, weight);
+        }
+        let bestWeight = 0;
+        let bestResult = undefined;
+        for (const { weight, result } of tally.values()) {
+            // Use this result, if this result meets quorum and has either:
+            // - a better weight
+            // - or equal weight, but the result is larger
+            if (weight >= quorum && (weight > bestWeight || (bestResult != null && weight === bestWeight && result > bestResult))) {
+                bestWeight = weight;
+                bestResult = result;
+            }
+        }
+        return bestResult;
+    }
+    /**
+     *  A **FallbackProvider** manages several [[Providers]] providing
+     *  resilience by switching between slow or misbehaving nodes, security
+     *  by requiring multiple backends to aggree and performance by allowing
+     *  faster backends to respond earlier.
+     *
+     */
+    class FallbackProvider extends AbstractProvider {
+        /**
+         *  The number of backends that must agree on a value before it is
+         *  accpeted.
+         */
+        quorum;
+        /**
+         *  @_ignore:
+         */
+        eventQuorum;
+        /**
+         *  @_ignore:
+         */
+        eventWorkers;
+        #configs;
+        #height;
+        #initialSyncPromise;
+        /**
+         *  Creates a new **FallbackProvider** with %%providers%% connected to
+         *  %%network%%.
+         *
+         *  If a [[Provider]] is included in %%providers%%, defaults are used
+         *  for the configuration.
+         */
+        constructor(providers, network, options) {
+            super(network, options);
+            this.#configs = providers.map((p) => {
+                if (p instanceof AbstractProvider) {
+                    return Object.assign({ provider: p }, defaultConfig, defaultState);
+                }
+                else {
+                    return Object.assign({}, defaultConfig, p, defaultState);
+                }
+            });
+            this.#height = -2;
+            this.#initialSyncPromise = null;
+            if (options && options.quorum != null) {
+                this.quorum = options.quorum;
+            }
+            else {
+                this.quorum = Math.ceil(this.#configs.reduce((accum, config) => {
+                    accum += config.weight;
+                    return accum;
+                }, 0) / 2);
+            }
+            this.eventQuorum = 1;
+            this.eventWorkers = 1;
+            assertArgument(this.quorum <= this.#configs.reduce((a, c) => (a + c.weight), 0), "quorum exceed provider weight", "quorum", this.quorum);
+        }
+        get providerConfigs() {
+            return this.#configs.map((c) => {
+                const result = Object.assign({}, c);
+                for (const key in result) {
+                    if (key[0] === "_") {
+                        delete result[key];
+                    }
+                }
+                return result;
+            });
+        }
+        async _detectNetwork() {
+            return Network.from(getBigInt(await this._perform({ method: "chainId" })));
+        }
+        // @TODO: Add support to select providers to be the event subscriber
+        //_getSubscriber(sub: Subscription): Subscriber {
+        //    throw new Error("@TODO");
+        //}
+        /**
+         *  Transforms a %%req%% into the correct method call on %%provider%%.
+         */
+        async _translatePerform(provider, req) {
+            switch (req.method) {
+                case "broadcastTransaction":
+                    return await provider.broadcastTransaction(req.signedTransaction);
+                case "call":
+                    return await provider.call(Object.assign({}, req.transaction, { blockTag: req.blockTag }));
+                case "chainId":
+                    return (await provider.getNetwork()).chainId;
+                case "estimateGas":
+                    return await provider.estimateGas(req.transaction);
+                case "getBalance":
+                    return await provider.getBalance(req.address, req.blockTag);
+                case "getBlock": {
+                    const block = ("blockHash" in req) ? req.blockHash : req.blockTag;
+                    return await provider.getBlock(block, req.includeTransactions);
+                }
+                case "getBlockNumber":
+                    return await provider.getBlockNumber();
+                case "getCode":
+                    return await provider.getCode(req.address, req.blockTag);
+                case "getGasPrice":
+                    return (await provider.getFeeData()).gasPrice;
+                case "getPriorityFee":
+                    return (await provider.getFeeData()).maxPriorityFeePerGas;
+                case "getLogs":
+                    return await provider.getLogs(req.filter);
+                case "getStorage":
+                    return await provider.getStorage(req.address, req.position, req.blockTag);
+                case "getTransaction":
+                    return await provider.getTransaction(req.hash);
+                case "getTransactionCount":
+                    return await provider.getTransactionCount(req.address, req.blockTag);
+                case "getTransactionReceipt":
+                    return await provider.getTransactionReceipt(req.hash);
+                case "getTransactionResult":
+                    return await provider.getTransactionResult(req.hash);
+            }
+        }
+        // Grab the next (random) config that is not already part of
+        // the running set
+        #getNextConfig(running) {
+            // @TODO: Maybe do a check here to favour (heavily) providers that
+            //        do not require waitForSync and disfavour providers that
+            //        seem down-ish or are behaving slowly
+            const configs = Array.from(running).map((r) => r.config);
+            // Shuffle the states, sorted by priority
+            const allConfigs = this.#configs.slice();
+            shuffle(allConfigs);
+            allConfigs.sort((a, b) => (a.priority - b.priority));
+            for (const config of allConfigs) {
+                if (config._lastFatalError) {
+                    continue;
+                }
+                if (configs.indexOf(config) === -1) {
+                    return config;
+                }
+            }
+            return null;
+        }
+        // Adds a new runner (if available) to running.
+        #addRunner(running, req) {
+            const config = this.#getNextConfig(running);
+            // No runners available
+            if (config == null) {
+                return null;
+            }
+            // Create a new runner
+            const runner = {
+                config, result: null, didBump: false,
+                perform: null, staller: null
+            };
+            const now = getTime();
+            // Start performing this operation
+            runner.perform = (async () => {
+                try {
+                    config.requests++;
+                    const result = await this._translatePerform(config.provider, req);
+                    runner.result = { result };
+                }
+                catch (error) {
+                    config.errorResponses++;
+                    runner.result = { error };
+                }
+                const dt = (getTime() - now);
+                config._totalTime += dt;
+                config.rollingDuration = 0.95 * config.rollingDuration + 0.05 * dt;
+                runner.perform = null;
+            })();
+            // Start a staller; when this times out, it's time to force
+            // kicking off another runner because we are taking too long
+            runner.staller = (async () => {
+                await stall$1(config.stallTimeout);
+                runner.staller = null;
+            })();
+            running.add(runner);
+            return runner;
+        }
+        // Initializes the blockNumber and network for each runner and
+        // blocks until initialized
+        async #initialSync() {
+            let initialSync = this.#initialSyncPromise;
+            if (!initialSync) {
+                const promises = [];
+                this.#configs.forEach((config) => {
+                    promises.push((async () => {
+                        await waitForSync(config, 0);
+                        if (!config._lastFatalError) {
+                            config._network = await config.provider.getNetwork();
+                        }
+                    })());
+                });
+                this.#initialSyncPromise = initialSync = (async () => {
+                    // Wait for all providers to have a block number and network
+                    await Promise.all(promises);
+                    // Check all the networks match
+                    let chainId = null;
+                    for (const config of this.#configs) {
+                        if (config._lastFatalError) {
+                            continue;
+                        }
+                        const network = (config._network);
+                        if (chainId == null) {
+                            chainId = network.chainId;
+                        }
+                        else if (network.chainId !== chainId) {
+                            assert(false, "cannot mix providers on different networks", "UNSUPPORTED_OPERATION", {
+                                operation: "new FallbackProvider"
+                            });
+                        }
+                    }
+                })();
+            }
+            await initialSync;
+        }
+        async #checkQuorum(running, req) {
+            // Get all the result objects
+            const results = [];
+            for (const runner of running) {
+                if (runner.result != null) {
+                    const { tag, value } = normalizeResult(req.method, runner.result);
+                    results.push({ tag, value, weight: runner.config.weight });
+                }
+            }
+            // Are there enough results to event meet quorum?
+            if (results.reduce((a, r) => (a + r.weight), 0) < this.quorum) {
+                return undefined;
+            }
+            switch (req.method) {
+                case "getBlockNumber": {
+                    // We need to get the bootstrap block height
+                    if (this.#height === -2) {
+                        this.#height = Math.ceil(getNumber(getMedian(this.quorum, this.#configs.filter((c) => (!c._lastFatalError)).map((c) => ({
+                            value: c.blockNumber,
+                            tag: getNumber(c.blockNumber).toString(),
+                            weight: c.weight
+                        })))));
+                    }
+                    // Find the mode across all the providers, allowing for
+                    // a little drift between block heights
+                    const mode = getFuzzyMode(this.quorum, results);
+                    if (mode === undefined) {
+                        return undefined;
+                    }
+                    if (mode > this.#height) {
+                        this.#height = mode;
+                    }
+                    return this.#height;
+                }
+                case "getGasPrice":
+                case "getPriorityFee":
+                case "estimateGas":
+                    return getMedian(this.quorum, results);
+                case "getBlock":
+                    // Pending blocks are in the mempool and already
+                    // quite untrustworthy; just grab anything
+                    if ("blockTag" in req && req.blockTag === "pending") {
+                        return getAnyResult(this.quorum, results);
+                    }
+                    return checkQuorum(this.quorum, results);
+                case "call":
+                case "chainId":
+                case "getBalance":
+                case "getTransactionCount":
+                case "getCode":
+                case "getStorage":
+                case "getTransaction":
+                case "getTransactionReceipt":
+                case "getLogs":
+                    return checkQuorum(this.quorum, results);
+                case "broadcastTransaction":
+                    return getAnyResult(this.quorum, results);
+            }
+            assert(false, "unsupported method", "UNSUPPORTED_OPERATION", {
+                operation: `_perform(${stringify(req.method)})`
+            });
+        }
+        async #waitForQuorum(running, req) {
+            if (running.size === 0) {
+                throw new Error("no runners?!");
+            }
+            // Any promises that are interesting to watch for; an expired stall
+            // or a successful perform
+            const interesting = [];
+            let newRunners = 0;
+            for (const runner of running) {
+                // No responses, yet; keep an eye on it
+                if (runner.perform) {
+                    interesting.push(runner.perform);
+                }
+                // Still stalling...
+                if (runner.staller) {
+                    interesting.push(runner.staller);
+                    continue;
+                }
+                // This runner has already triggered another runner
+                if (runner.didBump) {
+                    continue;
+                }
+                // Got a response (result or error) or stalled; kick off another runner
+                runner.didBump = true;
+                newRunners++;
+            }
+            // Check if we have reached quorum on a result (or error)
+            const value = await this.#checkQuorum(running, req);
+            if (value !== undefined) {
+                if (value instanceof Error) {
+                    throw value;
+                }
+                return value;
+            }
+            // Add any new runners, because a staller timed out or a result
+            // or error response came in.
+            for (let i = 0; i < newRunners; i++) {
+                this.#addRunner(running, req);
+            }
+            // All providers have returned, and we have no result
+            assert(interesting.length > 0, "quorum not met", "SERVER_ERROR", {
+                request: "%sub-requests",
+                info: { request: req, results: Array.from(running).map((r) => stringify(r.result)) }
+            });
+            // Wait for someone to either complete its perform or stall out
+            await Promise.race(interesting);
+            // This is recursive, but at worst case the depth is 2x the
+            // number of providers (each has a perform and a staller)
+            return await this.#waitForQuorum(running, req);
+        }
+        async _perform(req) {
+            // Broadcasting a transaction is rare (ish) and already incurs
+            // a cost on the user, so spamming is safe-ish. Just send it to
+            // every backend.
+            if (req.method === "broadcastTransaction") {
+                // Once any broadcast provides a positive result, use it. No
+                // need to wait for anyone else
+                const results = this.#configs.map((c) => null);
+                const broadcasts = this.#configs.map(async ({ provider, weight }, index) => {
+                    try {
+                        const result = await provider._perform(req);
+                        results[index] = Object.assign(normalizeResult(req.method, { result }), { weight });
+                    }
+                    catch (error) {
+                        results[index] = Object.assign(normalizeResult(req.method, { error }), { weight });
+                    }
+                });
+                // As each promise finishes...
+                while (true) {
+                    // Check for a valid broadcast result
+                    const done = results.filter((r) => (r != null));
+                    for (const { value } of done) {
+                        if (!(value instanceof Error)) {
+                            return value;
+                        }
+                    }
+                    // Check for a legit broadcast error (one which we cannot
+                    // recover from; some nodes may return the following red
+                    // herring events:
+                    // - alredy seend (UNKNOWN_ERROR)
+                    // - NONCE_EXPIRED
+                    // - REPLACEMENT_UNDERPRICED
+                    const result = checkQuorum(this.quorum, results.filter((r) => (r != null)));
+                    if (isError(result, "INSUFFICIENT_FUNDS")) {
+                        throw result;
+                    }
+                    // Kick off the next provider (if any)
+                    const waiting = broadcasts.filter((b, i) => (results[i] == null));
+                    if (waiting.length === 0) {
+                        break;
+                    }
+                    await Promise.race(waiting);
+                }
+                // Use standard quorum results; any result was returned above,
+                // so this will find any error that met quorum if any
+                const result = getAnyResult(this.quorum, results);
+                assert(result !== undefined, "problem multi-broadcasting", "SERVER_ERROR", {
+                    request: "%sub-requests",
+                    info: { request: req, results: results.map(stringify) }
+                });
+                if (result instanceof Error) {
+                    throw result;
+                }
+                return result;
+            }
+            await this.#initialSync();
+            // Bootstrap enough runners to meet quorum
+            const running = new Set();
+            let inflightQuorum = 0;
+            while (true) {
+                const runner = this.#addRunner(running, req);
+                if (runner == null) {
+                    break;
+                }
+                inflightQuorum += runner.config.weight;
+                if (inflightQuorum >= this.quorum) {
+                    break;
+                }
+            }
+            const result = await this.#waitForQuorum(running, req);
+            // Track requests sent to a provider that are still
+            // outstanding after quorum has been otherwise found
+            for (const runner of running) {
+                if (runner.perform && runner.result == null) {
+                    runner.config.lateResponses++;
+                }
+            }
+            return result;
+        }
+        async destroy() {
+            for (const { provider } of this.#configs) {
+                provider.destroy();
+            }
+            super.destroy();
+        }
+    }
+
     function copy(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
@@ -20149,7 +18719,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
         throw new Error(`should not happen: ${value} (${typeof (value)})`);
     }
-    function stall$3(duration) {
+    function stall(duration) {
         return new Promise((resolve) => { setTimeout(resolve, duration); });
     }
     function getLowerCase(value) {
@@ -20579,7 +19149,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                         }
                         console.log("JsonRpcProvider failed to detect network and cannot start up; retry in 1s (perhaps the URL is wrong or the node is not started)");
                         this.emit("error", makeError("failed to bootstrap network detection", "NETWORK_ERROR", { event: "initial-network-discovery", info: { error } }));
-                        await stall$3(1000);
+                        await stall(1000);
                     }
                 }
                 // Start dispatching requests
@@ -21077,909 +19647,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         return result;
     }
 
-    /**
-     *  [[link-ankr]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Base (``base``)
-     *  - Base Goerlia Testnet (``base-goerli``)
-     *  - Base Sepolia Testnet (``base-sepolia``)
-     *  - BNB (``bnb``)
-     *  - BNB Testnet (``bnbt``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Goerli Testnet (``optimism-goerli``)
-     *  - Optimism Sepolia Testnet (``optimism-sepolia``)
-     *  - Polygon (``matic``)
-     *  - Polygon Mumbai Testnet (``matic-mumbai``)
-     *
-     *  @_subsection: api/providers/thirdparty:Ankr  [providers-ankr]
-     */
-    const defaultApiKey$1 = "9f7d929b018cdffb338517efa06f58359e86ff1ffd350bc889738523659e7972";
-    function getHost$5(name) {
-        switch (name) {
-            case "mainnet":
-                return "rpc.ankr.com/eth";
-            case "goerli":
-                return "rpc.ankr.com/eth_goerli";
-            case "sepolia":
-                return "rpc.ankr.com/eth_sepolia";
-            case "arbitrum":
-                return "rpc.ankr.com/arbitrum";
-            case "base":
-                return "rpc.ankr.com/base";
-            case "base-goerli":
-                return "rpc.ankr.com/base_goerli";
-            case "base-sepolia":
-                return "rpc.ankr.com/base_sepolia";
-            case "bnb":
-                return "rpc.ankr.com/bsc";
-            case "bnbt":
-                return "rpc.ankr.com/bsc_testnet_chapel";
-            case "matic":
-                return "rpc.ankr.com/polygon";
-            case "matic-mumbai":
-                return "rpc.ankr.com/polygon_mumbai";
-            case "optimism":
-                return "rpc.ankr.com/optimism";
-            case "optimism-goerli":
-                return "rpc.ankr.com/optimism_testnet";
-            case "optimism-sepolia":
-                return "rpc.ankr.com/optimism_sepolia";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **AnkrProvider** connects to the [[link-ankr]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-ankr-signup).
-     */
-    class AnkrProvider extends JsonRpcProvider {
-        /**
-         *  The API key for the Ankr connection.
-         */
-        apiKey;
-        /**
-         *  Create a new **AnkrProvider**.
-         *
-         *  By default connecting to ``mainnet`` with a highly throttled
-         *  API key.
-         */
-        constructor(_network, apiKey) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (apiKey == null) {
-                apiKey = defaultApiKey$1;
-            }
-            // Ankr does not support filterId, so we force polling
-            const options = { polling: true, staticNetwork: network };
-            const request = AnkrProvider.getRequest(network, apiKey);
-            super(request, network, options);
-            defineProperties(this, { apiKey });
-        }
-        _getProvider(chainId) {
-            try {
-                return new AnkrProvider(chainId, this.apiKey);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        /**
-         *  Returns a prepared request for connecting to %%network%% with
-         *  %%apiKey%%.
-         */
-        static getRequest(network, apiKey) {
-            if (apiKey == null) {
-                apiKey = defaultApiKey$1;
-            }
-            const request = new FetchRequest(`https:/\/${getHost$5(network.name)}/${apiKey}`);
-            request.allowGzip = true;
-            if (apiKey === defaultApiKey$1) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("AnkrProvider");
-                    return true;
-                };
-            }
-            return request;
-        }
-        getRpcError(payload, error) {
-            if (payload.method === "eth_sendRawTransaction") {
-                if (error && error.error && error.error.message === "INTERNAL_ERROR: could not replace existing tx") {
-                    error.error.message = "replacement transaction underpriced";
-                }
-            }
-            return super.getRpcError(payload, error);
-        }
-        isCommunityResource() {
-            return (this.apiKey === defaultApiKey$1);
-        }
-    }
-
-    /**
-     *  [[link-alchemy]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Arbitrum Goerli Testnet (``arbitrum-goerli``)
-     *  - Arbitrum Sepolia Testnet (``arbitrum-sepolia``)
-     *  - Base (``base``)
-     *  - Base Goerlia Testnet (``base-goerli``)
-     *  - Base Sepolia Testnet (``base-sepolia``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Goerli Testnet (``optimism-goerli``)
-     *  - Optimism Sepolia Testnet (``optimism-sepolia``)
-     *  - Polygon (``matic``)
-     *  - Polygon Amoy Testnet (``matic-amoy``)
-     *  - Polygon Mumbai Testnet (``matic-mumbai``)
-     *
-     *  @_subsection: api/providers/thirdparty:Alchemy  [providers-alchemy]
-     */
-    const defaultApiKey = "_gg7wSSi0KMBsdKnGVfHDueq6xMB9EkC";
-    function getHost$4(name) {
-        switch (name) {
-            case "mainnet":
-                return "eth-mainnet.alchemyapi.io";
-            case "goerli":
-                return "eth-goerli.g.alchemy.com";
-            case "sepolia":
-                return "eth-sepolia.g.alchemy.com";
-            case "arbitrum":
-                return "arb-mainnet.g.alchemy.com";
-            case "arbitrum-goerli":
-                return "arb-goerli.g.alchemy.com";
-            case "arbitrum-sepolia":
-                return "arb-sepolia.g.alchemy.com";
-            case "base":
-                return "base-mainnet.g.alchemy.com";
-            case "base-goerli":
-                return "base-goerli.g.alchemy.com";
-            case "base-sepolia":
-                return "base-sepolia.g.alchemy.com";
-            case "matic":
-                return "polygon-mainnet.g.alchemy.com";
-            case "matic-amoy":
-                return "polygon-amoy.g.alchemy.com";
-            case "matic-mumbai":
-                return "polygon-mumbai.g.alchemy.com";
-            case "optimism":
-                return "opt-mainnet.g.alchemy.com";
-            case "optimism-goerli":
-                return "opt-goerli.g.alchemy.com";
-            case "optimism-sepolia":
-                return "opt-sepolia.g.alchemy.com";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **AlchemyProvider** connects to the [[link-alchemy]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-alchemy-signup).
-     *
-     *  @_docloc: api/providers/thirdparty
-     */
-    class AlchemyProvider extends JsonRpcProvider {
-        apiKey;
-        constructor(_network, apiKey) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (apiKey == null) {
-                apiKey = defaultApiKey;
-            }
-            const request = AlchemyProvider.getRequest(network, apiKey);
-            super(request, network, { staticNetwork: network });
-            defineProperties(this, { apiKey });
-        }
-        _getProvider(chainId) {
-            try {
-                return new AlchemyProvider(chainId, this.apiKey);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        async _perform(req) {
-            // https://docs.alchemy.com/reference/trace-transaction
-            if (req.method === "getTransactionResult") {
-                const { trace, tx } = await resolveProperties({
-                    trace: this.send("trace_transaction", [req.hash]),
-                    tx: this.getTransaction(req.hash)
-                });
-                if (trace == null || tx == null) {
-                    return null;
-                }
-                let data;
-                let error = false;
-                try {
-                    data = trace[0].result.output;
-                    error = (trace[0].error === "Reverted");
-                }
-                catch (error) { }
-                if (data) {
-                    assert(!error, "an error occurred during transaction executions", "CALL_EXCEPTION", {
-                        action: "getTransactionResult",
-                        data,
-                        reason: null,
-                        transaction: tx,
-                        invocation: null,
-                        revert: null // @TODO
-                    });
-                    return data;
-                }
-                assert(false, "could not parse trace result", "BAD_DATA", { value: trace });
-            }
-            return await super._perform(req);
-        }
-        isCommunityResource() {
-            return (this.apiKey === defaultApiKey);
-        }
-        static getRequest(network, apiKey) {
-            if (apiKey == null) {
-                apiKey = defaultApiKey;
-            }
-            const request = new FetchRequest(`https:/\/${getHost$4(network.name)}/v2/${apiKey}`);
-            request.allowGzip = true;
-            if (apiKey === defaultApiKey) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("alchemy");
-                    return true;
-                };
-            }
-            return request;
-        }
-    }
-
-    /**
-     *  [[link-chainstack]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Arbitrum (``arbitrum``)
-     *  - BNB Smart Chain Mainnet (``bnb``)
-     *  - Polygon (``matic``)
-     *
-     *  @_subsection: api/providers/thirdparty:Chainstack  [providers-chainstack]
-     */
-    function getApiKey(name) {
-        switch (name) {
-            case "mainnet": return "39f1d67cedf8b7831010a665328c9197";
-            case "arbitrum": return "0550c209db33c3abf4cc927e1e18cea1";
-            case "bnb": return "98b5a77e531614387366f6fc5da097f8";
-            case "matic": return "cd9d4d70377471aa7c142ec4a4205249";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    function getHost$3(name) {
-        switch (name) {
-            case "mainnet":
-                return "ethereum-mainnet.core.chainstack.com";
-            case "arbitrum":
-                return "arbitrum-mainnet.core.chainstack.com";
-            case "bnb":
-                return "bsc-mainnet.core.chainstack.com";
-            case "matic":
-                return "polygon-mainnet.core.chainstack.com";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **ChainstackProvider** connects to the [[link-chainstack]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-chainstack).
-     */
-    class ChainstackProvider extends JsonRpcProvider {
-        /**
-         *  The API key for the Chainstack connection.
-         */
-        apiKey;
-        /**
-         *  Creates a new **ChainstackProvider**.
-         */
-        constructor(_network, apiKey) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (apiKey == null) {
-                apiKey = getApiKey(network.name);
-            }
-            const request = ChainstackProvider.getRequest(network, apiKey);
-            super(request, network, { staticNetwork: network });
-            defineProperties(this, { apiKey });
-        }
-        _getProvider(chainId) {
-            try {
-                return new ChainstackProvider(chainId, this.apiKey);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        isCommunityResource() {
-            return (this.apiKey === getApiKey(this._network.name));
-        }
-        /**
-         *  Returns a prepared request for connecting to %%network%%
-         *  with %%apiKey%% and %%projectSecret%%.
-         */
-        static getRequest(network, apiKey) {
-            if (apiKey == null) {
-                apiKey = getApiKey(network.name);
-            }
-            const request = new FetchRequest(`https:/\/${getHost$3(network.name)}/${apiKey}`);
-            request.allowGzip = true;
-            if (apiKey === getApiKey(network.name)) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("ChainstackProvider");
-                    return true;
-                };
-            }
-            return request;
-        }
-    }
-
-    /**
-     *  About Cloudflare
-     *
-     *  @_subsection: api/providers/thirdparty:Cloudflare  [providers-cloudflare]
-     */
-    /**
-     *  About Cloudflare...
-     */
-    class CloudflareProvider extends JsonRpcProvider {
-        constructor(_network) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            assertArgument(network.name === "mainnet", "unsupported network", "network", _network);
-            super("https:/\/cloudflare-eth.com/", network, { staticNetwork: network });
-        }
-    }
-
-    /**
-     *  [[link-etherscan]] provides a third-party service for connecting to
-     *  various blockchains over a combination of JSON-RPC and custom API
-     *  endpoints.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Holesky Testnet (``holesky``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Arbitrum Goerli Testnet (``arbitrum-goerli``)
-     *  - Base (``base``)
-     *  - Base Sepolia Testnet (``base-sepolia``)
-     *  - BNB Smart Chain Mainnet (``bnb``)
-     *  - BNB Smart Chain Testnet (``bnbt``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Goerli Testnet (``optimism-goerli``)
-     *  - Polygon (``matic``)
-     *  - Polygon Mumbai Testnet (``matic-mumbai``)
-     *  - Polygon Amoy Testnet (``matic-amoy``)
-     *
-     *  @_subsection api/providers/thirdparty:Etherscan  [providers-etherscan]
-     */
-    const THROTTLE = 2000;
-    function isPromise(value) {
-        return (value && typeof (value.then) === "function");
-    }
-    const EtherscanPluginId = "org.ethers.plugins.provider.Etherscan";
-    /**
-     *  A Network can include an **EtherscanPlugin** to provide
-     *  a custom base URL.
-     *
-     *  @_docloc: api/providers/thirdparty:Etherscan
-     */
-    class EtherscanPlugin extends NetworkPlugin {
-        /**
-         *  The Etherscan API base URL.
-         */
-        baseUrl;
-        /**
-         *  Creates a new **EtherscanProvider** which will use
-         *  %%baseUrl%%.
-         */
-        constructor(baseUrl) {
-            super(EtherscanPluginId);
-            defineProperties(this, { baseUrl });
-        }
-        clone() {
-            return new EtherscanPlugin(this.baseUrl);
-        }
-    }
-    const skipKeys = ["enableCcipRead"];
-    let nextId = 1;
-    /**
-     *  The **EtherscanBaseProvider** is the super-class of
-     *  [[EtherscanProvider]], which should generally be used instead.
-     *
-     *  Since the **EtherscanProvider** includes additional code for
-     *  [[Contract]] access, in //rare cases// that contracts are not
-     *  used, this class can reduce code size.
-     *
-     *  @_docloc: api/providers/thirdparty:Etherscan
-     */
-    class EtherscanProvider extends AbstractProvider {
-        /**
-         *  The connected network.
-         */
-        network;
-        /**
-         *  The API key or null if using the community provided bandwidth.
-         */
-        apiKey;
-        #plugin;
-        /**
-         *  Creates a new **EtherscanBaseProvider**.
-         */
-        constructor(_network, _apiKey) {
-            const apiKey = (_apiKey != null) ? _apiKey : null;
-            super();
-            const network = Network.from(_network);
-            this.#plugin = network.getPlugin(EtherscanPluginId);
-            defineProperties(this, { apiKey, network });
-            // Test that the network is supported by Etherscan
-            this.getBaseUrl();
-        }
-        /**
-         *  Returns the base URL.
-         *
-         *  If an [[EtherscanPlugin]] is configured on the
-         *  [[EtherscanBaseProvider_network]], returns the plugin's
-         *  baseUrl.
-         */
-        getBaseUrl() {
-            if (this.#plugin) {
-                return this.#plugin.baseUrl;
-            }
-            switch (this.network.name) {
-                case "mainnet":
-                    return "https:/\/api.etherscan.io";
-                case "goerli":
-                    return "https:/\/api-goerli.etherscan.io";
-                case "sepolia":
-                    return "https:/\/api-sepolia.etherscan.io";
-                case "holesky":
-                    return "https:/\/api-holesky.etherscan.io";
-                case "arbitrum":
-                    return "https:/\/api.arbiscan.io";
-                case "arbitrum-goerli":
-                    return "https:/\/api-goerli.arbiscan.io";
-                case "base":
-                    return "https:/\/api.basescan.org";
-                case "base-sepolia":
-                    return "https:/\/api-sepolia.basescan.org";
-                case "bnb":
-                    return "https:/\/api.bscscan.com";
-                case "bnbt":
-                    return "https:/\/api-testnet.bscscan.com";
-                case "matic":
-                    return "https:/\/api.polygonscan.com";
-                case "matic-amoy":
-                    return "https:/\/api-amoy.polygonscan.com";
-                case "matic-mumbai":
-                    return "https:/\/api-testnet.polygonscan.com";
-                case "optimism":
-                    return "https:/\/api-optimistic.etherscan.io";
-                case "optimism-goerli":
-                    return "https:/\/api-goerli-optimistic.etherscan.io";
-            }
-            assertArgument(false, "unsupported network", "network", this.network);
-        }
-        /**
-         *  Returns the URL for the %%module%% and %%params%%.
-         */
-        getUrl(module, params) {
-            const query = Object.keys(params).reduce((accum, key) => {
-                const value = params[key];
-                if (value != null) {
-                    accum += `&${key}=${value}`;
-                }
-                return accum;
-            }, "");
-            const apiKey = ((this.apiKey) ? `&apikey=${this.apiKey}` : "");
-            return `${this.getBaseUrl()}/api?module=${module}${query}${apiKey}`;
-        }
-        /**
-         *  Returns the URL for using POST requests.
-         */
-        getPostUrl() {
-            return `${this.getBaseUrl()}/api`;
-        }
-        /**
-         *  Returns the parameters for using POST requests.
-         */
-        getPostData(module, params) {
-            params.module = module;
-            params.apikey = this.apiKey;
-            return params;
-        }
-        async detectNetwork() {
-            return this.network;
-        }
-        /**
-         *  Resolves to the result of calling %%module%% with %%params%%.
-         *
-         *  If %%post%%, the request is made as a POST request.
-         */
-        async fetch(module, params, post) {
-            const id = nextId++;
-            const url = (post ? this.getPostUrl() : this.getUrl(module, params));
-            const payload = (post ? this.getPostData(module, params) : null);
-            this.emit("debug", { action: "sendRequest", id, url, payload: payload });
-            const request = new FetchRequest(url);
-            request.setThrottleParams({ slotInterval: 1000 });
-            request.retryFunc = (req, resp, attempt) => {
-                if (this.isCommunityResource()) {
-                    showThrottleMessage("Etherscan");
-                }
-                return Promise.resolve(true);
-            };
-            request.processFunc = async (request, response) => {
-                const result = response.hasBody() ? JSON.parse(toUtf8String(response.body)) : {};
-                const throttle = ((typeof (result.result) === "string") ? result.result : "").toLowerCase().indexOf("rate limit") >= 0;
-                if (module === "proxy") {
-                    // This JSON response indicates we are being throttled
-                    if (result && result.status == 0 && result.message == "NOTOK" && throttle) {
-                        this.emit("debug", { action: "receiveError", id, reason: "proxy-NOTOK", error: result });
-                        response.throwThrottleError(result.result, THROTTLE);
-                    }
-                }
-                else {
-                    if (throttle) {
-                        this.emit("debug", { action: "receiveError", id, reason: "null result", error: result.result });
-                        response.throwThrottleError(result.result, THROTTLE);
-                    }
-                }
-                return response;
-            };
-            if (payload) {
-                request.setHeader("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-                request.body = Object.keys(payload).map((k) => `${k}=${payload[k]}`).join("&");
-            }
-            const response = await request.send();
-            try {
-                response.assertOk();
-            }
-            catch (error) {
-                this.emit("debug", { action: "receiveError", id, error, reason: "assertOk" });
-                assert(false, "response error", "SERVER_ERROR", { request, response });
-            }
-            if (!response.hasBody()) {
-                this.emit("debug", { action: "receiveError", id, error: "missing body", reason: "null body" });
-                assert(false, "missing response", "SERVER_ERROR", { request, response });
-            }
-            const result = JSON.parse(toUtf8String(response.body));
-            if (module === "proxy") {
-                if (result.jsonrpc != "2.0") {
-                    this.emit("debug", { action: "receiveError", id, result, reason: "invalid JSON-RPC" });
-                    assert(false, "invalid JSON-RPC response (missing jsonrpc='2.0')", "SERVER_ERROR", { request, response, info: { result } });
-                }
-                if (result.error) {
-                    this.emit("debug", { action: "receiveError", id, result, reason: "JSON-RPC error" });
-                    assert(false, "error response", "SERVER_ERROR", { request, response, info: { result } });
-                }
-                this.emit("debug", { action: "receiveRequest", id, result });
-                return result.result;
-            }
-            else {
-                // getLogs, getHistory have weird success responses
-                if (result.status == 0 && (result.message === "No records found" || result.message === "No transactions found")) {
-                    this.emit("debug", { action: "receiveRequest", id, result });
-                    return result.result;
-                }
-                if (result.status != 1 || (typeof (result.message) === "string" && !result.message.match(/^OK/))) {
-                    this.emit("debug", { action: "receiveError", id, result });
-                    assert(false, "error response", "SERVER_ERROR", { request, response, info: { result } });
-                }
-                this.emit("debug", { action: "receiveRequest", id, result });
-                return result.result;
-            }
-        }
-        /**
-         *  Returns %%transaction%% normalized for the Etherscan API.
-         */
-        _getTransactionPostData(transaction) {
-            const result = {};
-            for (let key in transaction) {
-                if (skipKeys.indexOf(key) >= 0) {
-                    continue;
-                }
-                if (transaction[key] == null) {
-                    continue;
-                }
-                let value = transaction[key];
-                if (key === "type" && value === 0) {
-                    continue;
-                }
-                if (key === "blockTag" && value === "latest") {
-                    continue;
-                }
-                // Quantity-types require no leading zero, unless 0
-                if ({ type: true, gasLimit: true, gasPrice: true, maxFeePerGs: true, maxPriorityFeePerGas: true, nonce: true, value: true }[key]) {
-                    value = toQuantity(value);
-                }
-                else if (key === "accessList") {
-                    value = "[" + accessListify(value).map((set) => {
-                        return `{address:"${set.address}",storageKeys:["${set.storageKeys.join('","')}"]}`;
-                    }).join(",") + "]";
-                }
-                else if (key === "blobVersionedHashes") {
-                    if (value.length === 0) {
-                        continue;
-                    }
-                    // @TODO: update this once the API supports blobs
-                    assert(false, "Etherscan API does not support blobVersionedHashes", "UNSUPPORTED_OPERATION", {
-                        operation: "_getTransactionPostData",
-                        info: { transaction }
-                    });
-                }
-                else {
-                    value = hexlify(value);
-                }
-                result[key] = value;
-            }
-            return result;
-        }
-        /**
-         *  Throws the normalized Etherscan error.
-         */
-        _checkError(req, error, transaction) {
-            // Pull any message out if, possible
-            let message = "";
-            if (isError(error, "SERVER_ERROR")) {
-                // Check for an error emitted by a proxy call
-                try {
-                    message = error.info.result.error.message;
-                }
-                catch (e) { }
-                if (!message) {
-                    try {
-                        message = error.info.message;
-                    }
-                    catch (e) { }
-                }
-            }
-            if (req.method === "estimateGas") {
-                if (!message.match(/revert/i) && message.match(/insufficient funds/i)) {
-                    assert(false, "insufficient funds", "INSUFFICIENT_FUNDS", {
-                        transaction: req.transaction
-                    });
-                }
-            }
-            if (req.method === "call" || req.method === "estimateGas") {
-                if (message.match(/execution reverted/i)) {
-                    let data = "";
-                    try {
-                        data = error.info.result.error.data;
-                    }
-                    catch (error) { }
-                    const e = AbiCoder.getBuiltinCallException(req.method, req.transaction, data);
-                    e.info = { request: req, error };
-                    throw e;
-                }
-            }
-            if (message) {
-                if (req.method === "broadcastTransaction") {
-                    const transaction = Transaction.from(req.signedTransaction);
-                    if (message.match(/replacement/i) && message.match(/underpriced/i)) {
-                        assert(false, "replacement fee too low", "REPLACEMENT_UNDERPRICED", {
-                            transaction
-                        });
-                    }
-                    if (message.match(/insufficient funds/)) {
-                        assert(false, "insufficient funds for intrinsic transaction cost", "INSUFFICIENT_FUNDS", {
-                            transaction
-                        });
-                    }
-                    if (message.match(/same hash was already imported|transaction nonce is too low|nonce too low/)) {
-                        assert(false, "nonce has already been used", "NONCE_EXPIRED", {
-                            transaction
-                        });
-                    }
-                }
-            }
-            // Something we could not process
-            throw error;
-        }
-        async _detectNetwork() {
-            return this.network;
-        }
-        async _perform(req) {
-            switch (req.method) {
-                case "chainId":
-                    return this.network.chainId;
-                case "getBlockNumber":
-                    return this.fetch("proxy", { action: "eth_blockNumber" });
-                case "getGasPrice":
-                    return this.fetch("proxy", { action: "eth_gasPrice" });
-                case "getPriorityFee":
-                    // This is temporary until Etherscan completes support
-                    if (this.network.name === "mainnet") {
-                        return "1000000000";
-                    }
-                    else if (this.network.name === "optimism") {
-                        return "1000000";
-                    }
-                    else {
-                        throw new Error("fallback onto the AbstractProvider default");
-                    }
-                /* Working with Etherscan to get this added:
-                try {
-                    const test = await this.fetch("proxy", {
-                        action: "eth_maxPriorityFeePerGas"
-                    });
-                    console.log(test);
-                    return test;
-                } catch (e) {
-                    console.log("DEBUG", e);
-                    throw e;
-                }
-                */
-                /* This might be safe; but due to rounding neither myself
-                   or Etherscan are necessarily comfortable with this. :)
-                try {
-                    const result = await this.fetch("gastracker", { action: "gasoracle" });
-                    console.log(result);
-                    const gasPrice = parseUnits(result.SafeGasPrice, "gwei");
-                    const baseFee = parseUnits(result.suggestBaseFee, "gwei");
-                    const priorityFee = gasPrice - baseFee;
-                    if (priorityFee < 0) { throw new Error("negative priority fee; defer to abstract provider default"); }
-                    return priorityFee;
-                } catch (error) {
-                    console.log("DEBUG", error);
-                    throw error;
-                }
-                */
-                case "getBalance":
-                    // Returns base-10 result
-                    return this.fetch("account", {
-                        action: "balance",
-                        address: req.address,
-                        tag: req.blockTag
-                    });
-                case "getTransactionCount":
-                    return this.fetch("proxy", {
-                        action: "eth_getTransactionCount",
-                        address: req.address,
-                        tag: req.blockTag
-                    });
-                case "getCode":
-                    return this.fetch("proxy", {
-                        action: "eth_getCode",
-                        address: req.address,
-                        tag: req.blockTag
-                    });
-                case "getStorage":
-                    return this.fetch("proxy", {
-                        action: "eth_getStorageAt",
-                        address: req.address,
-                        position: req.position,
-                        tag: req.blockTag
-                    });
-                case "broadcastTransaction":
-                    return this.fetch("proxy", {
-                        action: "eth_sendRawTransaction",
-                        hex: req.signedTransaction
-                    }, true).catch((error) => {
-                        return this._checkError(req, error, req.signedTransaction);
-                    });
-                case "getBlock":
-                    if ("blockTag" in req) {
-                        return this.fetch("proxy", {
-                            action: "eth_getBlockByNumber",
-                            tag: req.blockTag,
-                            boolean: (req.includeTransactions ? "true" : "false")
-                        });
-                    }
-                    assert(false, "getBlock by blockHash not supported by Etherscan", "UNSUPPORTED_OPERATION", {
-                        operation: "getBlock(blockHash)"
-                    });
-                case "getTransaction":
-                    return this.fetch("proxy", {
-                        action: "eth_getTransactionByHash",
-                        txhash: req.hash
-                    });
-                case "getTransactionReceipt":
-                    return this.fetch("proxy", {
-                        action: "eth_getTransactionReceipt",
-                        txhash: req.hash
-                    });
-                case "call": {
-                    if (req.blockTag !== "latest") {
-                        throw new Error("EtherscanProvider does not support blockTag for call");
-                    }
-                    const postData = this._getTransactionPostData(req.transaction);
-                    postData.module = "proxy";
-                    postData.action = "eth_call";
-                    try {
-                        return await this.fetch("proxy", postData, true);
-                    }
-                    catch (error) {
-                        return this._checkError(req, error, req.transaction);
-                    }
-                }
-                case "estimateGas": {
-                    const postData = this._getTransactionPostData(req.transaction);
-                    postData.module = "proxy";
-                    postData.action = "eth_estimateGas";
-                    try {
-                        return await this.fetch("proxy", postData, true);
-                    }
-                    catch (error) {
-                        return this._checkError(req, error, req.transaction);
-                    }
-                }
-            }
-            return super._perform(req);
-        }
-        async getNetwork() {
-            return this.network;
-        }
-        /**
-         *  Resolves to the current price of ether.
-         *
-         *  This returns ``0`` on any network other than ``mainnet``.
-         */
-        async getEtherPrice() {
-            if (this.network.name !== "mainnet") {
-                return 0.0;
-            }
-            return parseFloat((await this.fetch("stats", { action: "ethprice" })).ethusd);
-        }
-        /**
-         *  Resolves to a [Contract]] for %%address%%, using the
-         *  Etherscan API to retreive the Contract ABI.
-         */
-        async getContract(_address) {
-            let address = this._getAddress(_address);
-            if (isPromise(address)) {
-                address = await address;
-            }
-            try {
-                const resp = await this.fetch("contract", {
-                    action: "getabi", address
-                });
-                const abi = JSON.parse(resp);
-                return new Contract(address, abi, this);
-            }
-            catch (error) {
-                return null;
-            }
-        }
-        isCommunityResource() {
-            return (this.apiKey == null);
-        }
-    }
-
     function getGlobal() {
         if (typeof self !== 'undefined') {
             return self;
@@ -22365,973 +20032,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
     }
 
-    /**
-     *  [[link-infura]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Arbitrum Goerli Testnet (``arbitrum-goerli``)
-     *  - Arbitrum Sepolia Testnet (``arbitrum-sepolia``)
-     *  - Base (``base``)
-     *  - Base Goerlia Testnet (``base-goerli``)
-     *  - Base Sepolia Testnet (``base-sepolia``)
-     *  - BNB Smart Chain Mainnet (``bnb``)
-     *  - BNB Smart Chain Testnet (``bnbt``)
-     *  - Linea (``linea``)
-     *  - Linea Goerli Testnet (``linea-goerli``)
-     *  - Linea Sepolia Testnet (``linea-sepolia``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Goerli Testnet (``optimism-goerli``)
-     *  - Optimism Sepolia Testnet (``optimism-sepolia``)
-     *  - Polygon (``matic``)
-     *  - Polygon Amoy Testnet (``matic-amoy``)
-     *  - Polygon Mumbai Testnet (``matic-mumbai``)
-     *
-     *  @_subsection: api/providers/thirdparty:INFURA  [providers-infura]
-     */
-    const defaultProjectId = "84842078b09946638c03157f83405213";
-    function getHost$2(name) {
-        switch (name) {
-            case "mainnet":
-                return "mainnet.infura.io";
-            case "goerli":
-                return "goerli.infura.io";
-            case "sepolia":
-                return "sepolia.infura.io";
-            case "arbitrum":
-                return "arbitrum-mainnet.infura.io";
-            case "arbitrum-goerli":
-                return "arbitrum-goerli.infura.io";
-            case "arbitrum-sepolia":
-                return "arbitrum-sepolia.infura.io";
-            case "base":
-                return "base-mainnet.infura.io";
-            case "base-goerlia": // @TODO: Remove this typo in the future!
-            case "base-goerli":
-                return "base-goerli.infura.io";
-            case "base-sepolia":
-                return "base-sepolia.infura.io";
-            case "bnb":
-                return "bsc-mainnet.infura.io";
-            case "bnbt":
-                return "bsc-testnet.infura.io";
-            case "linea":
-                return "linea-mainnet.infura.io";
-            case "linea-goerli":
-                return "linea-goerli.infura.io";
-            case "linea-sepolia":
-                return "linea-sepolia.infura.io";
-            case "matic":
-                return "polygon-mainnet.infura.io";
-            case "matic-amoy":
-                return "polygon-amoy.infura.io";
-            case "matic-mumbai":
-                return "polygon-mumbai.infura.io";
-            case "optimism":
-                return "optimism-mainnet.infura.io";
-            case "optimism-goerli":
-                return "optimism-goerli.infura.io";
-            case "optimism-sepolia":
-                return "optimism-sepolia.infura.io";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **InfuraWebSocketProvider** connects to the [[link-infura]]
-     *  WebSocket end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-infura-signup).
-     */
-    class InfuraWebSocketProvider extends WebSocketProvider {
-        /**
-         *  The Project ID for the INFURA connection.
-         */
-        projectId;
-        /**
-         *  The Project Secret.
-         *
-         *  If null, no authenticated requests are made. This should not
-         *  be used outside of private contexts.
-         */
-        projectSecret;
-        /**
-         *  Creates a new **InfuraWebSocketProvider**.
-         */
-        constructor(network, projectId) {
-            const provider = new InfuraProvider(network, projectId);
-            const req = provider._getConnection();
-            assert(!req.credentials, "INFURA WebSocket project secrets unsupported", "UNSUPPORTED_OPERATION", { operation: "InfuraProvider.getWebSocketProvider()" });
-            const url = req.url.replace(/^http/i, "ws").replace("/v3/", "/ws/v3/");
-            super(url, provider._network);
-            defineProperties(this, {
-                projectId: provider.projectId,
-                projectSecret: provider.projectSecret
-            });
-        }
-        isCommunityResource() {
-            return (this.projectId === defaultProjectId);
-        }
-    }
-    /**
-     *  The **InfuraProvider** connects to the [[link-infura]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-infura-signup).
-     */
-    class InfuraProvider extends JsonRpcProvider {
-        /**
-         *  The Project ID for the INFURA connection.
-         */
-        projectId;
-        /**
-         *  The Project Secret.
-         *
-         *  If null, no authenticated requests are made. This should not
-         *  be used outside of private contexts.
-         */
-        projectSecret;
-        /**
-         *  Creates a new **InfuraProvider**.
-         */
-        constructor(_network, projectId, projectSecret) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (projectId == null) {
-                projectId = defaultProjectId;
-            }
-            if (projectSecret == null) {
-                projectSecret = null;
-            }
-            const request = InfuraProvider.getRequest(network, projectId, projectSecret);
-            super(request, network, { staticNetwork: network });
-            defineProperties(this, { projectId, projectSecret });
-        }
-        _getProvider(chainId) {
-            try {
-                return new InfuraProvider(chainId, this.projectId, this.projectSecret);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        isCommunityResource() {
-            return (this.projectId === defaultProjectId);
-        }
-        /**
-         *  Creates a new **InfuraWebSocketProvider**.
-         */
-        static getWebSocketProvider(network, projectId) {
-            return new InfuraWebSocketProvider(network, projectId);
-        }
-        /**
-         *  Returns a prepared request for connecting to %%network%%
-         *  with %%projectId%% and %%projectSecret%%.
-         */
-        static getRequest(network, projectId, projectSecret) {
-            if (projectId == null) {
-                projectId = defaultProjectId;
-            }
-            if (projectSecret == null) {
-                projectSecret = null;
-            }
-            const request = new FetchRequest(`https:/\/${getHost$2(network.name)}/v3/${projectId}`);
-            request.allowGzip = true;
-            if (projectSecret) {
-                request.setCredentials("", projectSecret);
-            }
-            if (projectId === defaultProjectId) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("InfuraProvider");
-                    return true;
-                };
-            }
-            return request;
-        }
-    }
-
-    /**
-     *  [[link-quicknode]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Holesky Testnet (``holesky``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Arbitrum Goerli Testnet (``arbitrum-goerli``)
-     *  - Arbitrum Sepolia Testnet (``arbitrum-sepolia``)
-     *  - Base Mainnet (``base``);
-     *  - Base Goerli Testnet (``base-goerli``);
-     *  - Base Sepolia Testnet (``base-sepolia``);
-     *  - BNB Smart Chain Mainnet (``bnb``)
-     *  - BNB Smart Chain Testnet (``bnbt``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Goerli Testnet (``optimism-goerli``)
-     *  - Optimism Sepolia Testnet (``optimism-sepolia``)
-     *  - Polygon (``matic``)
-     *  - Polygon Mumbai Testnet (``matic-mumbai``)
-     *
-     *  @_subsection: api/providers/thirdparty:QuickNode  [providers-quicknode]
-     */
-    const defaultToken = "919b412a057b5e9c9b6dce193c5a60242d6efadb";
-    function getHost$1(name) {
-        switch (name) {
-            case "mainnet":
-                return "ethers.quiknode.pro";
-            case "goerli":
-                return "ethers.ethereum-goerli.quiknode.pro";
-            case "sepolia":
-                return "ethers.ethereum-sepolia.quiknode.pro";
-            case "holesky":
-                return "ethers.ethereum-holesky.quiknode.pro";
-            case "arbitrum":
-                return "ethers.arbitrum-mainnet.quiknode.pro";
-            case "arbitrum-goerli":
-                return "ethers.arbitrum-goerli.quiknode.pro";
-            case "arbitrum-sepolia":
-                return "ethers.arbitrum-sepolia.quiknode.pro";
-            case "base":
-                return "ethers.base-mainnet.quiknode.pro";
-            case "base-goerli":
-                return "ethers.base-goerli.quiknode.pro";
-            case "base-spolia":
-                return "ethers.base-sepolia.quiknode.pro";
-            case "bnb":
-                return "ethers.bsc.quiknode.pro";
-            case "bnbt":
-                return "ethers.bsc-testnet.quiknode.pro";
-            case "matic":
-                return "ethers.matic.quiknode.pro";
-            case "matic-mumbai":
-                return "ethers.matic-testnet.quiknode.pro";
-            case "optimism":
-                return "ethers.optimism.quiknode.pro";
-            case "optimism-goerli":
-                return "ethers.optimism-goerli.quiknode.pro";
-            case "optimism-sepolia":
-                return "ethers.optimism-sepolia.quiknode.pro";
-            case "xdai":
-                return "ethers.xdai.quiknode.pro";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /*
-    @TODO:
-      These networks are not currently present in the Network
-      default included networks. Research them and ensure they
-      are EVM compatible and work with ethers
-
-      http://ethers.matic-amoy.quiknode.pro
-
-      http://ethers.avalanche-mainnet.quiknode.pro
-      http://ethers.avalanche-testnet.quiknode.pro
-      http://ethers.blast-sepolia.quiknode.pro
-      http://ethers.celo-mainnet.quiknode.pro
-      http://ethers.fantom.quiknode.pro
-      http://ethers.imx-demo.quiknode.pro
-      http://ethers.imx-mainnet.quiknode.pro
-      http://ethers.imx-testnet.quiknode.pro
-      http://ethers.near-mainnet.quiknode.pro
-      http://ethers.near-testnet.quiknode.pro
-      http://ethers.nova-mainnet.quiknode.pro
-      http://ethers.scroll-mainnet.quiknode.pro
-      http://ethers.scroll-testnet.quiknode.pro
-      http://ethers.tron-mainnet.quiknode.pro
-      http://ethers.zkevm-mainnet.quiknode.pro
-      http://ethers.zkevm-testnet.quiknode.pro
-      http://ethers.zksync-mainnet.quiknode.pro
-      http://ethers.zksync-testnet.quiknode.pro
-    */
-    /**
-     *  The **QuickNodeProvider** connects to the [[link-quicknode]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API token is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-quicknode).
-     */
-    class QuickNodeProvider extends JsonRpcProvider {
-        /**
-         *  The API token.
-         */
-        token;
-        /**
-         *  Creates a new **QuickNodeProvider**.
-         */
-        constructor(_network, token) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (token == null) {
-                token = defaultToken;
-            }
-            const request = QuickNodeProvider.getRequest(network, token);
-            super(request, network, { staticNetwork: network });
-            defineProperties(this, { token });
-        }
-        _getProvider(chainId) {
-            try {
-                return new QuickNodeProvider(chainId, this.token);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        isCommunityResource() {
-            return (this.token === defaultToken);
-        }
-        /**
-         *  Returns a new request prepared for %%network%% and the
-         *  %%token%%.
-         */
-        static getRequest(network, token) {
-            if (token == null) {
-                token = defaultToken;
-            }
-            const request = new FetchRequest(`https:/\/${getHost$1(network.name)}/${token}`);
-            request.allowGzip = true;
-            //if (projectSecret) { request.setCredentials("", projectSecret); }
-            if (token === defaultToken) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("QuickNodeProvider");
-                    return true;
-                };
-            }
-            return request;
-        }
-    }
-
-    /**
-     *  A **FallbackProvider** provides resilience, security and performance
-     *  in a way that is customizable and configurable.
-     *
-     *  @_section: api/providers/fallback-provider:Fallback Provider [about-fallback-provider]
-     */
-    const BN_1 = BigInt("1");
-    const BN_2 = BigInt("2");
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            const tmp = array[i];
-            array[i] = array[j];
-            array[j] = tmp;
-        }
-    }
-    function stall$2(duration) {
-        return new Promise((resolve) => { setTimeout(resolve, duration); });
-    }
-    function getTime() { return (new Date()).getTime(); }
-    function stringify(value) {
-        return JSON.stringify(value, (key, value) => {
-            if (typeof (value) === "bigint") {
-                return { type: "bigint", value: value.toString() };
-            }
-            return value;
-        });
-    }
-    const defaultConfig = { stallTimeout: 400, priority: 1, weight: 1 };
-    const defaultState = {
-        blockNumber: -2, requests: 0, lateResponses: 0, errorResponses: 0,
-        outOfSync: -1, unsupportedEvents: 0, rollingDuration: 0, score: 0,
-        _network: null, _updateNumber: null, _totalTime: 0,
-        _lastFatalError: null, _lastFatalErrorTimestamp: 0
-    };
-    async function waitForSync(config, blockNumber) {
-        while (config.blockNumber < 0 || config.blockNumber < blockNumber) {
-            if (!config._updateNumber) {
-                config._updateNumber = (async () => {
-                    try {
-                        const blockNumber = await config.provider.getBlockNumber();
-                        if (blockNumber > config.blockNumber) {
-                            config.blockNumber = blockNumber;
-                        }
-                    }
-                    catch (error) {
-                        config.blockNumber = -2;
-                        config._lastFatalError = error;
-                        config._lastFatalErrorTimestamp = getTime();
-                    }
-                    config._updateNumber = null;
-                })();
-            }
-            await config._updateNumber;
-            config.outOfSync++;
-            if (config._lastFatalError) {
-                break;
-            }
-        }
-    }
-    function _normalize(value) {
-        if (value == null) {
-            return "null";
-        }
-        if (Array.isArray(value)) {
-            return "[" + (value.map(_normalize)).join(",") + "]";
-        }
-        if (typeof (value) === "object" && typeof (value.toJSON) === "function") {
-            return _normalize(value.toJSON());
-        }
-        switch (typeof (value)) {
-            case "boolean":
-            case "symbol":
-                return value.toString();
-            case "bigint":
-            case "number":
-                return BigInt(value).toString();
-            case "string":
-                return JSON.stringify(value);
-            case "object": {
-                const keys = Object.keys(value);
-                keys.sort();
-                return "{" + keys.map((k) => `${JSON.stringify(k)}:${_normalize(value[k])}`).join(",") + "}";
-            }
-        }
-        console.log("Could not serialize", value);
-        throw new Error("Hmm...");
-    }
-    function normalizeResult(method, value) {
-        if ("error" in value) {
-            const error = value.error;
-            let tag;
-            if (isError(error, "CALL_EXCEPTION")) {
-                tag = _normalize(Object.assign({}, error, {
-                    shortMessage: undefined, reason: undefined, info: undefined
-                }));
-            }
-            else {
-                tag = _normalize(error);
-            }
-            return { tag, value: error };
-        }
-        const result = value.result;
-        return { tag: _normalize(result), value: result };
-    }
-    // This strategy picks the highest weight result, as long as the weight is
-    // equal to or greater than quorum
-    function checkQuorum(quorum, results) {
-        const tally = new Map();
-        for (const { value, tag, weight } of results) {
-            const t = tally.get(tag) || { value, weight: 0 };
-            t.weight += weight;
-            tally.set(tag, t);
-        }
-        let best = null;
-        for (const r of tally.values()) {
-            if (r.weight >= quorum && (!best || r.weight > best.weight)) {
-                best = r;
-            }
-        }
-        if (best) {
-            return best.value;
-        }
-        return undefined;
-    }
-    function getMedian(quorum, results) {
-        let resultWeight = 0;
-        const errorMap = new Map();
-        let bestError = null;
-        const values = [];
-        for (const { value, tag, weight } of results) {
-            if (value instanceof Error) {
-                const e = errorMap.get(tag) || { value, weight: 0 };
-                e.weight += weight;
-                errorMap.set(tag, e);
-                if (bestError == null || e.weight > bestError.weight) {
-                    bestError = e;
-                }
-            }
-            else {
-                values.push(BigInt(value));
-                resultWeight += weight;
-            }
-        }
-        if (resultWeight < quorum) {
-            // We have quorum for an error
-            if (bestError && bestError.weight >= quorum) {
-                return bestError.value;
-            }
-            // We do not have quorum for a result
-            return undefined;
-        }
-        // Get the sorted values
-        values.sort((a, b) => ((a < b) ? -1 : (b > a) ? 1 : 0));
-        const mid = Math.floor(values.length / 2);
-        // Odd-length; take the middle value
-        if (values.length % 2) {
-            return values[mid];
-        }
-        // Even length; take the ceiling of the mean of the center two values
-        return (values[mid - 1] + values[mid] + BN_1) / BN_2;
-    }
-    function getAnyResult(quorum, results) {
-        // If any value or error meets quorum, that is our preferred result
-        const result = checkQuorum(quorum, results);
-        if (result !== undefined) {
-            return result;
-        }
-        // Otherwise, do we have any result?
-        for (const r of results) {
-            if (r.value) {
-                return r.value;
-            }
-        }
-        // Nope!
-        return undefined;
-    }
-    function getFuzzyMode(quorum, results) {
-        if (quorum === 1) {
-            return getNumber(getMedian(quorum, results), "%internal");
-        }
-        const tally = new Map();
-        const add = (result, weight) => {
-            const t = tally.get(result) || { result, weight: 0 };
-            t.weight += weight;
-            tally.set(result, t);
-        };
-        for (const { weight, value } of results) {
-            const r = getNumber(value);
-            add(r - 1, weight);
-            add(r, weight);
-            add(r + 1, weight);
-        }
-        let bestWeight = 0;
-        let bestResult = undefined;
-        for (const { weight, result } of tally.values()) {
-            // Use this result, if this result meets quorum and has either:
-            // - a better weight
-            // - or equal weight, but the result is larger
-            if (weight >= quorum && (weight > bestWeight || (bestResult != null && weight === bestWeight && result > bestResult))) {
-                bestWeight = weight;
-                bestResult = result;
-            }
-        }
-        return bestResult;
-    }
-    /**
-     *  A **FallbackProvider** manages several [[Providers]] providing
-     *  resilience by switching between slow or misbehaving nodes, security
-     *  by requiring multiple backends to aggree and performance by allowing
-     *  faster backends to respond earlier.
-     *
-     */
-    class FallbackProvider extends AbstractProvider {
-        /**
-         *  The number of backends that must agree on a value before it is
-         *  accpeted.
-         */
-        quorum;
-        /**
-         *  @_ignore:
-         */
-        eventQuorum;
-        /**
-         *  @_ignore:
-         */
-        eventWorkers;
-        #configs;
-        #height;
-        #initialSyncPromise;
-        /**
-         *  Creates a new **FallbackProvider** with %%providers%% connected to
-         *  %%network%%.
-         *
-         *  If a [[Provider]] is included in %%providers%%, defaults are used
-         *  for the configuration.
-         */
-        constructor(providers, network, options) {
-            super(network, options);
-            this.#configs = providers.map((p) => {
-                if (p instanceof AbstractProvider) {
-                    return Object.assign({ provider: p }, defaultConfig, defaultState);
-                }
-                else {
-                    return Object.assign({}, defaultConfig, p, defaultState);
-                }
-            });
-            this.#height = -2;
-            this.#initialSyncPromise = null;
-            if (options && options.quorum != null) {
-                this.quorum = options.quorum;
-            }
-            else {
-                this.quorum = Math.ceil(this.#configs.reduce((accum, config) => {
-                    accum += config.weight;
-                    return accum;
-                }, 0) / 2);
-            }
-            this.eventQuorum = 1;
-            this.eventWorkers = 1;
-            assertArgument(this.quorum <= this.#configs.reduce((a, c) => (a + c.weight), 0), "quorum exceed provider weight", "quorum", this.quorum);
-        }
-        get providerConfigs() {
-            return this.#configs.map((c) => {
-                const result = Object.assign({}, c);
-                for (const key in result) {
-                    if (key[0] === "_") {
-                        delete result[key];
-                    }
-                }
-                return result;
-            });
-        }
-        async _detectNetwork() {
-            return Network.from(getBigInt(await this._perform({ method: "chainId" })));
-        }
-        // @TODO: Add support to select providers to be the event subscriber
-        //_getSubscriber(sub: Subscription): Subscriber {
-        //    throw new Error("@TODO");
-        //}
-        /**
-         *  Transforms a %%req%% into the correct method call on %%provider%%.
-         */
-        async _translatePerform(provider, req) {
-            switch (req.method) {
-                case "broadcastTransaction":
-                    return await provider.broadcastTransaction(req.signedTransaction);
-                case "call":
-                    return await provider.call(Object.assign({}, req.transaction, { blockTag: req.blockTag }));
-                case "chainId":
-                    return (await provider.getNetwork()).chainId;
-                case "estimateGas":
-                    return await provider.estimateGas(req.transaction);
-                case "getBalance":
-                    return await provider.getBalance(req.address, req.blockTag);
-                case "getBlock": {
-                    const block = ("blockHash" in req) ? req.blockHash : req.blockTag;
-                    return await provider.getBlock(block, req.includeTransactions);
-                }
-                case "getBlockNumber":
-                    return await provider.getBlockNumber();
-                case "getCode":
-                    return await provider.getCode(req.address, req.blockTag);
-                case "getGasPrice":
-                    return (await provider.getFeeData()).gasPrice;
-                case "getPriorityFee":
-                    return (await provider.getFeeData()).maxPriorityFeePerGas;
-                case "getLogs":
-                    return await provider.getLogs(req.filter);
-                case "getStorage":
-                    return await provider.getStorage(req.address, req.position, req.blockTag);
-                case "getTransaction":
-                    return await provider.getTransaction(req.hash);
-                case "getTransactionCount":
-                    return await provider.getTransactionCount(req.address, req.blockTag);
-                case "getTransactionReceipt":
-                    return await provider.getTransactionReceipt(req.hash);
-                case "getTransactionResult":
-                    return await provider.getTransactionResult(req.hash);
-            }
-        }
-        // Grab the next (random) config that is not already part of
-        // the running set
-        #getNextConfig(running) {
-            // @TODO: Maybe do a check here to favour (heavily) providers that
-            //        do not require waitForSync and disfavour providers that
-            //        seem down-ish or are behaving slowly
-            const configs = Array.from(running).map((r) => r.config);
-            // Shuffle the states, sorted by priority
-            const allConfigs = this.#configs.slice();
-            shuffle(allConfigs);
-            allConfigs.sort((a, b) => (a.priority - b.priority));
-            for (const config of allConfigs) {
-                if (config._lastFatalError) {
-                    continue;
-                }
-                if (configs.indexOf(config) === -1) {
-                    return config;
-                }
-            }
-            return null;
-        }
-        // Adds a new runner (if available) to running.
-        #addRunner(running, req) {
-            const config = this.#getNextConfig(running);
-            // No runners available
-            if (config == null) {
-                return null;
-            }
-            // Create a new runner
-            const runner = {
-                config, result: null, didBump: false,
-                perform: null, staller: null
-            };
-            const now = getTime();
-            // Start performing this operation
-            runner.perform = (async () => {
-                try {
-                    config.requests++;
-                    const result = await this._translatePerform(config.provider, req);
-                    runner.result = { result };
-                }
-                catch (error) {
-                    config.errorResponses++;
-                    runner.result = { error };
-                }
-                const dt = (getTime() - now);
-                config._totalTime += dt;
-                config.rollingDuration = 0.95 * config.rollingDuration + 0.05 * dt;
-                runner.perform = null;
-            })();
-            // Start a staller; when this times out, it's time to force
-            // kicking off another runner because we are taking too long
-            runner.staller = (async () => {
-                await stall$2(config.stallTimeout);
-                runner.staller = null;
-            })();
-            running.add(runner);
-            return runner;
-        }
-        // Initializes the blockNumber and network for each runner and
-        // blocks until initialized
-        async #initialSync() {
-            let initialSync = this.#initialSyncPromise;
-            if (!initialSync) {
-                const promises = [];
-                this.#configs.forEach((config) => {
-                    promises.push((async () => {
-                        await waitForSync(config, 0);
-                        if (!config._lastFatalError) {
-                            config._network = await config.provider.getNetwork();
-                        }
-                    })());
-                });
-                this.#initialSyncPromise = initialSync = (async () => {
-                    // Wait for all providers to have a block number and network
-                    await Promise.all(promises);
-                    // Check all the networks match
-                    let chainId = null;
-                    for (const config of this.#configs) {
-                        if (config._lastFatalError) {
-                            continue;
-                        }
-                        const network = (config._network);
-                        if (chainId == null) {
-                            chainId = network.chainId;
-                        }
-                        else if (network.chainId !== chainId) {
-                            assert(false, "cannot mix providers on different networks", "UNSUPPORTED_OPERATION", {
-                                operation: "new FallbackProvider"
-                            });
-                        }
-                    }
-                })();
-            }
-            await initialSync;
-        }
-        async #checkQuorum(running, req) {
-            // Get all the result objects
-            const results = [];
-            for (const runner of running) {
-                if (runner.result != null) {
-                    const { tag, value } = normalizeResult(req.method, runner.result);
-                    results.push({ tag, value, weight: runner.config.weight });
-                }
-            }
-            // Are there enough results to event meet quorum?
-            if (results.reduce((a, r) => (a + r.weight), 0) < this.quorum) {
-                return undefined;
-            }
-            switch (req.method) {
-                case "getBlockNumber": {
-                    // We need to get the bootstrap block height
-                    if (this.#height === -2) {
-                        this.#height = Math.ceil(getNumber(getMedian(this.quorum, this.#configs.filter((c) => (!c._lastFatalError)).map((c) => ({
-                            value: c.blockNumber,
-                            tag: getNumber(c.blockNumber).toString(),
-                            weight: c.weight
-                        })))));
-                    }
-                    // Find the mode across all the providers, allowing for
-                    // a little drift between block heights
-                    const mode = getFuzzyMode(this.quorum, results);
-                    if (mode === undefined) {
-                        return undefined;
-                    }
-                    if (mode > this.#height) {
-                        this.#height = mode;
-                    }
-                    return this.#height;
-                }
-                case "getGasPrice":
-                case "getPriorityFee":
-                case "estimateGas":
-                    return getMedian(this.quorum, results);
-                case "getBlock":
-                    // Pending blocks are in the mempool and already
-                    // quite untrustworthy; just grab anything
-                    if ("blockTag" in req && req.blockTag === "pending") {
-                        return getAnyResult(this.quorum, results);
-                    }
-                    return checkQuorum(this.quorum, results);
-                case "call":
-                case "chainId":
-                case "getBalance":
-                case "getTransactionCount":
-                case "getCode":
-                case "getStorage":
-                case "getTransaction":
-                case "getTransactionReceipt":
-                case "getLogs":
-                    return checkQuorum(this.quorum, results);
-                case "broadcastTransaction":
-                    return getAnyResult(this.quorum, results);
-            }
-            assert(false, "unsupported method", "UNSUPPORTED_OPERATION", {
-                operation: `_perform(${stringify(req.method)})`
-            });
-        }
-        async #waitForQuorum(running, req) {
-            if (running.size === 0) {
-                throw new Error("no runners?!");
-            }
-            // Any promises that are interesting to watch for; an expired stall
-            // or a successful perform
-            const interesting = [];
-            let newRunners = 0;
-            for (const runner of running) {
-                // No responses, yet; keep an eye on it
-                if (runner.perform) {
-                    interesting.push(runner.perform);
-                }
-                // Still stalling...
-                if (runner.staller) {
-                    interesting.push(runner.staller);
-                    continue;
-                }
-                // This runner has already triggered another runner
-                if (runner.didBump) {
-                    continue;
-                }
-                // Got a response (result or error) or stalled; kick off another runner
-                runner.didBump = true;
-                newRunners++;
-            }
-            // Check if we have reached quorum on a result (or error)
-            const value = await this.#checkQuorum(running, req);
-            if (value !== undefined) {
-                if (value instanceof Error) {
-                    throw value;
-                }
-                return value;
-            }
-            // Add any new runners, because a staller timed out or a result
-            // or error response came in.
-            for (let i = 0; i < newRunners; i++) {
-                this.#addRunner(running, req);
-            }
-            // All providers have returned, and we have no result
-            assert(interesting.length > 0, "quorum not met", "SERVER_ERROR", {
-                request: "%sub-requests",
-                info: { request: req, results: Array.from(running).map((r) => stringify(r.result)) }
-            });
-            // Wait for someone to either complete its perform or stall out
-            await Promise.race(interesting);
-            // This is recursive, but at worst case the depth is 2x the
-            // number of providers (each has a perform and a staller)
-            return await this.#waitForQuorum(running, req);
-        }
-        async _perform(req) {
-            // Broadcasting a transaction is rare (ish) and already incurs
-            // a cost on the user, so spamming is safe-ish. Just send it to
-            // every backend.
-            if (req.method === "broadcastTransaction") {
-                // Once any broadcast provides a positive result, use it. No
-                // need to wait for anyone else
-                const results = this.#configs.map((c) => null);
-                const broadcasts = this.#configs.map(async ({ provider, weight }, index) => {
-                    try {
-                        const result = await provider._perform(req);
-                        results[index] = Object.assign(normalizeResult(req.method, { result }), { weight });
-                    }
-                    catch (error) {
-                        results[index] = Object.assign(normalizeResult(req.method, { error }), { weight });
-                    }
-                });
-                // As each promise finishes...
-                while (true) {
-                    // Check for a valid broadcast result
-                    const done = results.filter((r) => (r != null));
-                    for (const { value } of done) {
-                        if (!(value instanceof Error)) {
-                            return value;
-                        }
-                    }
-                    // Check for a legit broadcast error (one which we cannot
-                    // recover from; some nodes may return the following red
-                    // herring events:
-                    // - alredy seend (UNKNOWN_ERROR)
-                    // - NONCE_EXPIRED
-                    // - REPLACEMENT_UNDERPRICED
-                    const result = checkQuorum(this.quorum, results.filter((r) => (r != null)));
-                    if (isError(result, "INSUFFICIENT_FUNDS")) {
-                        throw result;
-                    }
-                    // Kick off the next provider (if any)
-                    const waiting = broadcasts.filter((b, i) => (results[i] == null));
-                    if (waiting.length === 0) {
-                        break;
-                    }
-                    await Promise.race(waiting);
-                }
-                // Use standard quorum results; any result was returned above,
-                // so this will find any error that met quorum if any
-                const result = getAnyResult(this.quorum, results);
-                assert(result !== undefined, "problem multi-broadcasting", "SERVER_ERROR", {
-                    request: "%sub-requests",
-                    info: { request: req, results: results.map(stringify) }
-                });
-                if (result instanceof Error) {
-                    throw result;
-                }
-                return result;
-            }
-            await this.#initialSync();
-            // Bootstrap enough runners to meet quorum
-            const running = new Set();
-            let inflightQuorum = 0;
-            while (true) {
-                const runner = this.#addRunner(running, req);
-                if (runner == null) {
-                    break;
-                }
-                inflightQuorum += runner.config.weight;
-                if (inflightQuorum >= this.quorum) {
-                    break;
-                }
-            }
-            const result = await this.#waitForQuorum(running, req);
-            // Track requests sent to a provider that are still
-            // outstanding after quorum has been otherwise found
-            for (const runner of running) {
-                if (runner.perform && runner.result == null) {
-                    runner.config.lateResponses++;
-                }
-            }
-            return result;
-        }
-        async destroy() {
-            for (const { provider } of this.#configs) {
-                provider.destroy();
-            }
-            super.destroy();
-        }
-    }
-
     function isWebSocketLike(value) {
         return (value && typeof (value.send) === "function" &&
             typeof (value.close) === "function");
@@ -23357,14 +20057,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  will whitelist **only** those backends.
      *
      *  Current backend strings supported are:
-     *  - ``"alchemy"``
-     *  - ``"ankr"``
-     *  - ``"cloudflare"``
-     *  - ``"chainstack"``
-     *  - ``"etherscan"``
-     *  - ``"infura"``
-     *  - ``"publicPolygon"``
-     *  - ``"quicknode"``
      *
      *  @example:
      *    // Connect to a local Geth node
@@ -23385,18 +20077,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         if (options == null) {
             options = {};
         }
-        const allowService = (name) => {
-            if (options[name] === "-") {
-                return false;
-            }
-            if (typeof (options.exclusive) === "string") {
-                return (name === options.exclusive);
-            }
-            if (Array.isArray(options.exclusive)) {
-                return (options.exclusive.indexOf(name) !== -1);
-            }
-            return true;
-        };
         if (typeof (network) === "string" && network.match(/^https?:/)) {
             return new JsonRpcProvider(network);
         }
@@ -23410,85 +20090,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
         catch (error) { }
         const providers = [];
-        if (allowService("publicPolygon") && staticNetwork) {
-            if (staticNetwork.name === "matic") {
-                providers.push(new JsonRpcProvider("https:/\/polygon-rpc.com/", staticNetwork, { staticNetwork }));
-            }
-            else if (staticNetwork.name === "matic-amoy") {
-                providers.push(new JsonRpcProvider("https:/\/rpc-amoy.polygon.technology/", staticNetwork, { staticNetwork }));
-            }
-        }
-        if (allowService("alchemy")) {
-            try {
-                providers.push(new AlchemyProvider(network, options.alchemy));
-            }
-            catch (error) { }
-        }
-        if (allowService("ankr") && options.ankr != null) {
-            try {
-                providers.push(new AnkrProvider(network, options.ankr));
-            }
-            catch (error) { }
-        }
-        /* Temporarily remove until custom error issue is fixed
-            if (allowService("blockscout")) {
-                try {
-                    providers.push(new BlockscoutProvider(network, options.blockscout));
-                } catch (error) { }
-            }
-        */
-        if (allowService("chainstack")) {
-            try {
-                providers.push(new ChainstackProvider(network, options.chainstack));
-            }
-            catch (error) { }
-        }
-        if (allowService("cloudflare")) {
-            try {
-                providers.push(new CloudflareProvider(network));
-            }
-            catch (error) { }
-        }
-        if (allowService("etherscan")) {
-            try {
-                providers.push(new EtherscanProvider(network, options.etherscan));
-            }
-            catch (error) { }
-        }
-        if (allowService("infura")) {
-            try {
-                let projectId = options.infura;
-                let projectSecret = undefined;
-                if (typeof (projectId) === "object") {
-                    projectSecret = projectId.projectSecret;
-                    projectId = projectId.projectId;
-                }
-                providers.push(new InfuraProvider(network, projectId, projectSecret));
-            }
-            catch (error) { }
-        }
-        /*
-            if (options.pocket !== "-") {
-                try {
-                    let appId = options.pocket;
-                    let secretKey: undefined | string = undefined;
-                    let loadBalancer: undefined | boolean = undefined;
-                    if (typeof(appId) === "object") {
-                        loadBalancer = !!appId.loadBalancer;
-                        secretKey = appId.secretKey;
-                        appId = appId.appId;
-                    }
-                    providers.push(new PocketProvider(network, appId, secretKey, loadBalancer));
-                } catch (error) { console.log(error); }
-            }
-        */
-        if (allowService("quicknode")) {
-            try {
-                let token = options.quicknode;
-                providers.push(new QuickNodeProvider(network, token));
-            }
-            catch (error) { }
-        }
         assert(providers.length, "unsupported default network", "UNSUPPORTED_OPERATION", {
             operation: "getDefaultProvider"
         });
@@ -23783,245 +20384,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
     }
 
-    /**
-     *  [[link-blockscout]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Sepolia Testnet (``sepolia``)
-     *  - Holesky Testnet (``holesky``)
-     *  - Ethereum Classic (``classic``)
-     *  - Arbitrum (``arbitrum``)
-     *  - Base (``base``)
-     *  - Base Sepolia Testnet (``base-sepolia``)
-     *  - Gnosis (``xdai``)
-     *  - Optimism (``optimism``)
-     *  - Optimism Sepolia Testnet (``optimism-sepolia``)
-     *  - Polygon (``matic``)
-     *
-     *  @_subsection: api/providers/thirdparty:Blockscout  [providers-blockscout]
-     */
-    function getUrl(name) {
-        switch (name) {
-            case "mainnet":
-                return "https:/\/eth.blockscout.com/api/eth-rpc";
-            case "sepolia":
-                return "https:/\/eth-sepolia.blockscout.com/api/eth-rpc";
-            case "holesky":
-                return "https:/\/eth-holesky.blockscout.com/api/eth-rpc";
-            case "classic":
-                return "https:/\/etc.blockscout.com/api/eth-rpc";
-            case "arbitrum":
-                return "https:/\/arbitrum.blockscout.com/api/eth-rpc";
-            case "base":
-                return "https:/\/base.blockscout.com/api/eth-rpc";
-            case "base-sepolia":
-                return "https:/\/base-sepolia.blockscout.com/api/eth-rpc";
-            case "matic":
-                return "https:/\/polygon.blockscout.com/api/eth-rpc";
-            case "optimism":
-                return "https:/\/optimism.blockscout.com/api/eth-rpc";
-            case "optimism-sepolia":
-                return "https:/\/optimism-sepolia.blockscout.com/api/eth-rpc";
-            case "xdai":
-                return "https:/\/gnosis.blockscout.com/api/eth-rpc";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **BlockscoutProvider** connects to the [[link-blockscout]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-blockscout).
-     */
-    class BlockscoutProvider extends JsonRpcProvider {
-        /**
-         *  The API key.
-         */
-        apiKey;
-        /**
-         *  Creates a new **BlockscoutProvider**.
-         */
-        constructor(_network, apiKey) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (apiKey == null) {
-                apiKey = null;
-            }
-            const request = BlockscoutProvider.getRequest(network);
-            super(request, network, { staticNetwork: network });
-            defineProperties(this, { apiKey });
-        }
-        _getProvider(chainId) {
-            try {
-                return new BlockscoutProvider(chainId, this.apiKey);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        isCommunityResource() {
-            return (this.apiKey === null);
-        }
-        getRpcRequest(req) {
-            // Blockscout enforces the TAG argument for estimateGas
-            const resp = super.getRpcRequest(req);
-            if (resp && resp.method === "eth_estimateGas" && resp.args.length == 1) {
-                resp.args = resp.args.slice();
-                resp.args.push("latest");
-            }
-            return resp;
-        }
-        getRpcError(payload, _error) {
-            const error = _error ? _error.error : null;
-            // Blockscout currently drops the VM result and replaces it with a
-            // human-readable string, so we need to make it machine-readable.
-            if (error && error.code === -32015 && !isHexString(error.data || "", true)) {
-                const panicCodes = {
-                    "assert(false)": "01",
-                    "arithmetic underflow or overflow": "11",
-                    "division or modulo by zero": "12",
-                    "out-of-bounds array access; popping on an empty array": "31",
-                    "out-of-bounds access of an array or bytesN": "32"
-                };
-                let panicCode = "";
-                if (error.message === "VM execution error.") {
-                    // eth_call passes this message
-                    panicCode = panicCodes[error.data] || "";
-                }
-                else if (panicCodes[error.message || ""]) {
-                    panicCode = panicCodes[error.message || ""];
-                }
-                if (panicCode) {
-                    error.message += ` (reverted: ${error.data})`;
-                    error.data = "0x4e487b7100000000000000000000000000000000000000000000000000000000000000" + panicCode;
-                }
-            }
-            else if (error && error.code === -32000) {
-                if (error.message === "wrong transaction nonce") {
-                    error.message += " (nonce too low)";
-                }
-            }
-            return super.getRpcError(payload, _error);
-        }
-        /**
-         *  Returns a prepared request for connecting to %%network%%
-         *  with %%apiKey%%.
-         */
-        static getRequest(network) {
-            const request = new FetchRequest(getUrl(network.name));
-            request.allowGzip = true;
-            return request;
-        }
-    }
-
-    /**
-     *  [[link-pocket]] provides a third-party service for connecting to
-     *  various blockchains over JSON-RPC.
-     *
-     *  **Supported Networks**
-     *
-     *  - Ethereum Mainnet (``mainnet``)
-     *  - Goerli Testnet (``goerli``)
-     *  - Polygon (``matic``)
-     *  - Arbitrum (``arbitrum``)
-     *
-     *  @_subsection: api/providers/thirdparty:Pocket  [providers-pocket]
-     */
-    const defaultApplicationId = "62e1ad51b37b8e00394bda3b";
-    function getHost(name) {
-        switch (name) {
-            case "mainnet":
-                return "eth-mainnet.gateway.pokt.network";
-            case "goerli":
-                return "eth-goerli.gateway.pokt.network";
-            case "matic":
-                return "poly-mainnet.gateway.pokt.network";
-            case "matic-mumbai":
-                return "polygon-mumbai-rpc.gateway.pokt.network";
-        }
-        assertArgument(false, "unsupported network", "network", name);
-    }
-    /**
-     *  The **PocketProvider** connects to the [[link-pocket]]
-     *  JSON-RPC end-points.
-     *
-     *  By default, a highly-throttled API key is used, which is
-     *  appropriate for quick prototypes and simple scripts. To
-     *  gain access to an increased rate-limit, it is highly
-     *  recommended to [sign up here](link-pocket-signup).
-     */
-    class PocketProvider extends JsonRpcProvider {
-        /**
-         *  The Application ID for the Pocket connection.
-         */
-        applicationId;
-        /**
-         *  The Application Secret for making authenticated requests
-         *  to the Pocket connection.
-         */
-        applicationSecret;
-        /**
-         *  Create a new **PocketProvider**.
-         *
-         *  By default connecting to ``mainnet`` with a highly throttled
-         *  API key.
-         */
-        constructor(_network, applicationId, applicationSecret) {
-            if (_network == null) {
-                _network = "mainnet";
-            }
-            const network = Network.from(_network);
-            if (applicationId == null) {
-                applicationId = defaultApplicationId;
-            }
-            if (applicationSecret == null) {
-                applicationSecret = null;
-            }
-            const options = { staticNetwork: network };
-            const request = PocketProvider.getRequest(network, applicationId, applicationSecret);
-            super(request, network, options);
-            defineProperties(this, { applicationId, applicationSecret });
-        }
-        _getProvider(chainId) {
-            try {
-                return new PocketProvider(chainId, this.applicationId, this.applicationSecret);
-            }
-            catch (error) { }
-            return super._getProvider(chainId);
-        }
-        /**
-         *  Returns a prepared request for connecting to %%network%% with
-         *  %%applicationId%%.
-         */
-        static getRequest(network, applicationId, applicationSecret) {
-            if (applicationId == null) {
-                applicationId = defaultApplicationId;
-            }
-            const request = new FetchRequest(`https:/\/${getHost(network.name)}/v1/lb/${applicationId}`);
-            request.allowGzip = true;
-            if (applicationSecret) {
-                request.setCredentials("", applicationSecret);
-            }
-            if (applicationId === defaultApplicationId) {
-                request.retryFunc = async (request, response, attempt) => {
-                    showThrottleMessage("PocketProvider");
-                    return true;
-                };
-            }
-            return request;
-        }
-        isCommunityResource() {
-            return (this.applicationId === defaultApplicationId);
-        }
-    }
-
     const IpcSocketProvider = undefined;
 
     /**
@@ -24142,6 +20504,221 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
     }
 
+    /**
+     *  The JSON Wallet formats allow a simple way to store the private
+     *  keys needed in Ethereum along with related information and allows
+     *  for extensible forms of encryption.
+     *
+     *  These utilities facilitate decrypting and encrypting the most common
+     *  JSON Wallet formats.
+     *
+     *  @_subsection: api/wallet:JSON Wallets  [json-wallets]
+     */
+    //import { CTR } from "aes-js";
+    //import { getAddress } from "../address/index.js";
+    //randomBytes, scrypt, scryptSync, uuidV4
+    //import { keccak256  } from "../crypto/index.js";
+    //import { computeAddress } from "../transaction/index.js";
+    //concat, assert, assertArgument,
+    /**
+     *  Returns true if %%json%% is a valid JSON Keystore Wallet.
+     */
+    function isKeystoreJson(json) {
+        try {
+            const data = JSON.parse(json);
+            const version = ((data.version != null) ? parseInt(data.version) : 0);
+            if (version === 3) {
+                return true;
+            }
+        }
+        catch (error) { }
+        return false;
+    }
+    /**
+     *  Resolves to the decrypted JSON Keystore Wallet %%json%% using the
+     *  %%password%%.
+     *
+     *  If provided, %%progress%% will be called periodically during the
+     *  decrpytion to provide feedback, and if the function returns
+     *  ``false`` will halt decryption.
+     */
+    function decryptKeystoreJsonSync(json, _password) {
+        let pass;
+        if (typeof _password === 'string') {
+            pass = _password;
+        }
+        else {
+            pass = toUtf8String(_password);
+        }
+        let wal = qcsdk.deserializeEncryptedWallet(json, pass);
+        let privKey = wal.privateKey;
+        let ks = {
+            address: wal.address,
+            privateKey: hexlify(privKey)
+        };
+        return ks;
+    }
+    /**
+     *  Resolved to the JSON Keystore Wallet for %%account%% encrypted
+     *  with %%password%%.
+     *
+     *  The %%options%% can be used to tune the password-based key
+     *  derivation function parameters, explicitly set the random values
+     *  used.
+     */
+    function encryptKeystoreJsonSync(account, password) {
+        const signingKey = new SigningKey(account.privateKey);
+        const privateKey = getBytes(signingKey.privateKey);
+        const publicKey = getBytes(signingKey.publicKey);
+        const wal = new qcsdk.Wallet(account.address, privateKey, publicKey);
+        if (typeof password === 'string') {
+            return qcsdk.serializeEncryptedWallet(wal, password);
+        }
+        else {
+            let passPhrase = toUtf8String(password);
+            return qcsdk.serializeEncryptedWallet(wal, passPhrase);
+        }
+    }
+
+    //import {newWallet} from "quantum-coin-js-sdk";
+    /**
+     *  A **Wallet** manages a single private key which is used to sign
+     *  transactions, messages and other common payloads.
+     *
+     *  This class is generally the main entry point for developers
+     *  that wish to use a private key directly, as it can create
+     *  instances from a large variety of common sources, including
+     *  raw private key, [[link-bip-39]] mnemonics and encrypte JSON
+     *  wallets.
+     */
+    class Wallet extends BaseWallet {
+        /**
+         *  Create a new wallet for the private %%key%%, optionally connected
+         *  to %%provider%%.
+         */
+        constructor(key, provider) {
+            if (typeof (key) === "string" && !key.startsWith("0x")) {
+                key = "0x" + key;
+            }
+            let signingKey = (typeof (key) === "string") ? new SigningKey(key) : key;
+            super(signingKey, provider);
+        }
+        connect(provider) {
+            return new Wallet(this.signingKey, provider);
+        }
+        /**
+         *  Resolves to a [JSON Keystore Wallet](json-wallets) encrypted with
+         *  %%password%%.
+         *
+         *  If %%progressCallback%% is specified, it will receive periodic
+         *  updates as the encryption process progreses.
+         */
+        async encrypt(password) {
+            const account = { address: this.address, privateKey: this.privateKey };
+            return encryptKeystoreJsonSync(account, password);
+        }
+        /**
+         *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
+         *  %%password%%.
+         *
+         *  It is preferred to use the [async version](encrypt) instead,
+         *  which allows a [[ProgressCallback]] to keep the user informed.
+         *
+         *  This method will block the event loop (freezing all UI) until
+         *  it is complete, which may be a non-trivial duration.
+         */
+        encryptSync(password) {
+            const account = { address: this.address, privateKey: this.privateKey };
+            return encryptKeystoreJsonSync(account, password);
+        }
+        static #fromAccount(account) {
+            assertArgument(account, "invalid JSON wallet", "json", "[ REDACTED ]");
+            const wallet = new Wallet(account.privateKey);
+            assertArgument(wallet.address === account.address, "address/privateKey mismatch", "json", "[ REDACTED ]");
+            return wallet;
+        }
+        /**
+         *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
+         *  with %%password%%.
+         */
+        static async fromEncryptedJson(json, password) {
+            let account = null;
+            if (isKeystoreJson(json)) {
+                account = decryptKeystoreJsonSync(json, password);
+            }
+            return Wallet.#fromAccount(account);
+        }
+        /**
+         *  Creates a **Wallet** by decrypting the %%json%% with %%password%%.
+         *
+         *  The [[fromEncryptedJson]] method is preferred, as this method
+         *  will lock up and freeze the UI during decryption, which may take
+         *  some time.
+         */
+        static fromEncryptedJsonSync(json, password) {
+            let account = null;
+            if (isKeystoreJson(json)) {
+                account = decryptKeystoreJsonSync(json, password);
+            }
+            else {
+                assertArgument(false, "invalid JSON wallet", "json", "[ REDACTED ]");
+            }
+            return Wallet.#fromAccount(account);
+        }
+        /**
+         *  Creates a new random [[Wallet]] using the available
+         *  [cryptographic random source](randomBytes).
+         *
+         *  If there is no crytographic random source, this will throw.
+         */
+        static createRandom(provider) {
+            let wal = qcsdk.newWallet();
+            let privKey = wal.privateKey;
+            return new Wallet(hexlify(privKey));
+        }
+    }
+
+    /**
+     *  A Wordlist represents a collection of language-specific
+     *  words used to encode and devoce [[link-bip-39]] encoded data
+     *  by mapping words to 11-bit values and vice versa.
+     */
+    class Wordlist {
+        locale;
+        /**
+         *  Creates a new Wordlist instance.
+         *
+         *  Sub-classes MUST call this if they provide their own constructor,
+         *  passing in the locale string of the language.
+         *
+         *  Generally there is no need to create instances of a Wordlist,
+         *  since each language-specific Wordlist creates an instance and
+         *  there is no state kept internally, so they are safe to share.
+         */
+        constructor(locale) {
+            defineProperties(this, { locale });
+        }
+        /**
+         *  Sub-classes may override this to provide a language-specific
+         *  method for spliting %%phrase%% into individual words.
+         *
+         *  By default, %%phrase%% is split using any sequences of
+         *  white-space as defined by regular expressions (i.e. ``/\s+/``).
+         */
+        split(phrase) {
+            return phrase.toLowerCase().split(/\s+/g);
+        }
+        /**
+         *  Sub-classes may override this to provider a language-specific
+         *  method for joining %%words%% into a phrase.
+         *
+         *  By default, %%words%% are joined by a single space.
+         */
+        join(words) {
+            return words.join(" ");
+        }
+    }
+
     const subsChrs = " !#$%&'()*+,-./<=>?@[]^_`{|}~";
     const Word = /^[a-z]*$/i;
     function unfold(words, sep) {
@@ -24194,47 +20771,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function decodeOwl(data) {
         assertArgument(data[0] === "0", "unsupported auwl data", "data", data);
         return decode(data.substring(1 + 2 * subsChrs.length), data.substring(1, 1 + 2 * subsChrs.length));
-    }
-
-    /**
-     *  A Wordlist represents a collection of language-specific
-     *  words used to encode and devoce [[link-bip-39]] encoded data
-     *  by mapping words to 11-bit values and vice versa.
-     */
-    class Wordlist {
-        locale;
-        /**
-         *  Creates a new Wordlist instance.
-         *
-         *  Sub-classes MUST call this if they provide their own constructor,
-         *  passing in the locale string of the language.
-         *
-         *  Generally there is no need to create instances of a Wordlist,
-         *  since each language-specific Wordlist creates an instance and
-         *  there is no state kept internally, so they are safe to share.
-         */
-        constructor(locale) {
-            defineProperties(this, { locale });
-        }
-        /**
-         *  Sub-classes may override this to provide a language-specific
-         *  method for spliting %%phrase%% into individual words.
-         *
-         *  By default, %%phrase%% is split using any sequences of
-         *  white-space as defined by regular expressions (i.e. ``/\s+/``).
-         */
-        split(phrase) {
-            return phrase.toLowerCase().split(/\s+/g);
-        }
-        /**
-         *  Sub-classes may override this to provider a language-specific
-         *  method for joining %%words%% into a phrase.
-         *
-         *  By default, %%words%% are joined by a single space.
-         */
-        join(words) {
-            return words.join(" ");
-        }
     }
 
     // Use the encode-latin.js script to create the necessary
@@ -24326,1635 +20862,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 wordlist = new LangEn();
             }
             return wordlist;
-        }
-    }
-
-    // Returns a byte with the MSB bits set
-    function getUpperMask(bits) {
-        return ((1 << bits) - 1) << (8 - bits) & 0xff;
-    }
-    // Returns a byte with the LSB bits set
-    function getLowerMask(bits) {
-        return ((1 << bits) - 1) & 0xff;
-    }
-    function mnemonicToEntropy(mnemonic, wordlist) {
-        assertNormalize("NFKD");
-        if (wordlist == null) {
-            wordlist = LangEn.wordlist();
-        }
-        const words = wordlist.split(mnemonic);
-        assertArgument((words.length % 3) === 0 && words.length >= 12 && words.length <= 24, "invalid mnemonic length", "mnemonic", "[ REDACTED ]");
-        const entropy = new Uint8Array(Math.ceil(11 * words.length / 8));
-        let offset = 0;
-        for (let i = 0; i < words.length; i++) {
-            let index = wordlist.getWordIndex(words[i].normalize("NFKD"));
-            assertArgument(index >= 0, `invalid mnemonic word at index ${i}`, "mnemonic", "[ REDACTED ]");
-            for (let bit = 0; bit < 11; bit++) {
-                if (index & (1 << (10 - bit))) {
-                    entropy[offset >> 3] |= (1 << (7 - (offset % 8)));
-                }
-                offset++;
-            }
-        }
-        const entropyBits = 32 * words.length / 3;
-        const checksumBits = words.length / 3;
-        const checksumMask = getUpperMask(checksumBits);
-        const checksum = getBytes(sha256(entropy.slice(0, entropyBits / 8)))[0] & checksumMask;
-        assertArgument(checksum === (entropy[entropy.length - 1] & checksumMask), "invalid mnemonic checksum", "mnemonic", "[ REDACTED ]");
-        return hexlify(entropy.slice(0, entropyBits / 8));
-    }
-    function entropyToMnemonic(entropy, wordlist) {
-        assertArgument((entropy.length % 4) === 0 && entropy.length >= 16 && entropy.length <= 32, "invalid entropy size", "entropy", "[ REDACTED ]");
-        if (wordlist == null) {
-            wordlist = LangEn.wordlist();
-        }
-        const indices = [0];
-        let remainingBits = 11;
-        for (let i = 0; i < entropy.length; i++) {
-            // Consume the whole byte (with still more to go)
-            if (remainingBits > 8) {
-                indices[indices.length - 1] <<= 8;
-                indices[indices.length - 1] |= entropy[i];
-                remainingBits -= 8;
-                // This byte will complete an 11-bit index
-            }
-            else {
-                indices[indices.length - 1] <<= remainingBits;
-                indices[indices.length - 1] |= entropy[i] >> (8 - remainingBits);
-                // Start the next word
-                indices.push(entropy[i] & getLowerMask(8 - remainingBits));
-                remainingBits += 3;
-            }
-        }
-        // Compute the checksum bits
-        const checksumBits = entropy.length / 4;
-        const checksum = parseInt(sha256(entropy).substring(2, 4), 16) & getUpperMask(checksumBits);
-        // Shift the checksum into the word indices
-        indices[indices.length - 1] <<= checksumBits;
-        indices[indices.length - 1] |= (checksum >> (8 - checksumBits));
-        return wordlist.join(indices.map((index) => wordlist.getWord(index)));
-    }
-    const _guard$1 = {};
-    /**
-     *  A **Mnemonic** wraps all properties required to compute [[link-bip-39]]
-     *  seeds and convert between phrases and entropy.
-     */
-    class Mnemonic {
-        /**
-         *  The mnemonic phrase of 12, 15, 18, 21 or 24 words.
-         *
-         *  Use the [[wordlist]] ``split`` method to get the individual words.
-         */
-        phrase;
-        /**
-         *  The password used for this mnemonic. If no password is used this
-         *  is the empty string (i.e. ``""``) as per the specification.
-         */
-        password;
-        /**
-         *  The wordlist for this mnemonic.
-         */
-        wordlist;
-        /**
-         *  The underlying entropy which the mnemonic encodes.
-         */
-        entropy;
-        /**
-         *  @private
-         */
-        constructor(guard, entropy, phrase, password, wordlist) {
-            if (password == null) {
-                password = "";
-            }
-            if (wordlist == null) {
-                wordlist = LangEn.wordlist();
-            }
-            assertPrivate(guard, _guard$1, "Mnemonic");
-            defineProperties(this, { phrase, password, wordlist, entropy });
-        }
-        /**
-         *  Returns the seed for the mnemonic.
-         */
-        computeSeed() {
-            const salt = toUtf8Bytes("mnemonic" + this.password, "NFKD");
-            return pbkdf2(toUtf8Bytes(this.phrase, "NFKD"), salt, 2048, 64, "sha512");
-        }
-        /**
-         *  Creates a new Mnemonic for the %%phrase%%.
-         *
-         *  The default %%password%% is the empty string and the default
-         *  wordlist is the [English wordlists](LangEn).
-         */
-        static fromPhrase(phrase, password, wordlist) {
-            // Normalize the case and space; throws if invalid
-            const entropy = mnemonicToEntropy(phrase, wordlist);
-            phrase = entropyToMnemonic(getBytes(entropy), wordlist);
-            return new Mnemonic(_guard$1, entropy, phrase, password, wordlist);
-        }
-        /**
-         *  Create a new **Mnemonic** from the %%entropy%%.
-         *
-         *  The default %%password%% is the empty string and the default
-         *  wordlist is the [English wordlists](LangEn).
-         */
-        static fromEntropy(_entropy, password, wordlist) {
-            const entropy = getBytes(_entropy, "entropy");
-            const phrase = entropyToMnemonic(entropy, wordlist);
-            return new Mnemonic(_guard$1, hexlify(entropy), phrase, password, wordlist);
-        }
-        /**
-         *  Returns the phrase for %%mnemonic%%.
-         */
-        static entropyToPhrase(_entropy, wordlist) {
-            const entropy = getBytes(_entropy, "entropy");
-            return entropyToMnemonic(entropy, wordlist);
-        }
-        /**
-         *  Returns the entropy for %%phrase%%.
-         */
-        static phraseToEntropy(phrase, wordlist) {
-            return mnemonicToEntropy(phrase, wordlist);
-        }
-        /**
-         *  Returns true if %%phrase%% is a valid [[link-bip-39]] phrase.
-         *
-         *  This checks all the provided words belong to the %%wordlist%%,
-         *  that the length is valid and the checksum is correct.
-         */
-        static isValidMnemonic(phrase, wordlist) {
-            try {
-                mnemonicToEntropy(phrase, wordlist);
-                return true;
-            }
-            catch (error) { }
-            return false;
-        }
-    }
-
-    /*! MIT License. Copyright 2015-2022 Richard Moore <me@ricmoo.com>. See LICENSE.txt. */
-    var __classPrivateFieldGet$2 = (__$G && __$G.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-    var __classPrivateFieldSet$2 = (__$G && __$G.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-    var _AES_key, _AES_Kd, _AES_Ke;
-    // Number of rounds by keysize
-    const numberOfRounds = { 16: 10, 24: 12, 32: 14 };
-    // Round constant words
-    const rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91];
-    // S-box and Inverse S-box (S is for Substitution)
-    const S = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08, 0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16];
-    const Si = [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e, 0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25, 0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92, 0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84, 0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06, 0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, 0x3a, 0x91, 0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73, 0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8, 0x1c, 0x75, 0xdf, 0x6e, 0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, 0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4, 0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f, 0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, 0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d];
-    // Transformations for encryption
-    const T1 = [0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d, 0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554, 0x60303050, 0x02010103, 0xce6767a9, 0x562b2b7d, 0xe7fefe19, 0xb5d7d762, 0x4dababe6, 0xec76769a, 0x8fcaca45, 0x1f82829d, 0x89c9c940, 0xfa7d7d87, 0xeffafa15, 0xb25959eb, 0x8e4747c9, 0xfbf0f00b, 0x41adadec, 0xb3d4d467, 0x5fa2a2fd, 0x45afafea, 0x239c9cbf, 0x53a4a4f7, 0xe4727296, 0x9bc0c05b, 0x75b7b7c2, 0xe1fdfd1c, 0x3d9393ae, 0x4c26266a, 0x6c36365a, 0x7e3f3f41, 0xf5f7f702, 0x83cccc4f, 0x6834345c, 0x51a5a5f4, 0xd1e5e534, 0xf9f1f108, 0xe2717193, 0xabd8d873, 0x62313153, 0x2a15153f, 0x0804040c, 0x95c7c752, 0x46232365, 0x9dc3c35e, 0x30181828, 0x379696a1, 0x0a05050f, 0x2f9a9ab5, 0x0e070709, 0x24121236, 0x1b80809b, 0xdfe2e23d, 0xcdebeb26, 0x4e272769, 0x7fb2b2cd, 0xea75759f, 0x1209091b, 0x1d83839e, 0x582c2c74, 0x341a1a2e, 0x361b1b2d, 0xdc6e6eb2, 0xb45a5aee, 0x5ba0a0fb, 0xa45252f6, 0x763b3b4d, 0xb7d6d661, 0x7db3b3ce, 0x5229297b, 0xdde3e33e, 0x5e2f2f71, 0x13848497, 0xa65353f5, 0xb9d1d168, 0x00000000, 0xc1eded2c, 0x40202060, 0xe3fcfc1f, 0x79b1b1c8, 0xb65b5bed, 0xd46a6abe, 0x8dcbcb46, 0x67bebed9, 0x7239394b, 0x944a4ade, 0x984c4cd4, 0xb05858e8, 0x85cfcf4a, 0xbbd0d06b, 0xc5efef2a, 0x4faaaae5, 0xedfbfb16, 0x864343c5, 0x9a4d4dd7, 0x66333355, 0x11858594, 0x8a4545cf, 0xe9f9f910, 0x04020206, 0xfe7f7f81, 0xa05050f0, 0x783c3c44, 0x259f9fba, 0x4ba8a8e3, 0xa25151f3, 0x5da3a3fe, 0x804040c0, 0x058f8f8a, 0x3f9292ad, 0x219d9dbc, 0x70383848, 0xf1f5f504, 0x63bcbcdf, 0x77b6b6c1, 0xafdada75, 0x42212163, 0x20101030, 0xe5ffff1a, 0xfdf3f30e, 0xbfd2d26d, 0x81cdcd4c, 0x180c0c14, 0x26131335, 0xc3ecec2f, 0xbe5f5fe1, 0x359797a2, 0x884444cc, 0x2e171739, 0x93c4c457, 0x55a7a7f2, 0xfc7e7e82, 0x7a3d3d47, 0xc86464ac, 0xba5d5de7, 0x3219192b, 0xe6737395, 0xc06060a0, 0x19818198, 0x9e4f4fd1, 0xa3dcdc7f, 0x44222266, 0x542a2a7e, 0x3b9090ab, 0x0b888883, 0x8c4646ca, 0xc7eeee29, 0x6bb8b8d3, 0x2814143c, 0xa7dede79, 0xbc5e5ee2, 0x160b0b1d, 0xaddbdb76, 0xdbe0e03b, 0x64323256, 0x743a3a4e, 0x140a0a1e, 0x924949db, 0x0c06060a, 0x4824246c, 0xb85c5ce4, 0x9fc2c25d, 0xbdd3d36e, 0x43acacef, 0xc46262a6, 0x399191a8, 0x319595a4, 0xd3e4e437, 0xf279798b, 0xd5e7e732, 0x8bc8c843, 0x6e373759, 0xda6d6db7, 0x018d8d8c, 0xb1d5d564, 0x9c4e4ed2, 0x49a9a9e0, 0xd86c6cb4, 0xac5656fa, 0xf3f4f407, 0xcfeaea25, 0xca6565af, 0xf47a7a8e, 0x47aeaee9, 0x10080818, 0x6fbabad5, 0xf0787888, 0x4a25256f, 0x5c2e2e72, 0x381c1c24, 0x57a6a6f1, 0x73b4b4c7, 0x97c6c651, 0xcbe8e823, 0xa1dddd7c, 0xe874749c, 0x3e1f1f21, 0x964b4bdd, 0x61bdbddc, 0x0d8b8b86, 0x0f8a8a85, 0xe0707090, 0x7c3e3e42, 0x71b5b5c4, 0xcc6666aa, 0x904848d8, 0x06030305, 0xf7f6f601, 0x1c0e0e12, 0xc26161a3, 0x6a35355f, 0xae5757f9, 0x69b9b9d0, 0x17868691, 0x99c1c158, 0x3a1d1d27, 0x279e9eb9, 0xd9e1e138, 0xebf8f813, 0x2b9898b3, 0x22111133, 0xd26969bb, 0xa9d9d970, 0x078e8e89, 0x339494a7, 0x2d9b9bb6, 0x3c1e1e22, 0x15878792, 0xc9e9e920, 0x87cece49, 0xaa5555ff, 0x50282878, 0xa5dfdf7a, 0x038c8c8f, 0x59a1a1f8, 0x09898980, 0x1a0d0d17, 0x65bfbfda, 0xd7e6e631, 0x844242c6, 0xd06868b8, 0x824141c3, 0x299999b0, 0x5a2d2d77, 0x1e0f0f11, 0x7bb0b0cb, 0xa85454fc, 0x6dbbbbd6, 0x2c16163a];
-    const T2 = [0xa5c66363, 0x84f87c7c, 0x99ee7777, 0x8df67b7b, 0x0dfff2f2, 0xbdd66b6b, 0xb1de6f6f, 0x5491c5c5, 0x50603030, 0x03020101, 0xa9ce6767, 0x7d562b2b, 0x19e7fefe, 0x62b5d7d7, 0xe64dabab, 0x9aec7676, 0x458fcaca, 0x9d1f8282, 0x4089c9c9, 0x87fa7d7d, 0x15effafa, 0xebb25959, 0xc98e4747, 0x0bfbf0f0, 0xec41adad, 0x67b3d4d4, 0xfd5fa2a2, 0xea45afaf, 0xbf239c9c, 0xf753a4a4, 0x96e47272, 0x5b9bc0c0, 0xc275b7b7, 0x1ce1fdfd, 0xae3d9393, 0x6a4c2626, 0x5a6c3636, 0x417e3f3f, 0x02f5f7f7, 0x4f83cccc, 0x5c683434, 0xf451a5a5, 0x34d1e5e5, 0x08f9f1f1, 0x93e27171, 0x73abd8d8, 0x53623131, 0x3f2a1515, 0x0c080404, 0x5295c7c7, 0x65462323, 0x5e9dc3c3, 0x28301818, 0xa1379696, 0x0f0a0505, 0xb52f9a9a, 0x090e0707, 0x36241212, 0x9b1b8080, 0x3ddfe2e2, 0x26cdebeb, 0x694e2727, 0xcd7fb2b2, 0x9fea7575, 0x1b120909, 0x9e1d8383, 0x74582c2c, 0x2e341a1a, 0x2d361b1b, 0xb2dc6e6e, 0xeeb45a5a, 0xfb5ba0a0, 0xf6a45252, 0x4d763b3b, 0x61b7d6d6, 0xce7db3b3, 0x7b522929, 0x3edde3e3, 0x715e2f2f, 0x97138484, 0xf5a65353, 0x68b9d1d1, 0x00000000, 0x2cc1eded, 0x60402020, 0x1fe3fcfc, 0xc879b1b1, 0xedb65b5b, 0xbed46a6a, 0x468dcbcb, 0xd967bebe, 0x4b723939, 0xde944a4a, 0xd4984c4c, 0xe8b05858, 0x4a85cfcf, 0x6bbbd0d0, 0x2ac5efef, 0xe54faaaa, 0x16edfbfb, 0xc5864343, 0xd79a4d4d, 0x55663333, 0x94118585, 0xcf8a4545, 0x10e9f9f9, 0x06040202, 0x81fe7f7f, 0xf0a05050, 0x44783c3c, 0xba259f9f, 0xe34ba8a8, 0xf3a25151, 0xfe5da3a3, 0xc0804040, 0x8a058f8f, 0xad3f9292, 0xbc219d9d, 0x48703838, 0x04f1f5f5, 0xdf63bcbc, 0xc177b6b6, 0x75afdada, 0x63422121, 0x30201010, 0x1ae5ffff, 0x0efdf3f3, 0x6dbfd2d2, 0x4c81cdcd, 0x14180c0c, 0x35261313, 0x2fc3ecec, 0xe1be5f5f, 0xa2359797, 0xcc884444, 0x392e1717, 0x5793c4c4, 0xf255a7a7, 0x82fc7e7e, 0x477a3d3d, 0xacc86464, 0xe7ba5d5d, 0x2b321919, 0x95e67373, 0xa0c06060, 0x98198181, 0xd19e4f4f, 0x7fa3dcdc, 0x66442222, 0x7e542a2a, 0xab3b9090, 0x830b8888, 0xca8c4646, 0x29c7eeee, 0xd36bb8b8, 0x3c281414, 0x79a7dede, 0xe2bc5e5e, 0x1d160b0b, 0x76addbdb, 0x3bdbe0e0, 0x56643232, 0x4e743a3a, 0x1e140a0a, 0xdb924949, 0x0a0c0606, 0x6c482424, 0xe4b85c5c, 0x5d9fc2c2, 0x6ebdd3d3, 0xef43acac, 0xa6c46262, 0xa8399191, 0xa4319595, 0x37d3e4e4, 0x8bf27979, 0x32d5e7e7, 0x438bc8c8, 0x596e3737, 0xb7da6d6d, 0x8c018d8d, 0x64b1d5d5, 0xd29c4e4e, 0xe049a9a9, 0xb4d86c6c, 0xfaac5656, 0x07f3f4f4, 0x25cfeaea, 0xafca6565, 0x8ef47a7a, 0xe947aeae, 0x18100808, 0xd56fbaba, 0x88f07878, 0x6f4a2525, 0x725c2e2e, 0x24381c1c, 0xf157a6a6, 0xc773b4b4, 0x5197c6c6, 0x23cbe8e8, 0x7ca1dddd, 0x9ce87474, 0x213e1f1f, 0xdd964b4b, 0xdc61bdbd, 0x860d8b8b, 0x850f8a8a, 0x90e07070, 0x427c3e3e, 0xc471b5b5, 0xaacc6666, 0xd8904848, 0x05060303, 0x01f7f6f6, 0x121c0e0e, 0xa3c26161, 0x5f6a3535, 0xf9ae5757, 0xd069b9b9, 0x91178686, 0x5899c1c1, 0x273a1d1d, 0xb9279e9e, 0x38d9e1e1, 0x13ebf8f8, 0xb32b9898, 0x33221111, 0xbbd26969, 0x70a9d9d9, 0x89078e8e, 0xa7339494, 0xb62d9b9b, 0x223c1e1e, 0x92158787, 0x20c9e9e9, 0x4987cece, 0xffaa5555, 0x78502828, 0x7aa5dfdf, 0x8f038c8c, 0xf859a1a1, 0x80098989, 0x171a0d0d, 0xda65bfbf, 0x31d7e6e6, 0xc6844242, 0xb8d06868, 0xc3824141, 0xb0299999, 0x775a2d2d, 0x111e0f0f, 0xcb7bb0b0, 0xfca85454, 0xd66dbbbb, 0x3a2c1616];
-    const T3 = [0x63a5c663, 0x7c84f87c, 0x7799ee77, 0x7b8df67b, 0xf20dfff2, 0x6bbdd66b, 0x6fb1de6f, 0xc55491c5, 0x30506030, 0x01030201, 0x67a9ce67, 0x2b7d562b, 0xfe19e7fe, 0xd762b5d7, 0xabe64dab, 0x769aec76, 0xca458fca, 0x829d1f82, 0xc94089c9, 0x7d87fa7d, 0xfa15effa, 0x59ebb259, 0x47c98e47, 0xf00bfbf0, 0xadec41ad, 0xd467b3d4, 0xa2fd5fa2, 0xafea45af, 0x9cbf239c, 0xa4f753a4, 0x7296e472, 0xc05b9bc0, 0xb7c275b7, 0xfd1ce1fd, 0x93ae3d93, 0x266a4c26, 0x365a6c36, 0x3f417e3f, 0xf702f5f7, 0xcc4f83cc, 0x345c6834, 0xa5f451a5, 0xe534d1e5, 0xf108f9f1, 0x7193e271, 0xd873abd8, 0x31536231, 0x153f2a15, 0x040c0804, 0xc75295c7, 0x23654623, 0xc35e9dc3, 0x18283018, 0x96a13796, 0x050f0a05, 0x9ab52f9a, 0x07090e07, 0x12362412, 0x809b1b80, 0xe23ddfe2, 0xeb26cdeb, 0x27694e27, 0xb2cd7fb2, 0x759fea75, 0x091b1209, 0x839e1d83, 0x2c74582c, 0x1a2e341a, 0x1b2d361b, 0x6eb2dc6e, 0x5aeeb45a, 0xa0fb5ba0, 0x52f6a452, 0x3b4d763b, 0xd661b7d6, 0xb3ce7db3, 0x297b5229, 0xe33edde3, 0x2f715e2f, 0x84971384, 0x53f5a653, 0xd168b9d1, 0x00000000, 0xed2cc1ed, 0x20604020, 0xfc1fe3fc, 0xb1c879b1, 0x5bedb65b, 0x6abed46a, 0xcb468dcb, 0xbed967be, 0x394b7239, 0x4ade944a, 0x4cd4984c, 0x58e8b058, 0xcf4a85cf, 0xd06bbbd0, 0xef2ac5ef, 0xaae54faa, 0xfb16edfb, 0x43c58643, 0x4dd79a4d, 0x33556633, 0x85941185, 0x45cf8a45, 0xf910e9f9, 0x02060402, 0x7f81fe7f, 0x50f0a050, 0x3c44783c, 0x9fba259f, 0xa8e34ba8, 0x51f3a251, 0xa3fe5da3, 0x40c08040, 0x8f8a058f, 0x92ad3f92, 0x9dbc219d, 0x38487038, 0xf504f1f5, 0xbcdf63bc, 0xb6c177b6, 0xda75afda, 0x21634221, 0x10302010, 0xff1ae5ff, 0xf30efdf3, 0xd26dbfd2, 0xcd4c81cd, 0x0c14180c, 0x13352613, 0xec2fc3ec, 0x5fe1be5f, 0x97a23597, 0x44cc8844, 0x17392e17, 0xc45793c4, 0xa7f255a7, 0x7e82fc7e, 0x3d477a3d, 0x64acc864, 0x5de7ba5d, 0x192b3219, 0x7395e673, 0x60a0c060, 0x81981981, 0x4fd19e4f, 0xdc7fa3dc, 0x22664422, 0x2a7e542a, 0x90ab3b90, 0x88830b88, 0x46ca8c46, 0xee29c7ee, 0xb8d36bb8, 0x143c2814, 0xde79a7de, 0x5ee2bc5e, 0x0b1d160b, 0xdb76addb, 0xe03bdbe0, 0x32566432, 0x3a4e743a, 0x0a1e140a, 0x49db9249, 0x060a0c06, 0x246c4824, 0x5ce4b85c, 0xc25d9fc2, 0xd36ebdd3, 0xacef43ac, 0x62a6c462, 0x91a83991, 0x95a43195, 0xe437d3e4, 0x798bf279, 0xe732d5e7, 0xc8438bc8, 0x37596e37, 0x6db7da6d, 0x8d8c018d, 0xd564b1d5, 0x4ed29c4e, 0xa9e049a9, 0x6cb4d86c, 0x56faac56, 0xf407f3f4, 0xea25cfea, 0x65afca65, 0x7a8ef47a, 0xaee947ae, 0x08181008, 0xbad56fba, 0x7888f078, 0x256f4a25, 0x2e725c2e, 0x1c24381c, 0xa6f157a6, 0xb4c773b4, 0xc65197c6, 0xe823cbe8, 0xdd7ca1dd, 0x749ce874, 0x1f213e1f, 0x4bdd964b, 0xbddc61bd, 0x8b860d8b, 0x8a850f8a, 0x7090e070, 0x3e427c3e, 0xb5c471b5, 0x66aacc66, 0x48d89048, 0x03050603, 0xf601f7f6, 0x0e121c0e, 0x61a3c261, 0x355f6a35, 0x57f9ae57, 0xb9d069b9, 0x86911786, 0xc15899c1, 0x1d273a1d, 0x9eb9279e, 0xe138d9e1, 0xf813ebf8, 0x98b32b98, 0x11332211, 0x69bbd269, 0xd970a9d9, 0x8e89078e, 0x94a73394, 0x9bb62d9b, 0x1e223c1e, 0x87921587, 0xe920c9e9, 0xce4987ce, 0x55ffaa55, 0x28785028, 0xdf7aa5df, 0x8c8f038c, 0xa1f859a1, 0x89800989, 0x0d171a0d, 0xbfda65bf, 0xe631d7e6, 0x42c68442, 0x68b8d068, 0x41c38241, 0x99b02999, 0x2d775a2d, 0x0f111e0f, 0xb0cb7bb0, 0x54fca854, 0xbbd66dbb, 0x163a2c16];
-    const T4 = [0x6363a5c6, 0x7c7c84f8, 0x777799ee, 0x7b7b8df6, 0xf2f20dff, 0x6b6bbdd6, 0x6f6fb1de, 0xc5c55491, 0x30305060, 0x01010302, 0x6767a9ce, 0x2b2b7d56, 0xfefe19e7, 0xd7d762b5, 0xababe64d, 0x76769aec, 0xcaca458f, 0x82829d1f, 0xc9c94089, 0x7d7d87fa, 0xfafa15ef, 0x5959ebb2, 0x4747c98e, 0xf0f00bfb, 0xadadec41, 0xd4d467b3, 0xa2a2fd5f, 0xafafea45, 0x9c9cbf23, 0xa4a4f753, 0x727296e4, 0xc0c05b9b, 0xb7b7c275, 0xfdfd1ce1, 0x9393ae3d, 0x26266a4c, 0x36365a6c, 0x3f3f417e, 0xf7f702f5, 0xcccc4f83, 0x34345c68, 0xa5a5f451, 0xe5e534d1, 0xf1f108f9, 0x717193e2, 0xd8d873ab, 0x31315362, 0x15153f2a, 0x04040c08, 0xc7c75295, 0x23236546, 0xc3c35e9d, 0x18182830, 0x9696a137, 0x05050f0a, 0x9a9ab52f, 0x0707090e, 0x12123624, 0x80809b1b, 0xe2e23ddf, 0xebeb26cd, 0x2727694e, 0xb2b2cd7f, 0x75759fea, 0x09091b12, 0x83839e1d, 0x2c2c7458, 0x1a1a2e34, 0x1b1b2d36, 0x6e6eb2dc, 0x5a5aeeb4, 0xa0a0fb5b, 0x5252f6a4, 0x3b3b4d76, 0xd6d661b7, 0xb3b3ce7d, 0x29297b52, 0xe3e33edd, 0x2f2f715e, 0x84849713, 0x5353f5a6, 0xd1d168b9, 0x00000000, 0xeded2cc1, 0x20206040, 0xfcfc1fe3, 0xb1b1c879, 0x5b5bedb6, 0x6a6abed4, 0xcbcb468d, 0xbebed967, 0x39394b72, 0x4a4ade94, 0x4c4cd498, 0x5858e8b0, 0xcfcf4a85, 0xd0d06bbb, 0xefef2ac5, 0xaaaae54f, 0xfbfb16ed, 0x4343c586, 0x4d4dd79a, 0x33335566, 0x85859411, 0x4545cf8a, 0xf9f910e9, 0x02020604, 0x7f7f81fe, 0x5050f0a0, 0x3c3c4478, 0x9f9fba25, 0xa8a8e34b, 0x5151f3a2, 0xa3a3fe5d, 0x4040c080, 0x8f8f8a05, 0x9292ad3f, 0x9d9dbc21, 0x38384870, 0xf5f504f1, 0xbcbcdf63, 0xb6b6c177, 0xdada75af, 0x21216342, 0x10103020, 0xffff1ae5, 0xf3f30efd, 0xd2d26dbf, 0xcdcd4c81, 0x0c0c1418, 0x13133526, 0xecec2fc3, 0x5f5fe1be, 0x9797a235, 0x4444cc88, 0x1717392e, 0xc4c45793, 0xa7a7f255, 0x7e7e82fc, 0x3d3d477a, 0x6464acc8, 0x5d5de7ba, 0x19192b32, 0x737395e6, 0x6060a0c0, 0x81819819, 0x4f4fd19e, 0xdcdc7fa3, 0x22226644, 0x2a2a7e54, 0x9090ab3b, 0x8888830b, 0x4646ca8c, 0xeeee29c7, 0xb8b8d36b, 0x14143c28, 0xdede79a7, 0x5e5ee2bc, 0x0b0b1d16, 0xdbdb76ad, 0xe0e03bdb, 0x32325664, 0x3a3a4e74, 0x0a0a1e14, 0x4949db92, 0x06060a0c, 0x24246c48, 0x5c5ce4b8, 0xc2c25d9f, 0xd3d36ebd, 0xacacef43, 0x6262a6c4, 0x9191a839, 0x9595a431, 0xe4e437d3, 0x79798bf2, 0xe7e732d5, 0xc8c8438b, 0x3737596e, 0x6d6db7da, 0x8d8d8c01, 0xd5d564b1, 0x4e4ed29c, 0xa9a9e049, 0x6c6cb4d8, 0x5656faac, 0xf4f407f3, 0xeaea25cf, 0x6565afca, 0x7a7a8ef4, 0xaeaee947, 0x08081810, 0xbabad56f, 0x787888f0, 0x25256f4a, 0x2e2e725c, 0x1c1c2438, 0xa6a6f157, 0xb4b4c773, 0xc6c65197, 0xe8e823cb, 0xdddd7ca1, 0x74749ce8, 0x1f1f213e, 0x4b4bdd96, 0xbdbddc61, 0x8b8b860d, 0x8a8a850f, 0x707090e0, 0x3e3e427c, 0xb5b5c471, 0x6666aacc, 0x4848d890, 0x03030506, 0xf6f601f7, 0x0e0e121c, 0x6161a3c2, 0x35355f6a, 0x5757f9ae, 0xb9b9d069, 0x86869117, 0xc1c15899, 0x1d1d273a, 0x9e9eb927, 0xe1e138d9, 0xf8f813eb, 0x9898b32b, 0x11113322, 0x6969bbd2, 0xd9d970a9, 0x8e8e8907, 0x9494a733, 0x9b9bb62d, 0x1e1e223c, 0x87879215, 0xe9e920c9, 0xcece4987, 0x5555ffaa, 0x28287850, 0xdfdf7aa5, 0x8c8c8f03, 0xa1a1f859, 0x89898009, 0x0d0d171a, 0xbfbfda65, 0xe6e631d7, 0x4242c684, 0x6868b8d0, 0x4141c382, 0x9999b029, 0x2d2d775a, 0x0f0f111e, 0xb0b0cb7b, 0x5454fca8, 0xbbbbd66d, 0x16163a2c];
-    // Transformations for decryption
-    const T5 = [0x51f4a750, 0x7e416553, 0x1a17a4c3, 0x3a275e96, 0x3bab6bcb, 0x1f9d45f1, 0xacfa58ab, 0x4be30393, 0x2030fa55, 0xad766df6, 0x88cc7691, 0xf5024c25, 0x4fe5d7fc, 0xc52acbd7, 0x26354480, 0xb562a38f, 0xdeb15a49, 0x25ba1b67, 0x45ea0e98, 0x5dfec0e1, 0xc32f7502, 0x814cf012, 0x8d4697a3, 0x6bd3f9c6, 0x038f5fe7, 0x15929c95, 0xbf6d7aeb, 0x955259da, 0xd4be832d, 0x587421d3, 0x49e06929, 0x8ec9c844, 0x75c2896a, 0xf48e7978, 0x99583e6b, 0x27b971dd, 0xbee14fb6, 0xf088ad17, 0xc920ac66, 0x7dce3ab4, 0x63df4a18, 0xe51a3182, 0x97513360, 0x62537f45, 0xb16477e0, 0xbb6bae84, 0xfe81a01c, 0xf9082b94, 0x70486858, 0x8f45fd19, 0x94de6c87, 0x527bf8b7, 0xab73d323, 0x724b02e2, 0xe31f8f57, 0x6655ab2a, 0xb2eb2807, 0x2fb5c203, 0x86c57b9a, 0xd33708a5, 0x302887f2, 0x23bfa5b2, 0x02036aba, 0xed16825c, 0x8acf1c2b, 0xa779b492, 0xf307f2f0, 0x4e69e2a1, 0x65daf4cd, 0x0605bed5, 0xd134621f, 0xc4a6fe8a, 0x342e539d, 0xa2f355a0, 0x058ae132, 0xa4f6eb75, 0x0b83ec39, 0x4060efaa, 0x5e719f06, 0xbd6e1051, 0x3e218af9, 0x96dd063d, 0xdd3e05ae, 0x4de6bd46, 0x91548db5, 0x71c45d05, 0x0406d46f, 0x605015ff, 0x1998fb24, 0xd6bde997, 0x894043cc, 0x67d99e77, 0xb0e842bd, 0x07898b88, 0xe7195b38, 0x79c8eedb, 0xa17c0a47, 0x7c420fe9, 0xf8841ec9, 0x00000000, 0x09808683, 0x322bed48, 0x1e1170ac, 0x6c5a724e, 0xfd0efffb, 0x0f853856, 0x3daed51e, 0x362d3927, 0x0a0fd964, 0x685ca621, 0x9b5b54d1, 0x24362e3a, 0x0c0a67b1, 0x9357e70f, 0xb4ee96d2, 0x1b9b919e, 0x80c0c54f, 0x61dc20a2, 0x5a774b69, 0x1c121a16, 0xe293ba0a, 0xc0a02ae5, 0x3c22e043, 0x121b171d, 0x0e090d0b, 0xf28bc7ad, 0x2db6a8b9, 0x141ea9c8, 0x57f11985, 0xaf75074c, 0xee99ddbb, 0xa37f60fd, 0xf701269f, 0x5c72f5bc, 0x44663bc5, 0x5bfb7e34, 0x8b432976, 0xcb23c6dc, 0xb6edfc68, 0xb8e4f163, 0xd731dcca, 0x42638510, 0x13972240, 0x84c61120, 0x854a247d, 0xd2bb3df8, 0xaef93211, 0xc729a16d, 0x1d9e2f4b, 0xdcb230f3, 0x0d8652ec, 0x77c1e3d0, 0x2bb3166c, 0xa970b999, 0x119448fa, 0x47e96422, 0xa8fc8cc4, 0xa0f03f1a, 0x567d2cd8, 0x223390ef, 0x87494ec7, 0xd938d1c1, 0x8ccaa2fe, 0x98d40b36, 0xa6f581cf, 0xa57ade28, 0xdab78e26, 0x3fadbfa4, 0x2c3a9de4, 0x5078920d, 0x6a5fcc9b, 0x547e4662, 0xf68d13c2, 0x90d8b8e8, 0x2e39f75e, 0x82c3aff5, 0x9f5d80be, 0x69d0937c, 0x6fd52da9, 0xcf2512b3, 0xc8ac993b, 0x10187da7, 0xe89c636e, 0xdb3bbb7b, 0xcd267809, 0x6e5918f4, 0xec9ab701, 0x834f9aa8, 0xe6956e65, 0xaaffe67e, 0x21bccf08, 0xef15e8e6, 0xbae79bd9, 0x4a6f36ce, 0xea9f09d4, 0x29b07cd6, 0x31a4b2af, 0x2a3f2331, 0xc6a59430, 0x35a266c0, 0x744ebc37, 0xfc82caa6, 0xe090d0b0, 0x33a7d815, 0xf104984a, 0x41ecdaf7, 0x7fcd500e, 0x1791f62f, 0x764dd68d, 0x43efb04d, 0xccaa4d54, 0xe49604df, 0x9ed1b5e3, 0x4c6a881b, 0xc12c1fb8, 0x4665517f, 0x9d5eea04, 0x018c355d, 0xfa877473, 0xfb0b412e, 0xb3671d5a, 0x92dbd252, 0xe9105633, 0x6dd64713, 0x9ad7618c, 0x37a10c7a, 0x59f8148e, 0xeb133c89, 0xcea927ee, 0xb761c935, 0xe11ce5ed, 0x7a47b13c, 0x9cd2df59, 0x55f2733f, 0x1814ce79, 0x73c737bf, 0x53f7cdea, 0x5ffdaa5b, 0xdf3d6f14, 0x7844db86, 0xcaaff381, 0xb968c43e, 0x3824342c, 0xc2a3405f, 0x161dc372, 0xbce2250c, 0x283c498b, 0xff0d9541, 0x39a80171, 0x080cb3de, 0xd8b4e49c, 0x6456c190, 0x7bcb8461, 0xd532b670, 0x486c5c74, 0xd0b85742];
-    const T6 = [0x5051f4a7, 0x537e4165, 0xc31a17a4, 0x963a275e, 0xcb3bab6b, 0xf11f9d45, 0xabacfa58, 0x934be303, 0x552030fa, 0xf6ad766d, 0x9188cc76, 0x25f5024c, 0xfc4fe5d7, 0xd7c52acb, 0x80263544, 0x8fb562a3, 0x49deb15a, 0x6725ba1b, 0x9845ea0e, 0xe15dfec0, 0x02c32f75, 0x12814cf0, 0xa38d4697, 0xc66bd3f9, 0xe7038f5f, 0x9515929c, 0xebbf6d7a, 0xda955259, 0x2dd4be83, 0xd3587421, 0x2949e069, 0x448ec9c8, 0x6a75c289, 0x78f48e79, 0x6b99583e, 0xdd27b971, 0xb6bee14f, 0x17f088ad, 0x66c920ac, 0xb47dce3a, 0x1863df4a, 0x82e51a31, 0x60975133, 0x4562537f, 0xe0b16477, 0x84bb6bae, 0x1cfe81a0, 0x94f9082b, 0x58704868, 0x198f45fd, 0x8794de6c, 0xb7527bf8, 0x23ab73d3, 0xe2724b02, 0x57e31f8f, 0x2a6655ab, 0x07b2eb28, 0x032fb5c2, 0x9a86c57b, 0xa5d33708, 0xf2302887, 0xb223bfa5, 0xba02036a, 0x5ced1682, 0x2b8acf1c, 0x92a779b4, 0xf0f307f2, 0xa14e69e2, 0xcd65daf4, 0xd50605be, 0x1fd13462, 0x8ac4a6fe, 0x9d342e53, 0xa0a2f355, 0x32058ae1, 0x75a4f6eb, 0x390b83ec, 0xaa4060ef, 0x065e719f, 0x51bd6e10, 0xf93e218a, 0x3d96dd06, 0xaedd3e05, 0x464de6bd, 0xb591548d, 0x0571c45d, 0x6f0406d4, 0xff605015, 0x241998fb, 0x97d6bde9, 0xcc894043, 0x7767d99e, 0xbdb0e842, 0x8807898b, 0x38e7195b, 0xdb79c8ee, 0x47a17c0a, 0xe97c420f, 0xc9f8841e, 0x00000000, 0x83098086, 0x48322bed, 0xac1e1170, 0x4e6c5a72, 0xfbfd0eff, 0x560f8538, 0x1e3daed5, 0x27362d39, 0x640a0fd9, 0x21685ca6, 0xd19b5b54, 0x3a24362e, 0xb10c0a67, 0x0f9357e7, 0xd2b4ee96, 0x9e1b9b91, 0x4f80c0c5, 0xa261dc20, 0x695a774b, 0x161c121a, 0x0ae293ba, 0xe5c0a02a, 0x433c22e0, 0x1d121b17, 0x0b0e090d, 0xadf28bc7, 0xb92db6a8, 0xc8141ea9, 0x8557f119, 0x4caf7507, 0xbbee99dd, 0xfda37f60, 0x9ff70126, 0xbc5c72f5, 0xc544663b, 0x345bfb7e, 0x768b4329, 0xdccb23c6, 0x68b6edfc, 0x63b8e4f1, 0xcad731dc, 0x10426385, 0x40139722, 0x2084c611, 0x7d854a24, 0xf8d2bb3d, 0x11aef932, 0x6dc729a1, 0x4b1d9e2f, 0xf3dcb230, 0xec0d8652, 0xd077c1e3, 0x6c2bb316, 0x99a970b9, 0xfa119448, 0x2247e964, 0xc4a8fc8c, 0x1aa0f03f, 0xd8567d2c, 0xef223390, 0xc787494e, 0xc1d938d1, 0xfe8ccaa2, 0x3698d40b, 0xcfa6f581, 0x28a57ade, 0x26dab78e, 0xa43fadbf, 0xe42c3a9d, 0x0d507892, 0x9b6a5fcc, 0x62547e46, 0xc2f68d13, 0xe890d8b8, 0x5e2e39f7, 0xf582c3af, 0xbe9f5d80, 0x7c69d093, 0xa96fd52d, 0xb3cf2512, 0x3bc8ac99, 0xa710187d, 0x6ee89c63, 0x7bdb3bbb, 0x09cd2678, 0xf46e5918, 0x01ec9ab7, 0xa8834f9a, 0x65e6956e, 0x7eaaffe6, 0x0821bccf, 0xe6ef15e8, 0xd9bae79b, 0xce4a6f36, 0xd4ea9f09, 0xd629b07c, 0xaf31a4b2, 0x312a3f23, 0x30c6a594, 0xc035a266, 0x37744ebc, 0xa6fc82ca, 0xb0e090d0, 0x1533a7d8, 0x4af10498, 0xf741ecda, 0x0e7fcd50, 0x2f1791f6, 0x8d764dd6, 0x4d43efb0, 0x54ccaa4d, 0xdfe49604, 0xe39ed1b5, 0x1b4c6a88, 0xb8c12c1f, 0x7f466551, 0x049d5eea, 0x5d018c35, 0x73fa8774, 0x2efb0b41, 0x5ab3671d, 0x5292dbd2, 0x33e91056, 0x136dd647, 0x8c9ad761, 0x7a37a10c, 0x8e59f814, 0x89eb133c, 0xeecea927, 0x35b761c9, 0xede11ce5, 0x3c7a47b1, 0x599cd2df, 0x3f55f273, 0x791814ce, 0xbf73c737, 0xea53f7cd, 0x5b5ffdaa, 0x14df3d6f, 0x867844db, 0x81caaff3, 0x3eb968c4, 0x2c382434, 0x5fc2a340, 0x72161dc3, 0x0cbce225, 0x8b283c49, 0x41ff0d95, 0x7139a801, 0xde080cb3, 0x9cd8b4e4, 0x906456c1, 0x617bcb84, 0x70d532b6, 0x74486c5c, 0x42d0b857];
-    const T7 = [0xa75051f4, 0x65537e41, 0xa4c31a17, 0x5e963a27, 0x6bcb3bab, 0x45f11f9d, 0x58abacfa, 0x03934be3, 0xfa552030, 0x6df6ad76, 0x769188cc, 0x4c25f502, 0xd7fc4fe5, 0xcbd7c52a, 0x44802635, 0xa38fb562, 0x5a49deb1, 0x1b6725ba, 0x0e9845ea, 0xc0e15dfe, 0x7502c32f, 0xf012814c, 0x97a38d46, 0xf9c66bd3, 0x5fe7038f, 0x9c951592, 0x7aebbf6d, 0x59da9552, 0x832dd4be, 0x21d35874, 0x692949e0, 0xc8448ec9, 0x896a75c2, 0x7978f48e, 0x3e6b9958, 0x71dd27b9, 0x4fb6bee1, 0xad17f088, 0xac66c920, 0x3ab47dce, 0x4a1863df, 0x3182e51a, 0x33609751, 0x7f456253, 0x77e0b164, 0xae84bb6b, 0xa01cfe81, 0x2b94f908, 0x68587048, 0xfd198f45, 0x6c8794de, 0xf8b7527b, 0xd323ab73, 0x02e2724b, 0x8f57e31f, 0xab2a6655, 0x2807b2eb, 0xc2032fb5, 0x7b9a86c5, 0x08a5d337, 0x87f23028, 0xa5b223bf, 0x6aba0203, 0x825ced16, 0x1c2b8acf, 0xb492a779, 0xf2f0f307, 0xe2a14e69, 0xf4cd65da, 0xbed50605, 0x621fd134, 0xfe8ac4a6, 0x539d342e, 0x55a0a2f3, 0xe132058a, 0xeb75a4f6, 0xec390b83, 0xefaa4060, 0x9f065e71, 0x1051bd6e, 0x8af93e21, 0x063d96dd, 0x05aedd3e, 0xbd464de6, 0x8db59154, 0x5d0571c4, 0xd46f0406, 0x15ff6050, 0xfb241998, 0xe997d6bd, 0x43cc8940, 0x9e7767d9, 0x42bdb0e8, 0x8b880789, 0x5b38e719, 0xeedb79c8, 0x0a47a17c, 0x0fe97c42, 0x1ec9f884, 0x00000000, 0x86830980, 0xed48322b, 0x70ac1e11, 0x724e6c5a, 0xfffbfd0e, 0x38560f85, 0xd51e3dae, 0x3927362d, 0xd9640a0f, 0xa621685c, 0x54d19b5b, 0x2e3a2436, 0x67b10c0a, 0xe70f9357, 0x96d2b4ee, 0x919e1b9b, 0xc54f80c0, 0x20a261dc, 0x4b695a77, 0x1a161c12, 0xba0ae293, 0x2ae5c0a0, 0xe0433c22, 0x171d121b, 0x0d0b0e09, 0xc7adf28b, 0xa8b92db6, 0xa9c8141e, 0x198557f1, 0x074caf75, 0xddbbee99, 0x60fda37f, 0x269ff701, 0xf5bc5c72, 0x3bc54466, 0x7e345bfb, 0x29768b43, 0xc6dccb23, 0xfc68b6ed, 0xf163b8e4, 0xdccad731, 0x85104263, 0x22401397, 0x112084c6, 0x247d854a, 0x3df8d2bb, 0x3211aef9, 0xa16dc729, 0x2f4b1d9e, 0x30f3dcb2, 0x52ec0d86, 0xe3d077c1, 0x166c2bb3, 0xb999a970, 0x48fa1194, 0x642247e9, 0x8cc4a8fc, 0x3f1aa0f0, 0x2cd8567d, 0x90ef2233, 0x4ec78749, 0xd1c1d938, 0xa2fe8cca, 0x0b3698d4, 0x81cfa6f5, 0xde28a57a, 0x8e26dab7, 0xbfa43fad, 0x9de42c3a, 0x920d5078, 0xcc9b6a5f, 0x4662547e, 0x13c2f68d, 0xb8e890d8, 0xf75e2e39, 0xaff582c3, 0x80be9f5d, 0x937c69d0, 0x2da96fd5, 0x12b3cf25, 0x993bc8ac, 0x7da71018, 0x636ee89c, 0xbb7bdb3b, 0x7809cd26, 0x18f46e59, 0xb701ec9a, 0x9aa8834f, 0x6e65e695, 0xe67eaaff, 0xcf0821bc, 0xe8e6ef15, 0x9bd9bae7, 0x36ce4a6f, 0x09d4ea9f, 0x7cd629b0, 0xb2af31a4, 0x23312a3f, 0x9430c6a5, 0x66c035a2, 0xbc37744e, 0xcaa6fc82, 0xd0b0e090, 0xd81533a7, 0x984af104, 0xdaf741ec, 0x500e7fcd, 0xf62f1791, 0xd68d764d, 0xb04d43ef, 0x4d54ccaa, 0x04dfe496, 0xb5e39ed1, 0x881b4c6a, 0x1fb8c12c, 0x517f4665, 0xea049d5e, 0x355d018c, 0x7473fa87, 0x412efb0b, 0x1d5ab367, 0xd25292db, 0x5633e910, 0x47136dd6, 0x618c9ad7, 0x0c7a37a1, 0x148e59f8, 0x3c89eb13, 0x27eecea9, 0xc935b761, 0xe5ede11c, 0xb13c7a47, 0xdf599cd2, 0x733f55f2, 0xce791814, 0x37bf73c7, 0xcdea53f7, 0xaa5b5ffd, 0x6f14df3d, 0xdb867844, 0xf381caaf, 0xc43eb968, 0x342c3824, 0x405fc2a3, 0xc372161d, 0x250cbce2, 0x498b283c, 0x9541ff0d, 0x017139a8, 0xb3de080c, 0xe49cd8b4, 0xc1906456, 0x84617bcb, 0xb670d532, 0x5c74486c, 0x5742d0b8];
-    const T8 = [0xf4a75051, 0x4165537e, 0x17a4c31a, 0x275e963a, 0xab6bcb3b, 0x9d45f11f, 0xfa58abac, 0xe303934b, 0x30fa5520, 0x766df6ad, 0xcc769188, 0x024c25f5, 0xe5d7fc4f, 0x2acbd7c5, 0x35448026, 0x62a38fb5, 0xb15a49de, 0xba1b6725, 0xea0e9845, 0xfec0e15d, 0x2f7502c3, 0x4cf01281, 0x4697a38d, 0xd3f9c66b, 0x8f5fe703, 0x929c9515, 0x6d7aebbf, 0x5259da95, 0xbe832dd4, 0x7421d358, 0xe0692949, 0xc9c8448e, 0xc2896a75, 0x8e7978f4, 0x583e6b99, 0xb971dd27, 0xe14fb6be, 0x88ad17f0, 0x20ac66c9, 0xce3ab47d, 0xdf4a1863, 0x1a3182e5, 0x51336097, 0x537f4562, 0x6477e0b1, 0x6bae84bb, 0x81a01cfe, 0x082b94f9, 0x48685870, 0x45fd198f, 0xde6c8794, 0x7bf8b752, 0x73d323ab, 0x4b02e272, 0x1f8f57e3, 0x55ab2a66, 0xeb2807b2, 0xb5c2032f, 0xc57b9a86, 0x3708a5d3, 0x2887f230, 0xbfa5b223, 0x036aba02, 0x16825ced, 0xcf1c2b8a, 0x79b492a7, 0x07f2f0f3, 0x69e2a14e, 0xdaf4cd65, 0x05bed506, 0x34621fd1, 0xa6fe8ac4, 0x2e539d34, 0xf355a0a2, 0x8ae13205, 0xf6eb75a4, 0x83ec390b, 0x60efaa40, 0x719f065e, 0x6e1051bd, 0x218af93e, 0xdd063d96, 0x3e05aedd, 0xe6bd464d, 0x548db591, 0xc45d0571, 0x06d46f04, 0x5015ff60, 0x98fb2419, 0xbde997d6, 0x4043cc89, 0xd99e7767, 0xe842bdb0, 0x898b8807, 0x195b38e7, 0xc8eedb79, 0x7c0a47a1, 0x420fe97c, 0x841ec9f8, 0x00000000, 0x80868309, 0x2bed4832, 0x1170ac1e, 0x5a724e6c, 0x0efffbfd, 0x8538560f, 0xaed51e3d, 0x2d392736, 0x0fd9640a, 0x5ca62168, 0x5b54d19b, 0x362e3a24, 0x0a67b10c, 0x57e70f93, 0xee96d2b4, 0x9b919e1b, 0xc0c54f80, 0xdc20a261, 0x774b695a, 0x121a161c, 0x93ba0ae2, 0xa02ae5c0, 0x22e0433c, 0x1b171d12, 0x090d0b0e, 0x8bc7adf2, 0xb6a8b92d, 0x1ea9c814, 0xf1198557, 0x75074caf, 0x99ddbbee, 0x7f60fda3, 0x01269ff7, 0x72f5bc5c, 0x663bc544, 0xfb7e345b, 0x4329768b, 0x23c6dccb, 0xedfc68b6, 0xe4f163b8, 0x31dccad7, 0x63851042, 0x97224013, 0xc6112084, 0x4a247d85, 0xbb3df8d2, 0xf93211ae, 0x29a16dc7, 0x9e2f4b1d, 0xb230f3dc, 0x8652ec0d, 0xc1e3d077, 0xb3166c2b, 0x70b999a9, 0x9448fa11, 0xe9642247, 0xfc8cc4a8, 0xf03f1aa0, 0x7d2cd856, 0x3390ef22, 0x494ec787, 0x38d1c1d9, 0xcaa2fe8c, 0xd40b3698, 0xf581cfa6, 0x7ade28a5, 0xb78e26da, 0xadbfa43f, 0x3a9de42c, 0x78920d50, 0x5fcc9b6a, 0x7e466254, 0x8d13c2f6, 0xd8b8e890, 0x39f75e2e, 0xc3aff582, 0x5d80be9f, 0xd0937c69, 0xd52da96f, 0x2512b3cf, 0xac993bc8, 0x187da710, 0x9c636ee8, 0x3bbb7bdb, 0x267809cd, 0x5918f46e, 0x9ab701ec, 0x4f9aa883, 0x956e65e6, 0xffe67eaa, 0xbccf0821, 0x15e8e6ef, 0xe79bd9ba, 0x6f36ce4a, 0x9f09d4ea, 0xb07cd629, 0xa4b2af31, 0x3f23312a, 0xa59430c6, 0xa266c035, 0x4ebc3774, 0x82caa6fc, 0x90d0b0e0, 0xa7d81533, 0x04984af1, 0xecdaf741, 0xcd500e7f, 0x91f62f17, 0x4dd68d76, 0xefb04d43, 0xaa4d54cc, 0x9604dfe4, 0xd1b5e39e, 0x6a881b4c, 0x2c1fb8c1, 0x65517f46, 0x5eea049d, 0x8c355d01, 0x877473fa, 0x0b412efb, 0x671d5ab3, 0xdbd25292, 0x105633e9, 0xd647136d, 0xd7618c9a, 0xa10c7a37, 0xf8148e59, 0x133c89eb, 0xa927eece, 0x61c935b7, 0x1ce5ede1, 0x47b13c7a, 0xd2df599c, 0xf2733f55, 0x14ce7918, 0xc737bf73, 0xf7cdea53, 0xfdaa5b5f, 0x3d6f14df, 0x44db8678, 0xaff381ca, 0x68c43eb9, 0x24342c38, 0xa3405fc2, 0x1dc37216, 0xe2250cbc, 0x3c498b28, 0x0d9541ff, 0xa8017139, 0x0cb3de08, 0xb4e49cd8, 0x56c19064, 0xcb84617b, 0x32b670d5, 0x6c5c7448, 0xb85742d0];
-    // Transformations for decryption key expansion
-    const U1 = [0x00000000, 0x0e090d0b, 0x1c121a16, 0x121b171d, 0x3824342c, 0x362d3927, 0x24362e3a, 0x2a3f2331, 0x70486858, 0x7e416553, 0x6c5a724e, 0x62537f45, 0x486c5c74, 0x4665517f, 0x547e4662, 0x5a774b69, 0xe090d0b0, 0xee99ddbb, 0xfc82caa6, 0xf28bc7ad, 0xd8b4e49c, 0xd6bde997, 0xc4a6fe8a, 0xcaaff381, 0x90d8b8e8, 0x9ed1b5e3, 0x8ccaa2fe, 0x82c3aff5, 0xa8fc8cc4, 0xa6f581cf, 0xb4ee96d2, 0xbae79bd9, 0xdb3bbb7b, 0xd532b670, 0xc729a16d, 0xc920ac66, 0xe31f8f57, 0xed16825c, 0xff0d9541, 0xf104984a, 0xab73d323, 0xa57ade28, 0xb761c935, 0xb968c43e, 0x9357e70f, 0x9d5eea04, 0x8f45fd19, 0x814cf012, 0x3bab6bcb, 0x35a266c0, 0x27b971dd, 0x29b07cd6, 0x038f5fe7, 0x0d8652ec, 0x1f9d45f1, 0x119448fa, 0x4be30393, 0x45ea0e98, 0x57f11985, 0x59f8148e, 0x73c737bf, 0x7dce3ab4, 0x6fd52da9, 0x61dc20a2, 0xad766df6, 0xa37f60fd, 0xb16477e0, 0xbf6d7aeb, 0x955259da, 0x9b5b54d1, 0x894043cc, 0x87494ec7, 0xdd3e05ae, 0xd33708a5, 0xc12c1fb8, 0xcf2512b3, 0xe51a3182, 0xeb133c89, 0xf9082b94, 0xf701269f, 0x4de6bd46, 0x43efb04d, 0x51f4a750, 0x5ffdaa5b, 0x75c2896a, 0x7bcb8461, 0x69d0937c, 0x67d99e77, 0x3daed51e, 0x33a7d815, 0x21bccf08, 0x2fb5c203, 0x058ae132, 0x0b83ec39, 0x1998fb24, 0x1791f62f, 0x764dd68d, 0x7844db86, 0x6a5fcc9b, 0x6456c190, 0x4e69e2a1, 0x4060efaa, 0x527bf8b7, 0x5c72f5bc, 0x0605bed5, 0x080cb3de, 0x1a17a4c3, 0x141ea9c8, 0x3e218af9, 0x302887f2, 0x223390ef, 0x2c3a9de4, 0x96dd063d, 0x98d40b36, 0x8acf1c2b, 0x84c61120, 0xaef93211, 0xa0f03f1a, 0xb2eb2807, 0xbce2250c, 0xe6956e65, 0xe89c636e, 0xfa877473, 0xf48e7978, 0xdeb15a49, 0xd0b85742, 0xc2a3405f, 0xccaa4d54, 0x41ecdaf7, 0x4fe5d7fc, 0x5dfec0e1, 0x53f7cdea, 0x79c8eedb, 0x77c1e3d0, 0x65daf4cd, 0x6bd3f9c6, 0x31a4b2af, 0x3fadbfa4, 0x2db6a8b9, 0x23bfa5b2, 0x09808683, 0x07898b88, 0x15929c95, 0x1b9b919e, 0xa17c0a47, 0xaf75074c, 0xbd6e1051, 0xb3671d5a, 0x99583e6b, 0x97513360, 0x854a247d, 0x8b432976, 0xd134621f, 0xdf3d6f14, 0xcd267809, 0xc32f7502, 0xe9105633, 0xe7195b38, 0xf5024c25, 0xfb0b412e, 0x9ad7618c, 0x94de6c87, 0x86c57b9a, 0x88cc7691, 0xa2f355a0, 0xacfa58ab, 0xbee14fb6, 0xb0e842bd, 0xea9f09d4, 0xe49604df, 0xf68d13c2, 0xf8841ec9, 0xd2bb3df8, 0xdcb230f3, 0xcea927ee, 0xc0a02ae5, 0x7a47b13c, 0x744ebc37, 0x6655ab2a, 0x685ca621, 0x42638510, 0x4c6a881b, 0x5e719f06, 0x5078920d, 0x0a0fd964, 0x0406d46f, 0x161dc372, 0x1814ce79, 0x322bed48, 0x3c22e043, 0x2e39f75e, 0x2030fa55, 0xec9ab701, 0xe293ba0a, 0xf088ad17, 0xfe81a01c, 0xd4be832d, 0xdab78e26, 0xc8ac993b, 0xc6a59430, 0x9cd2df59, 0x92dbd252, 0x80c0c54f, 0x8ec9c844, 0xa4f6eb75, 0xaaffe67e, 0xb8e4f163, 0xb6edfc68, 0x0c0a67b1, 0x02036aba, 0x10187da7, 0x1e1170ac, 0x342e539d, 0x3a275e96, 0x283c498b, 0x26354480, 0x7c420fe9, 0x724b02e2, 0x605015ff, 0x6e5918f4, 0x44663bc5, 0x4a6f36ce, 0x587421d3, 0x567d2cd8, 0x37a10c7a, 0x39a80171, 0x2bb3166c, 0x25ba1b67, 0x0f853856, 0x018c355d, 0x13972240, 0x1d9e2f4b, 0x47e96422, 0x49e06929, 0x5bfb7e34, 0x55f2733f, 0x7fcd500e, 0x71c45d05, 0x63df4a18, 0x6dd64713, 0xd731dcca, 0xd938d1c1, 0xcb23c6dc, 0xc52acbd7, 0xef15e8e6, 0xe11ce5ed, 0xf307f2f0, 0xfd0efffb, 0xa779b492, 0xa970b999, 0xbb6bae84, 0xb562a38f, 0x9f5d80be, 0x91548db5, 0x834f9aa8, 0x8d4697a3];
-    const U2 = [0x00000000, 0x0b0e090d, 0x161c121a, 0x1d121b17, 0x2c382434, 0x27362d39, 0x3a24362e, 0x312a3f23, 0x58704868, 0x537e4165, 0x4e6c5a72, 0x4562537f, 0x74486c5c, 0x7f466551, 0x62547e46, 0x695a774b, 0xb0e090d0, 0xbbee99dd, 0xa6fc82ca, 0xadf28bc7, 0x9cd8b4e4, 0x97d6bde9, 0x8ac4a6fe, 0x81caaff3, 0xe890d8b8, 0xe39ed1b5, 0xfe8ccaa2, 0xf582c3af, 0xc4a8fc8c, 0xcfa6f581, 0xd2b4ee96, 0xd9bae79b, 0x7bdb3bbb, 0x70d532b6, 0x6dc729a1, 0x66c920ac, 0x57e31f8f, 0x5ced1682, 0x41ff0d95, 0x4af10498, 0x23ab73d3, 0x28a57ade, 0x35b761c9, 0x3eb968c4, 0x0f9357e7, 0x049d5eea, 0x198f45fd, 0x12814cf0, 0xcb3bab6b, 0xc035a266, 0xdd27b971, 0xd629b07c, 0xe7038f5f, 0xec0d8652, 0xf11f9d45, 0xfa119448, 0x934be303, 0x9845ea0e, 0x8557f119, 0x8e59f814, 0xbf73c737, 0xb47dce3a, 0xa96fd52d, 0xa261dc20, 0xf6ad766d, 0xfda37f60, 0xe0b16477, 0xebbf6d7a, 0xda955259, 0xd19b5b54, 0xcc894043, 0xc787494e, 0xaedd3e05, 0xa5d33708, 0xb8c12c1f, 0xb3cf2512, 0x82e51a31, 0x89eb133c, 0x94f9082b, 0x9ff70126, 0x464de6bd, 0x4d43efb0, 0x5051f4a7, 0x5b5ffdaa, 0x6a75c289, 0x617bcb84, 0x7c69d093, 0x7767d99e, 0x1e3daed5, 0x1533a7d8, 0x0821bccf, 0x032fb5c2, 0x32058ae1, 0x390b83ec, 0x241998fb, 0x2f1791f6, 0x8d764dd6, 0x867844db, 0x9b6a5fcc, 0x906456c1, 0xa14e69e2, 0xaa4060ef, 0xb7527bf8, 0xbc5c72f5, 0xd50605be, 0xde080cb3, 0xc31a17a4, 0xc8141ea9, 0xf93e218a, 0xf2302887, 0xef223390, 0xe42c3a9d, 0x3d96dd06, 0x3698d40b, 0x2b8acf1c, 0x2084c611, 0x11aef932, 0x1aa0f03f, 0x07b2eb28, 0x0cbce225, 0x65e6956e, 0x6ee89c63, 0x73fa8774, 0x78f48e79, 0x49deb15a, 0x42d0b857, 0x5fc2a340, 0x54ccaa4d, 0xf741ecda, 0xfc4fe5d7, 0xe15dfec0, 0xea53f7cd, 0xdb79c8ee, 0xd077c1e3, 0xcd65daf4, 0xc66bd3f9, 0xaf31a4b2, 0xa43fadbf, 0xb92db6a8, 0xb223bfa5, 0x83098086, 0x8807898b, 0x9515929c, 0x9e1b9b91, 0x47a17c0a, 0x4caf7507, 0x51bd6e10, 0x5ab3671d, 0x6b99583e, 0x60975133, 0x7d854a24, 0x768b4329, 0x1fd13462, 0x14df3d6f, 0x09cd2678, 0x02c32f75, 0x33e91056, 0x38e7195b, 0x25f5024c, 0x2efb0b41, 0x8c9ad761, 0x8794de6c, 0x9a86c57b, 0x9188cc76, 0xa0a2f355, 0xabacfa58, 0xb6bee14f, 0xbdb0e842, 0xd4ea9f09, 0xdfe49604, 0xc2f68d13, 0xc9f8841e, 0xf8d2bb3d, 0xf3dcb230, 0xeecea927, 0xe5c0a02a, 0x3c7a47b1, 0x37744ebc, 0x2a6655ab, 0x21685ca6, 0x10426385, 0x1b4c6a88, 0x065e719f, 0x0d507892, 0x640a0fd9, 0x6f0406d4, 0x72161dc3, 0x791814ce, 0x48322bed, 0x433c22e0, 0x5e2e39f7, 0x552030fa, 0x01ec9ab7, 0x0ae293ba, 0x17f088ad, 0x1cfe81a0, 0x2dd4be83, 0x26dab78e, 0x3bc8ac99, 0x30c6a594, 0x599cd2df, 0x5292dbd2, 0x4f80c0c5, 0x448ec9c8, 0x75a4f6eb, 0x7eaaffe6, 0x63b8e4f1, 0x68b6edfc, 0xb10c0a67, 0xba02036a, 0xa710187d, 0xac1e1170, 0x9d342e53, 0x963a275e, 0x8b283c49, 0x80263544, 0xe97c420f, 0xe2724b02, 0xff605015, 0xf46e5918, 0xc544663b, 0xce4a6f36, 0xd3587421, 0xd8567d2c, 0x7a37a10c, 0x7139a801, 0x6c2bb316, 0x6725ba1b, 0x560f8538, 0x5d018c35, 0x40139722, 0x4b1d9e2f, 0x2247e964, 0x2949e069, 0x345bfb7e, 0x3f55f273, 0x0e7fcd50, 0x0571c45d, 0x1863df4a, 0x136dd647, 0xcad731dc, 0xc1d938d1, 0xdccb23c6, 0xd7c52acb, 0xe6ef15e8, 0xede11ce5, 0xf0f307f2, 0xfbfd0eff, 0x92a779b4, 0x99a970b9, 0x84bb6bae, 0x8fb562a3, 0xbe9f5d80, 0xb591548d, 0xa8834f9a, 0xa38d4697];
-    const U3 = [0x00000000, 0x0d0b0e09, 0x1a161c12, 0x171d121b, 0x342c3824, 0x3927362d, 0x2e3a2436, 0x23312a3f, 0x68587048, 0x65537e41, 0x724e6c5a, 0x7f456253, 0x5c74486c, 0x517f4665, 0x4662547e, 0x4b695a77, 0xd0b0e090, 0xddbbee99, 0xcaa6fc82, 0xc7adf28b, 0xe49cd8b4, 0xe997d6bd, 0xfe8ac4a6, 0xf381caaf, 0xb8e890d8, 0xb5e39ed1, 0xa2fe8cca, 0xaff582c3, 0x8cc4a8fc, 0x81cfa6f5, 0x96d2b4ee, 0x9bd9bae7, 0xbb7bdb3b, 0xb670d532, 0xa16dc729, 0xac66c920, 0x8f57e31f, 0x825ced16, 0x9541ff0d, 0x984af104, 0xd323ab73, 0xde28a57a, 0xc935b761, 0xc43eb968, 0xe70f9357, 0xea049d5e, 0xfd198f45, 0xf012814c, 0x6bcb3bab, 0x66c035a2, 0x71dd27b9, 0x7cd629b0, 0x5fe7038f, 0x52ec0d86, 0x45f11f9d, 0x48fa1194, 0x03934be3, 0x0e9845ea, 0x198557f1, 0x148e59f8, 0x37bf73c7, 0x3ab47dce, 0x2da96fd5, 0x20a261dc, 0x6df6ad76, 0x60fda37f, 0x77e0b164, 0x7aebbf6d, 0x59da9552, 0x54d19b5b, 0x43cc8940, 0x4ec78749, 0x05aedd3e, 0x08a5d337, 0x1fb8c12c, 0x12b3cf25, 0x3182e51a, 0x3c89eb13, 0x2b94f908, 0x269ff701, 0xbd464de6, 0xb04d43ef, 0xa75051f4, 0xaa5b5ffd, 0x896a75c2, 0x84617bcb, 0x937c69d0, 0x9e7767d9, 0xd51e3dae, 0xd81533a7, 0xcf0821bc, 0xc2032fb5, 0xe132058a, 0xec390b83, 0xfb241998, 0xf62f1791, 0xd68d764d, 0xdb867844, 0xcc9b6a5f, 0xc1906456, 0xe2a14e69, 0xefaa4060, 0xf8b7527b, 0xf5bc5c72, 0xbed50605, 0xb3de080c, 0xa4c31a17, 0xa9c8141e, 0x8af93e21, 0x87f23028, 0x90ef2233, 0x9de42c3a, 0x063d96dd, 0x0b3698d4, 0x1c2b8acf, 0x112084c6, 0x3211aef9, 0x3f1aa0f0, 0x2807b2eb, 0x250cbce2, 0x6e65e695, 0x636ee89c, 0x7473fa87, 0x7978f48e, 0x5a49deb1, 0x5742d0b8, 0x405fc2a3, 0x4d54ccaa, 0xdaf741ec, 0xd7fc4fe5, 0xc0e15dfe, 0xcdea53f7, 0xeedb79c8, 0xe3d077c1, 0xf4cd65da, 0xf9c66bd3, 0xb2af31a4, 0xbfa43fad, 0xa8b92db6, 0xa5b223bf, 0x86830980, 0x8b880789, 0x9c951592, 0x919e1b9b, 0x0a47a17c, 0x074caf75, 0x1051bd6e, 0x1d5ab367, 0x3e6b9958, 0x33609751, 0x247d854a, 0x29768b43, 0x621fd134, 0x6f14df3d, 0x7809cd26, 0x7502c32f, 0x5633e910, 0x5b38e719, 0x4c25f502, 0x412efb0b, 0x618c9ad7, 0x6c8794de, 0x7b9a86c5, 0x769188cc, 0x55a0a2f3, 0x58abacfa, 0x4fb6bee1, 0x42bdb0e8, 0x09d4ea9f, 0x04dfe496, 0x13c2f68d, 0x1ec9f884, 0x3df8d2bb, 0x30f3dcb2, 0x27eecea9, 0x2ae5c0a0, 0xb13c7a47, 0xbc37744e, 0xab2a6655, 0xa621685c, 0x85104263, 0x881b4c6a, 0x9f065e71, 0x920d5078, 0xd9640a0f, 0xd46f0406, 0xc372161d, 0xce791814, 0xed48322b, 0xe0433c22, 0xf75e2e39, 0xfa552030, 0xb701ec9a, 0xba0ae293, 0xad17f088, 0xa01cfe81, 0x832dd4be, 0x8e26dab7, 0x993bc8ac, 0x9430c6a5, 0xdf599cd2, 0xd25292db, 0xc54f80c0, 0xc8448ec9, 0xeb75a4f6, 0xe67eaaff, 0xf163b8e4, 0xfc68b6ed, 0x67b10c0a, 0x6aba0203, 0x7da71018, 0x70ac1e11, 0x539d342e, 0x5e963a27, 0x498b283c, 0x44802635, 0x0fe97c42, 0x02e2724b, 0x15ff6050, 0x18f46e59, 0x3bc54466, 0x36ce4a6f, 0x21d35874, 0x2cd8567d, 0x0c7a37a1, 0x017139a8, 0x166c2bb3, 0x1b6725ba, 0x38560f85, 0x355d018c, 0x22401397, 0x2f4b1d9e, 0x642247e9, 0x692949e0, 0x7e345bfb, 0x733f55f2, 0x500e7fcd, 0x5d0571c4, 0x4a1863df, 0x47136dd6, 0xdccad731, 0xd1c1d938, 0xc6dccb23, 0xcbd7c52a, 0xe8e6ef15, 0xe5ede11c, 0xf2f0f307, 0xfffbfd0e, 0xb492a779, 0xb999a970, 0xae84bb6b, 0xa38fb562, 0x80be9f5d, 0x8db59154, 0x9aa8834f, 0x97a38d46];
-    const U4 = [0x00000000, 0x090d0b0e, 0x121a161c, 0x1b171d12, 0x24342c38, 0x2d392736, 0x362e3a24, 0x3f23312a, 0x48685870, 0x4165537e, 0x5a724e6c, 0x537f4562, 0x6c5c7448, 0x65517f46, 0x7e466254, 0x774b695a, 0x90d0b0e0, 0x99ddbbee, 0x82caa6fc, 0x8bc7adf2, 0xb4e49cd8, 0xbde997d6, 0xa6fe8ac4, 0xaff381ca, 0xd8b8e890, 0xd1b5e39e, 0xcaa2fe8c, 0xc3aff582, 0xfc8cc4a8, 0xf581cfa6, 0xee96d2b4, 0xe79bd9ba, 0x3bbb7bdb, 0x32b670d5, 0x29a16dc7, 0x20ac66c9, 0x1f8f57e3, 0x16825ced, 0x0d9541ff, 0x04984af1, 0x73d323ab, 0x7ade28a5, 0x61c935b7, 0x68c43eb9, 0x57e70f93, 0x5eea049d, 0x45fd198f, 0x4cf01281, 0xab6bcb3b, 0xa266c035, 0xb971dd27, 0xb07cd629, 0x8f5fe703, 0x8652ec0d, 0x9d45f11f, 0x9448fa11, 0xe303934b, 0xea0e9845, 0xf1198557, 0xf8148e59, 0xc737bf73, 0xce3ab47d, 0xd52da96f, 0xdc20a261, 0x766df6ad, 0x7f60fda3, 0x6477e0b1, 0x6d7aebbf, 0x5259da95, 0x5b54d19b, 0x4043cc89, 0x494ec787, 0x3e05aedd, 0x3708a5d3, 0x2c1fb8c1, 0x2512b3cf, 0x1a3182e5, 0x133c89eb, 0x082b94f9, 0x01269ff7, 0xe6bd464d, 0xefb04d43, 0xf4a75051, 0xfdaa5b5f, 0xc2896a75, 0xcb84617b, 0xd0937c69, 0xd99e7767, 0xaed51e3d, 0xa7d81533, 0xbccf0821, 0xb5c2032f, 0x8ae13205, 0x83ec390b, 0x98fb2419, 0x91f62f17, 0x4dd68d76, 0x44db8678, 0x5fcc9b6a, 0x56c19064, 0x69e2a14e, 0x60efaa40, 0x7bf8b752, 0x72f5bc5c, 0x05bed506, 0x0cb3de08, 0x17a4c31a, 0x1ea9c814, 0x218af93e, 0x2887f230, 0x3390ef22, 0x3a9de42c, 0xdd063d96, 0xd40b3698, 0xcf1c2b8a, 0xc6112084, 0xf93211ae, 0xf03f1aa0, 0xeb2807b2, 0xe2250cbc, 0x956e65e6, 0x9c636ee8, 0x877473fa, 0x8e7978f4, 0xb15a49de, 0xb85742d0, 0xa3405fc2, 0xaa4d54cc, 0xecdaf741, 0xe5d7fc4f, 0xfec0e15d, 0xf7cdea53, 0xc8eedb79, 0xc1e3d077, 0xdaf4cd65, 0xd3f9c66b, 0xa4b2af31, 0xadbfa43f, 0xb6a8b92d, 0xbfa5b223, 0x80868309, 0x898b8807, 0x929c9515, 0x9b919e1b, 0x7c0a47a1, 0x75074caf, 0x6e1051bd, 0x671d5ab3, 0x583e6b99, 0x51336097, 0x4a247d85, 0x4329768b, 0x34621fd1, 0x3d6f14df, 0x267809cd, 0x2f7502c3, 0x105633e9, 0x195b38e7, 0x024c25f5, 0x0b412efb, 0xd7618c9a, 0xde6c8794, 0xc57b9a86, 0xcc769188, 0xf355a0a2, 0xfa58abac, 0xe14fb6be, 0xe842bdb0, 0x9f09d4ea, 0x9604dfe4, 0x8d13c2f6, 0x841ec9f8, 0xbb3df8d2, 0xb230f3dc, 0xa927eece, 0xa02ae5c0, 0x47b13c7a, 0x4ebc3774, 0x55ab2a66, 0x5ca62168, 0x63851042, 0x6a881b4c, 0x719f065e, 0x78920d50, 0x0fd9640a, 0x06d46f04, 0x1dc37216, 0x14ce7918, 0x2bed4832, 0x22e0433c, 0x39f75e2e, 0x30fa5520, 0x9ab701ec, 0x93ba0ae2, 0x88ad17f0, 0x81a01cfe, 0xbe832dd4, 0xb78e26da, 0xac993bc8, 0xa59430c6, 0xd2df599c, 0xdbd25292, 0xc0c54f80, 0xc9c8448e, 0xf6eb75a4, 0xffe67eaa, 0xe4f163b8, 0xedfc68b6, 0x0a67b10c, 0x036aba02, 0x187da710, 0x1170ac1e, 0x2e539d34, 0x275e963a, 0x3c498b28, 0x35448026, 0x420fe97c, 0x4b02e272, 0x5015ff60, 0x5918f46e, 0x663bc544, 0x6f36ce4a, 0x7421d358, 0x7d2cd856, 0xa10c7a37, 0xa8017139, 0xb3166c2b, 0xba1b6725, 0x8538560f, 0x8c355d01, 0x97224013, 0x9e2f4b1d, 0xe9642247, 0xe0692949, 0xfb7e345b, 0xf2733f55, 0xcd500e7f, 0xc45d0571, 0xdf4a1863, 0xd647136d, 0x31dccad7, 0x38d1c1d9, 0x23c6dccb, 0x2acbd7c5, 0x15e8e6ef, 0x1ce5ede1, 0x07f2f0f3, 0x0efffbfd, 0x79b492a7, 0x70b999a9, 0x6bae84bb, 0x62a38fb5, 0x5d80be9f, 0x548db591, 0x4f9aa883, 0x4697a38d];
-    function convertToInt32(bytes) {
-        const result = [];
-        for (let i = 0; i < bytes.length; i += 4) {
-            result.push((bytes[i] << 24) | (bytes[i + 1] << 16) | (bytes[i + 2] << 8) | bytes[i + 3]);
-        }
-        return result;
-    }
-    class AES {
-        get key() { return __classPrivateFieldGet$2(this, _AES_key, "f").slice(); }
-        constructor(key) {
-            _AES_key.set(this, void 0);
-            _AES_Kd.set(this, void 0);
-            _AES_Ke.set(this, void 0);
-            if (!(this instanceof AES)) {
-                throw Error('AES must be instanitated with `new`');
-            }
-            __classPrivateFieldSet$2(this, _AES_key, new Uint8Array(key), "f");
-            const rounds = numberOfRounds[this.key.length];
-            if (rounds == null) {
-                throw new TypeError('invalid key size (must be 16, 24 or 32 bytes)');
-            }
-            // encryption round keys
-            __classPrivateFieldSet$2(this, _AES_Ke, [], "f");
-            // decryption round keys
-            __classPrivateFieldSet$2(this, _AES_Kd, [], "f");
-            for (let i = 0; i <= rounds; i++) {
-                __classPrivateFieldGet$2(this, _AES_Ke, "f").push([0, 0, 0, 0]);
-                __classPrivateFieldGet$2(this, _AES_Kd, "f").push([0, 0, 0, 0]);
-            }
-            const roundKeyCount = (rounds + 1) * 4;
-            const KC = this.key.length / 4;
-            // convert the key into ints
-            const tk = convertToInt32(this.key);
-            // copy values into round key arrays
-            let index;
-            for (let i = 0; i < KC; i++) {
-                index = i >> 2;
-                __classPrivateFieldGet$2(this, _AES_Ke, "f")[index][i % 4] = tk[i];
-                __classPrivateFieldGet$2(this, _AES_Kd, "f")[rounds - index][i % 4] = tk[i];
-            }
-            // key expansion (fips-197 section 5.2)
-            let rconpointer = 0;
-            let t = KC, tt;
-            while (t < roundKeyCount) {
-                tt = tk[KC - 1];
-                tk[0] ^= ((S[(tt >> 16) & 0xFF] << 24) ^
-                    (S[(tt >> 8) & 0xFF] << 16) ^
-                    (S[tt & 0xFF] << 8) ^
-                    S[(tt >> 24) & 0xFF] ^
-                    (rcon[rconpointer] << 24));
-                rconpointer += 1;
-                // key expansion (for non-256 bit)
-                if (KC != 8) {
-                    for (let i = 1; i < KC; i++) {
-                        tk[i] ^= tk[i - 1];
-                    }
-                    // key expansion for 256-bit keys is "slightly different" (fips-197)
-                }
-                else {
-                    for (let i = 1; i < (KC / 2); i++) {
-                        tk[i] ^= tk[i - 1];
-                    }
-                    tt = tk[(KC / 2) - 1];
-                    tk[KC / 2] ^= (S[tt & 0xFF] ^
-                        (S[(tt >> 8) & 0xFF] << 8) ^
-                        (S[(tt >> 16) & 0xFF] << 16) ^
-                        (S[(tt >> 24) & 0xFF] << 24));
-                    for (let i = (KC / 2) + 1; i < KC; i++) {
-                        tk[i] ^= tk[i - 1];
-                    }
-                }
-                // copy values into round key arrays
-                let i = 0, r, c;
-                while (i < KC && t < roundKeyCount) {
-                    r = t >> 2;
-                    c = t % 4;
-                    __classPrivateFieldGet$2(this, _AES_Ke, "f")[r][c] = tk[i];
-                    __classPrivateFieldGet$2(this, _AES_Kd, "f")[rounds - r][c] = tk[i++];
-                    t++;
-                }
-            }
-            // inverse-cipher-ify the decryption round key (fips-197 section 5.3)
-            for (let r = 1; r < rounds; r++) {
-                for (let c = 0; c < 4; c++) {
-                    tt = __classPrivateFieldGet$2(this, _AES_Kd, "f")[r][c];
-                    __classPrivateFieldGet$2(this, _AES_Kd, "f")[r][c] = (U1[(tt >> 24) & 0xFF] ^
-                        U2[(tt >> 16) & 0xFF] ^
-                        U3[(tt >> 8) & 0xFF] ^
-                        U4[tt & 0xFF]);
-                }
-            }
-        }
-        encrypt(plaintext) {
-            if (plaintext.length != 16) {
-                throw new TypeError('invalid plaintext size (must be 16 bytes)');
-            }
-            const rounds = __classPrivateFieldGet$2(this, _AES_Ke, "f").length - 1;
-            const a = [0, 0, 0, 0];
-            // convert plaintext to (ints ^ key)
-            let t = convertToInt32(plaintext);
-            for (let i = 0; i < 4; i++) {
-                t[i] ^= __classPrivateFieldGet$2(this, _AES_Ke, "f")[0][i];
-            }
-            // apply round transforms
-            for (let r = 1; r < rounds; r++) {
-                for (let i = 0; i < 4; i++) {
-                    a[i] = (T1[(t[i] >> 24) & 0xff] ^
-                        T2[(t[(i + 1) % 4] >> 16) & 0xff] ^
-                        T3[(t[(i + 2) % 4] >> 8) & 0xff] ^
-                        T4[t[(i + 3) % 4] & 0xff] ^
-                        __classPrivateFieldGet$2(this, _AES_Ke, "f")[r][i]);
-                }
-                t = a.slice();
-            }
-            // the last round is special
-            const result = new Uint8Array(16);
-            let tt = 0;
-            for (let i = 0; i < 4; i++) {
-                tt = __classPrivateFieldGet$2(this, _AES_Ke, "f")[rounds][i];
-                result[4 * i] = (S[(t[i] >> 24) & 0xff] ^ (tt >> 24)) & 0xff;
-                result[4 * i + 1] = (S[(t[(i + 1) % 4] >> 16) & 0xff] ^ (tt >> 16)) & 0xff;
-                result[4 * i + 2] = (S[(t[(i + 2) % 4] >> 8) & 0xff] ^ (tt >> 8)) & 0xff;
-                result[4 * i + 3] = (S[t[(i + 3) % 4] & 0xff] ^ tt) & 0xff;
-            }
-            return result;
-        }
-        decrypt(ciphertext) {
-            if (ciphertext.length != 16) {
-                throw new TypeError('invalid ciphertext size (must be 16 bytes)');
-            }
-            const rounds = __classPrivateFieldGet$2(this, _AES_Kd, "f").length - 1;
-            const a = [0, 0, 0, 0];
-            // convert plaintext to (ints ^ key)
-            let t = convertToInt32(ciphertext);
-            for (let i = 0; i < 4; i++) {
-                t[i] ^= __classPrivateFieldGet$2(this, _AES_Kd, "f")[0][i];
-            }
-            // apply round transforms
-            for (let r = 1; r < rounds; r++) {
-                for (let i = 0; i < 4; i++) {
-                    a[i] = (T5[(t[i] >> 24) & 0xff] ^
-                        T6[(t[(i + 3) % 4] >> 16) & 0xff] ^
-                        T7[(t[(i + 2) % 4] >> 8) & 0xff] ^
-                        T8[t[(i + 1) % 4] & 0xff] ^
-                        __classPrivateFieldGet$2(this, _AES_Kd, "f")[r][i]);
-                }
-                t = a.slice();
-            }
-            // the last round is special
-            const result = new Uint8Array(16);
-            let tt = 0;
-            for (let i = 0; i < 4; i++) {
-                tt = __classPrivateFieldGet$2(this, _AES_Kd, "f")[rounds][i];
-                result[4 * i] = (Si[(t[i] >> 24) & 0xff] ^ (tt >> 24)) & 0xff;
-                result[4 * i + 1] = (Si[(t[(i + 3) % 4] >> 16) & 0xff] ^ (tt >> 16)) & 0xff;
-                result[4 * i + 2] = (Si[(t[(i + 2) % 4] >> 8) & 0xff] ^ (tt >> 8)) & 0xff;
-                result[4 * i + 3] = (Si[t[(i + 1) % 4] & 0xff] ^ tt) & 0xff;
-            }
-            return result;
-        }
-    }
-    _AES_key = new WeakMap(), _AES_Kd = new WeakMap(), _AES_Ke = new WeakMap();
-
-    class ModeOfOperation {
-        constructor(name, key, cls) {
-            if (cls && !(this instanceof cls)) {
-                throw new Error(`${name} must be instantiated with "new"`);
-            }
-            Object.defineProperties(this, {
-                aes: { enumerable: true, value: new AES(key) },
-                name: { enumerable: true, value: name }
-            });
-        }
-    }
-
-    // Cipher Block Chaining
-    var __classPrivateFieldSet$1 = (__$G && __$G.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-    var __classPrivateFieldGet$1 = (__$G && __$G.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-    var _CBC_iv, _CBC_lastBlock;
-    class CBC extends ModeOfOperation {
-        constructor(key, iv) {
-            super("ECC", key, CBC);
-            _CBC_iv.set(this, void 0);
-            _CBC_lastBlock.set(this, void 0);
-            if (iv) {
-                if (iv.length % 16) {
-                    throw new TypeError("invalid iv size (must be 16 bytes)");
-                }
-                __classPrivateFieldSet$1(this, _CBC_iv, new Uint8Array(iv), "f");
-            }
-            else {
-                __classPrivateFieldSet$1(this, _CBC_iv, new Uint8Array(16), "f");
-            }
-            __classPrivateFieldSet$1(this, _CBC_lastBlock, this.iv, "f");
-        }
-        get iv() { return new Uint8Array(__classPrivateFieldGet$1(this, _CBC_iv, "f")); }
-        encrypt(plaintext) {
-            if (plaintext.length % 16) {
-                throw new TypeError("invalid plaintext size (must be multiple of 16 bytes)");
-            }
-            const ciphertext = new Uint8Array(plaintext.length);
-            for (let i = 0; i < plaintext.length; i += 16) {
-                for (let j = 0; j < 16; j++) {
-                    __classPrivateFieldGet$1(this, _CBC_lastBlock, "f")[j] ^= plaintext[i + j];
-                }
-                __classPrivateFieldSet$1(this, _CBC_lastBlock, this.aes.encrypt(__classPrivateFieldGet$1(this, _CBC_lastBlock, "f")), "f");
-                ciphertext.set(__classPrivateFieldGet$1(this, _CBC_lastBlock, "f"), i);
-            }
-            return ciphertext;
-        }
-        decrypt(ciphertext) {
-            if (ciphertext.length % 16) {
-                throw new TypeError("invalid ciphertext size (must be multiple of 16 bytes)");
-            }
-            const plaintext = new Uint8Array(ciphertext.length);
-            for (let i = 0; i < ciphertext.length; i += 16) {
-                const block = this.aes.decrypt(ciphertext.subarray(i, i + 16));
-                for (let j = 0; j < 16; j++) {
-                    plaintext[i + j] = block[j] ^ __classPrivateFieldGet$1(this, _CBC_lastBlock, "f")[j];
-                    __classPrivateFieldGet$1(this, _CBC_lastBlock, "f")[j] = ciphertext[i + j];
-                }
-            }
-            return plaintext;
-        }
-    }
-    _CBC_iv = new WeakMap(), _CBC_lastBlock = new WeakMap();
-
-    // Counter Mode
-    var __classPrivateFieldSet = (__$G && __$G.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    };
-    var __classPrivateFieldGet = (__$G && __$G.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-    var _CTR_remaining, _CTR_remainingIndex, _CTR_counter;
-    class CTR extends ModeOfOperation {
-        constructor(key, initialValue) {
-            super("CTR", key, CTR);
-            // Remaining bytes for the one-time pad
-            _CTR_remaining.set(this, void 0);
-            _CTR_remainingIndex.set(this, void 0);
-            // The current counter
-            _CTR_counter.set(this, void 0);
-            __classPrivateFieldSet(this, _CTR_counter, new Uint8Array(16), "f");
-            __classPrivateFieldGet(this, _CTR_counter, "f").fill(0);
-            __classPrivateFieldSet(this, _CTR_remaining, __classPrivateFieldGet(this, _CTR_counter, "f"), "f"); // This will be discarded immediately
-            __classPrivateFieldSet(this, _CTR_remainingIndex, 16, "f");
-            if (initialValue == null) {
-                initialValue = 1;
-            }
-            if (typeof (initialValue) === "number") {
-                this.setCounterValue(initialValue);
-            }
-            else {
-                this.setCounterBytes(initialValue);
-            }
-        }
-        get counter() { return new Uint8Array(__classPrivateFieldGet(this, _CTR_counter, "f")); }
-        setCounterValue(value) {
-            if (!Number.isInteger(value) || value < 0 || value > Number.MAX_SAFE_INTEGER) {
-                throw new TypeError("invalid counter initial integer value");
-            }
-            for (let index = 15; index >= 0; --index) {
-                __classPrivateFieldGet(this, _CTR_counter, "f")[index] = value % 256;
-                value = Math.floor(value / 256);
-            }
-        }
-        setCounterBytes(value) {
-            if (value.length !== 16) {
-                throw new TypeError("invalid counter initial Uint8Array value length");
-            }
-            __classPrivateFieldGet(this, _CTR_counter, "f").set(value);
-        }
-        increment() {
-            for (let i = 15; i >= 0; i--) {
-                if (__classPrivateFieldGet(this, _CTR_counter, "f")[i] === 255) {
-                    __classPrivateFieldGet(this, _CTR_counter, "f")[i] = 0;
-                }
-                else {
-                    __classPrivateFieldGet(this, _CTR_counter, "f")[i]++;
-                    break;
-                }
-            }
-        }
-        encrypt(plaintext) {
-            var _a, _b;
-            const crypttext = new Uint8Array(plaintext);
-            for (let i = 0; i < crypttext.length; i++) {
-                if (__classPrivateFieldGet(this, _CTR_remainingIndex, "f") === 16) {
-                    __classPrivateFieldSet(this, _CTR_remaining, this.aes.encrypt(__classPrivateFieldGet(this, _CTR_counter, "f")), "f");
-                    __classPrivateFieldSet(this, _CTR_remainingIndex, 0, "f");
-                    this.increment();
-                }
-                crypttext[i] ^= __classPrivateFieldGet(this, _CTR_remaining, "f")[__classPrivateFieldSet(this, _CTR_remainingIndex, (_b = __classPrivateFieldGet(this, _CTR_remainingIndex, "f"), _a = _b++, _b), "f"), _a];
-            }
-            return crypttext;
-        }
-        decrypt(ciphertext) {
-            return this.encrypt(ciphertext);
-        }
-    }
-    _CTR_remaining = new WeakMap(), _CTR_remainingIndex = new WeakMap(), _CTR_counter = new WeakMap();
-
-    function pkcs7Strip(data) {
-        if (data.length < 16) {
-            throw new TypeError('PKCS#7 invalid length');
-        }
-        const padder = data[data.length - 1];
-        if (padder > 16) {
-            throw new TypeError('PKCS#7 padding byte out of range');
-        }
-        const length = data.length - padder;
-        for (let i = 0; i < padder; i++) {
-            if (data[length + i] !== padder) {
-                throw new TypeError('PKCS#7 invalid padding byte');
-            }
-        }
-        return new Uint8Array(data.subarray(0, length));
-    }
-
-    /**
-     *  @_ignore
-     */
-    function looseArrayify(hexString) {
-        if (typeof (hexString) === "string" && !hexString.startsWith("0x")) {
-            hexString = "0x" + hexString;
-        }
-        return getBytesCopy(hexString);
-    }
-    function zpad$1(value, length) {
-        value = String(value);
-        while (value.length < length) {
-            value = '0' + value;
-        }
-        return value;
-    }
-    function getPassword(password) {
-        if (typeof (password) === 'string') {
-            return toUtf8Bytes(password, "NFKC");
-        }
-        return getBytesCopy(password);
-    }
-    function spelunk(object, _path) {
-        const match = _path.match(/^([a-z0-9$_.-]*)(:([a-z]+))?(!)?$/i);
-        assertArgument(match != null, "invalid path", "path", _path);
-        const path = match[1];
-        const type = match[3];
-        const reqd = (match[4] === "!");
-        let cur = object;
-        for (const comp of path.toLowerCase().split('.')) {
-            // Search for a child object with a case-insensitive matching key
-            if (Array.isArray(cur)) {
-                if (!comp.match(/^[0-9]+$/)) {
-                    break;
-                }
-                cur = cur[parseInt(comp)];
-            }
-            else if (typeof (cur) === "object") {
-                let found = null;
-                for (const key in cur) {
-                    if (key.toLowerCase() === comp) {
-                        found = cur[key];
-                        break;
-                    }
-                }
-                cur = found;
-            }
-            else {
-                cur = null;
-            }
-            if (cur == null) {
-                break;
-            }
-        }
-        assertArgument(!reqd || cur != null, "missing required value", "path", path);
-        if (type && cur != null) {
-            if (type === "int") {
-                if (typeof (cur) === "string" && cur.match(/^-?[0-9]+$/)) {
-                    return parseInt(cur);
-                }
-                else if (Number.isSafeInteger(cur)) {
-                    return cur;
-                }
-            }
-            if (type === "number") {
-                if (typeof (cur) === "string" && cur.match(/^-?[0-9.]*$/)) {
-                    return parseFloat(cur);
-                }
-            }
-            if (type === "data") {
-                if (typeof (cur) === "string") {
-                    return looseArrayify(cur);
-                }
-            }
-            if (type === "array" && Array.isArray(cur)) {
-                return cur;
-            }
-            if (type === typeof (cur)) {
-                return cur;
-            }
-            assertArgument(false, `wrong type found for ${type} `, "path", path);
-        }
-        return cur;
-    }
-    /*
-    export function follow(object: any, path: string): null | string {
-        let currentChild = object;
-
-        for (const comp of path.toLowerCase().split('/')) {
-
-            // Search for a child object with a case-insensitive matching key
-            let matchingChild = null;
-            for (const key in currentChild) {
-                 if (key.toLowerCase() === comp) {
-                     matchingChild = currentChild[key];
-                     break;
-                 }
-            }
-
-            if (matchingChild === null) { return null; }
-
-            currentChild = matchingChild;
-        }
-
-        return currentChild;
-    }
-
-    // "path/to/something:type!"
-    export function followRequired(data: any, path: string): string {
-        const value = follow(data, path);
-        if (value != null) { return value; }
-        return logger.throwArgumentError("invalid value", `data:${ path }`,
-        JSON.stringify(data));
-    }
-    */
-    // See: https://www.ietf.org/rfc/rfc4122.txt (Section 4.4)
-    /*
-    export function uuidV4(randomBytes: BytesLike): string {
-        const bytes = getBytes(randomBytes, "randomBytes");
-
-        // Section: 4.1.3:
-        // - time_hi_and_version[12:16] = 0b0100
-        bytes[6] = (bytes[6] & 0x0f) | 0x40;
-
-        // Section 4.4
-        // - clock_seq_hi_and_reserved[6] = 0b0
-        // - clock_seq_hi_and_reserved[7] = 0b1
-        bytes[8] = (bytes[8] & 0x3f) | 0x80;
-
-        const value = hexlify(bytes);
-
-        return [
-           value.substring(2, 10),
-           value.substring(10, 14),
-           value.substring(14, 18),
-           value.substring(18, 22),
-           value.substring(22, 34),
-        ].join("-");
-    }
-    */
-
-    /**
-     *  The JSON Wallet formats allow a simple way to store the private
-     *  keys needed in Ethereum along with related information and allows
-     *  for extensible forms of encryption.
-     *
-     *  These utilities facilitate decrypting and encrypting the most common
-     *  JSON Wallet formats.
-     *
-     *  @_subsection: api/wallet:JSON Wallets  [json-wallets]
-     */
-    const defaultPath$1 = "m/44'/60'/0'/0/0";
-    /**
-     *  Returns true if %%json%% is a valid JSON Keystore Wallet.
-     */
-    function isKeystoreJson(json) {
-        try {
-            const data = JSON.parse(json);
-            const version = ((data.version != null) ? parseInt(data.version) : 0);
-            if (version === 3) {
-                return true;
-            }
-        }
-        catch (error) { }
-        return false;
-    }
-    function decrypt(data, key, ciphertext) {
-        const cipher = spelunk(data, "crypto.cipher:string");
-        if (cipher === "aes-128-ctr") {
-            const iv = spelunk(data, "crypto.cipherparams.iv:data!");
-            const aesCtr = new CTR(key, iv);
-            return hexlify(aesCtr.decrypt(ciphertext));
-        }
-        assert(false, "unsupported cipher", "UNSUPPORTED_OPERATION", {
-            operation: "decrypt"
-        });
-    }
-    function getAccount(data, _key) {
-        const key = getBytes(_key);
-        const ciphertext = spelunk(data, "crypto.ciphertext:data!");
-        const computedMAC = hexlify(keccak256(concat([key.slice(16, 32), ciphertext]))).substring(2);
-        assertArgument(computedMAC === spelunk(data, "crypto.mac:string!").toLowerCase(), "incorrect password", "password", "[ REDACTED ]");
-        const privateKey = decrypt(data, key.slice(0, 16), ciphertext);
-        const address = computeAddress(privateKey);
-        if (data.address) {
-            let check = data.address.toLowerCase();
-            if (!check.startsWith("0x")) {
-                check = "0x" + check;
-            }
-            assertArgument(getAddress(check) === address, "keystore address/privateKey mismatch", "address", data.address);
-        }
-        const account = { address, privateKey };
-        // Version 0.1 x-ethers metadata must contain an encrypted mnemonic phrase
-        const version = spelunk(data, "x-ethers.version:string");
-        if (version === "0.1") {
-            const mnemonicKey = key.slice(32, 64);
-            const mnemonicCiphertext = spelunk(data, "x-ethers.mnemonicCiphertext:data!");
-            const mnemonicIv = spelunk(data, "x-ethers.mnemonicCounter:data!");
-            const mnemonicAesCtr = new CTR(mnemonicKey, mnemonicIv);
-            account.mnemonic = {
-                path: (spelunk(data, "x-ethers.path:string") || defaultPath$1),
-                locale: (spelunk(data, "x-ethers.locale:string") || "en"),
-                entropy: hexlify(getBytes(mnemonicAesCtr.decrypt(mnemonicCiphertext)))
-            };
-        }
-        return account;
-    }
-    function getDecryptKdfParams(data) {
-        const kdf = spelunk(data, "crypto.kdf:string");
-        if (kdf && typeof (kdf) === "string") {
-            if (kdf.toLowerCase() === "scrypt") {
-                const salt = spelunk(data, "crypto.kdfparams.salt:data!");
-                const N = spelunk(data, "crypto.kdfparams.n:int!");
-                const r = spelunk(data, "crypto.kdfparams.r:int!");
-                const p = spelunk(data, "crypto.kdfparams.p:int!");
-                // Make sure N is a power of 2
-                assertArgument(N > 0 && (N & (N - 1)) === 0, "invalid kdf.N", "kdf.N", N);
-                assertArgument(r > 0 && p > 0, "invalid kdf", "kdf", kdf);
-                const dkLen = spelunk(data, "crypto.kdfparams.dklen:int!");
-                assertArgument(dkLen === 32, "invalid kdf.dklen", "kdf.dflen", dkLen);
-                return { name: "scrypt", salt, N, r, p, dkLen: 64 };
-            }
-            else if (kdf.toLowerCase() === "pbkdf2") {
-                const salt = spelunk(data, "crypto.kdfparams.salt:data!");
-                const prf = spelunk(data, "crypto.kdfparams.prf:string!");
-                const algorithm = prf.split("-").pop();
-                assertArgument(algorithm === "sha256" || algorithm === "sha512", "invalid kdf.pdf", "kdf.pdf", prf);
-                const count = spelunk(data, "crypto.kdfparams.c:int!");
-                const dkLen = spelunk(data, "crypto.kdfparams.dklen:int!");
-                assertArgument(dkLen === 32, "invalid kdf.dklen", "kdf.dklen", dkLen);
-                return { name: "pbkdf2", salt, count, dkLen, algorithm };
-            }
-        }
-        assertArgument(false, "unsupported key-derivation function", "kdf", kdf);
-    }
-    /**
-     *  Returns the account details for the JSON Keystore Wallet %%json%%
-     *  using %%password%%.
-     *
-     *  It is preferred to use the [async version](decryptKeystoreJson)
-     *  instead, which allows a [[ProgressCallback]] to keep the user informed
-     *  as to the decryption status.
-     *
-     *  This method will block the event loop (freezing all UI) until decryption
-     *  is complete, which can take quite some time, depending on the wallet
-     *  paramters and platform.
-     */
-    function decryptKeystoreJsonSync(json, _password) {
-        const data = JSON.parse(json);
-        const password = getPassword(_password);
-        const params = getDecryptKdfParams(data);
-        if (params.name === "pbkdf2") {
-            const { salt, count, dkLen, algorithm } = params;
-            const key = pbkdf2(password, salt, count, dkLen, algorithm);
-            return getAccount(data, key);
-        }
-        assert(params.name === "scrypt", "cannot be reached", "UNKNOWN_ERROR", { params });
-        const { salt, N, r, p, dkLen } = params;
-        const key = scryptSync(password, salt, N, r, p, dkLen);
-        return getAccount(data, key);
-    }
-    function stall$1(duration) {
-        return new Promise((resolve) => { setTimeout(() => { resolve(); }, duration); });
-    }
-    /**
-     *  Resolves to the decrypted JSON Keystore Wallet %%json%% using the
-     *  %%password%%.
-     *
-     *  If provided, %%progress%% will be called periodically during the
-     *  decrpytion to provide feedback, and if the function returns
-     *  ``false`` will halt decryption.
-     *
-     *  The %%progressCallback%% will **always** receive ``0`` before
-     *  decryption begins and ``1`` when complete.
-     */
-    async function decryptKeystoreJson(json, _password, progress) {
-        const data = JSON.parse(json);
-        const password = getPassword(_password);
-        const params = getDecryptKdfParams(data);
-        if (params.name === "pbkdf2") {
-            if (progress) {
-                progress(0);
-                await stall$1(0);
-            }
-            const { salt, count, dkLen, algorithm } = params;
-            const key = pbkdf2(password, salt, count, dkLen, algorithm);
-            if (progress) {
-                progress(1);
-                await stall$1(0);
-            }
-            return getAccount(data, key);
-        }
-        assert(params.name === "scrypt", "cannot be reached", "UNKNOWN_ERROR", { params });
-        const { salt, N, r, p, dkLen } = params;
-        const key = await scrypt(password, salt, N, r, p, dkLen, progress);
-        return getAccount(data, key);
-    }
-    function getEncryptKdfParams(options) {
-        // Check/generate the salt
-        const salt = (options.salt != null) ? getBytes(options.salt, "options.salt") : randomBytes(32);
-        // Override the scrypt password-based key derivation function parameters
-        let N = (1 << 17), r = 8, p = 1;
-        if (options.scrypt) {
-            if (options.scrypt.N) {
-                N = options.scrypt.N;
-            }
-            if (options.scrypt.r) {
-                r = options.scrypt.r;
-            }
-            if (options.scrypt.p) {
-                p = options.scrypt.p;
-            }
-        }
-        assertArgument(typeof (N) === "number" && N > 0 && Number.isSafeInteger(N) && (BigInt(N) & BigInt(N - 1)) === BigInt(0), "invalid scrypt N parameter", "options.N", N);
-        assertArgument(typeof (r) === "number" && r > 0 && Number.isSafeInteger(r), "invalid scrypt r parameter", "options.r", r);
-        assertArgument(typeof (p) === "number" && p > 0 && Number.isSafeInteger(p), "invalid scrypt p parameter", "options.p", p);
-        return { name: "scrypt", dkLen: 32, salt, N, r, p };
-    }
-    function _encryptKeystore(key, kdf, account, options) {
-        const privateKey = getBytes(account.privateKey, "privateKey");
-        // Override initialization vector
-        const iv = (options.iv != null) ? getBytes(options.iv, "options.iv") : randomBytes(16);
-        assertArgument(iv.length === 16, "invalid options.iv length", "options.iv", options.iv);
-        // Override the uuid
-        const uuidRandom = (options.uuid != null) ? getBytes(options.uuid, "options.uuid") : randomBytes(16);
-        assertArgument(uuidRandom.length === 16, "invalid options.uuid length", "options.uuid", options.iv);
-        // This will be used to encrypt the wallet (as per Web3 secret storage)
-        // - 32 bytes   As normal for the Web3 secret storage (derivedKey, macPrefix)
-        // - 32 bytes   AES key to encrypt mnemonic with (required here to be Ethers Wallet)
-        const derivedKey = key.slice(0, 16);
-        const macPrefix = key.slice(16, 32);
-        // Encrypt the private key
-        const aesCtr = new CTR(derivedKey, iv);
-        const ciphertext = getBytes(aesCtr.encrypt(privateKey));
-        // Compute the message authentication code, used to check the password
-        const mac = keccak256(concat([macPrefix, ciphertext]));
-        // See: https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition
-        const data = {
-            address: account.address.substring(2).toLowerCase(),
-            id: uuidV4(uuidRandom),
-            version: 3,
-            Crypto: {
-                cipher: "aes-128-ctr",
-                cipherparams: {
-                    iv: hexlify(iv).substring(2),
-                },
-                ciphertext: hexlify(ciphertext).substring(2),
-                kdf: "scrypt",
-                kdfparams: {
-                    salt: hexlify(kdf.salt).substring(2),
-                    n: kdf.N,
-                    dklen: 32,
-                    p: kdf.p,
-                    r: kdf.r
-                },
-                mac: mac.substring(2)
-            }
-        };
-        // If we have a mnemonic, encrypt it into the JSON wallet
-        if (account.mnemonic) {
-            const client = (options.client != null) ? options.client : `ethers/${version}`;
-            const path = account.mnemonic.path || defaultPath$1;
-            const locale = account.mnemonic.locale || "en";
-            const mnemonicKey = key.slice(32, 64);
-            const entropy = getBytes(account.mnemonic.entropy, "account.mnemonic.entropy");
-            const mnemonicIv = randomBytes(16);
-            const mnemonicAesCtr = new CTR(mnemonicKey, mnemonicIv);
-            const mnemonicCiphertext = getBytes(mnemonicAesCtr.encrypt(entropy));
-            const now = new Date();
-            const timestamp = (now.getUTCFullYear() + "-" +
-                zpad$1(now.getUTCMonth() + 1, 2) + "-" +
-                zpad$1(now.getUTCDate(), 2) + "T" +
-                zpad$1(now.getUTCHours(), 2) + "-" +
-                zpad$1(now.getUTCMinutes(), 2) + "-" +
-                zpad$1(now.getUTCSeconds(), 2) + ".0Z");
-            const gethFilename = ("UTC--" + timestamp + "--" + data.address);
-            data["x-ethers"] = {
-                client, gethFilename, path, locale,
-                mnemonicCounter: hexlify(mnemonicIv).substring(2),
-                mnemonicCiphertext: hexlify(mnemonicCiphertext).substring(2),
-                version: "0.1"
-            };
-        }
-        return JSON.stringify(data);
-    }
-    /**
-     *  Return the JSON Keystore Wallet for %%account%% encrypted with
-     *  %%password%%.
-     *
-     *  The %%options%% can be used to tune the password-based key
-     *  derivation function parameters, explicitly set the random values
-     *  used. Any provided [[ProgressCallback]] is ignord.
-     */
-    function encryptKeystoreJsonSync(account, password, options) {
-        if (options == null) {
-            options = {};
-        }
-        const passwordBytes = getPassword(password);
-        const kdf = getEncryptKdfParams(options);
-        const key = scryptSync(passwordBytes, kdf.salt, kdf.N, kdf.r, kdf.p, 64);
-        return _encryptKeystore(getBytes(key), kdf, account, options);
-    }
-    /**
-     *  Resolved to the JSON Keystore Wallet for %%account%% encrypted
-     *  with %%password%%.
-     *
-     *  The %%options%% can be used to tune the password-based key
-     *  derivation function parameters, explicitly set the random values
-     *  used and provide a [[ProgressCallback]] to receive periodic updates
-     *  on the completion status..
-     */
-    async function encryptKeystoreJson(account, password, options) {
-        if (options == null) {
-            options = {};
-        }
-        const passwordBytes = getPassword(password);
-        const kdf = getEncryptKdfParams(options);
-        const key = await scrypt(passwordBytes, kdf.salt, kdf.N, kdf.r, kdf.p, 64, options.progressCallback);
-        return _encryptKeystore(getBytes(key), kdf, account, options);
-    }
-
-    /**
-     *  Explain HD Wallets..
-     *
-     *  @_subsection: api/wallet:HD Wallets  [hd-wallets]
-     */
-    /**
-     *  The default derivation path for Ethereum HD Nodes. (i.e. ``"m/44'/60'/0'/0/0"``)
-     */
-    const defaultPath = "m/44'/60'/0'/0/0";
-    // "Bitcoin seed"
-    const MasterSecret = new Uint8Array([66, 105, 116, 99, 111, 105, 110, 32, 115, 101, 101, 100]);
-    const HardenedBit = 0x80000000;
-    const N = BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
-    const Nibbles = "0123456789abcdef";
-    function zpad(value, length) {
-        let result = "";
-        while (value) {
-            result = Nibbles[value % 16] + result;
-            value = Math.trunc(value / 16);
-        }
-        while (result.length < length * 2) {
-            result = "0" + result;
-        }
-        return "0x" + result;
-    }
-    function encodeBase58Check(_value) {
-        const value = getBytes(_value);
-        const check = dataSlice(sha256(sha256(value)), 0, 4);
-        const bytes = concat([value, check]);
-        return encodeBase58(bytes);
-    }
-    const _guard = {};
-    function ser_I(index, chainCode, publicKey, privateKey) {
-        const data = new Uint8Array(37);
-        if (index & HardenedBit) {
-            assert(privateKey != null, "cannot derive child of neutered node", "UNSUPPORTED_OPERATION", {
-                operation: "deriveChild"
-            });
-            // Data = 0x00 || ser_256(k_par)
-            data.set(getBytes(privateKey), 1);
-        }
-        else {
-            // Data = ser_p(point(k_par))
-            data.set(getBytes(publicKey));
-        }
-        // Data += ser_32(i)
-        for (let i = 24; i >= 0; i -= 8) {
-            data[33 + (i >> 3)] = ((index >> (24 - i)) & 0xff);
-        }
-        const I = getBytes(computeHmac("sha512", chainCode, data));
-        return { IL: I.slice(0, 32), IR: I.slice(32) };
-    }
-    function derivePath(node, path) {
-        const components = path.split("/");
-        assertArgument(components.length > 0, "invalid path", "path", path);
-        if (components[0] === "m") {
-            assertArgument(node.depth === 0, `cannot derive root path (i.e. path starting with "m/") for a node at non-zero depth ${node.depth}`, "path", path);
-            components.shift();
-        }
-        let result = node;
-        for (let i = 0; i < components.length; i++) {
-            const component = components[i];
-            if (component.match(/^[0-9]+'$/)) {
-                const index = parseInt(component.substring(0, component.length - 1));
-                assertArgument(index < HardenedBit, "invalid path index", `path[${i}]`, component);
-                result = result.deriveChild(HardenedBit + index);
-            }
-            else if (component.match(/^[0-9]+$/)) {
-                const index = parseInt(component);
-                assertArgument(index < HardenedBit, "invalid path index", `path[${i}]`, component);
-                result = result.deriveChild(index);
-            }
-            else {
-                assertArgument(false, "invalid path component", `path[${i}]`, component);
-            }
-        }
-        return result;
-    }
-    /**
-     *  An **HDNodeWallet** is a [[Signer]] backed by the private key derived
-     *  from an HD Node using the [[link-bip-32]] stantard.
-     *
-     *  An HD Node forms a hierarchal structure with each HD Node having a
-     *  private key and the ability to derive child HD Nodes, defined by
-     *  a path indicating the index of each child.
-     */
-    class HDNodeWallet extends BaseWallet {
-        /**
-         *  The compressed public key.
-         */
-        publicKey;
-        /**
-         *  The fingerprint.
-         *
-         *  A fingerprint allows quick qay to detect parent and child nodes,
-         *  but developers should be prepared to deal with collisions as it
-         *  is only 4 bytes.
-         */
-        fingerprint;
-        /**
-         *  The parent fingerprint.
-         */
-        parentFingerprint;
-        /**
-         *  The mnemonic used to create this HD Node, if available.
-         *
-         *  Sources such as extended keys do not encode the mnemonic, in
-         *  which case this will be ``null``.
-         */
-        mnemonic;
-        /**
-         *  The chaincode, which is effectively a public key used
-         *  to derive children.
-         */
-        chainCode;
-        /**
-         *  The derivation path of this wallet.
-         *
-         *  Since extended keys do not provide full path details, this
-         *  may be ``null``, if instantiated from a source that does not
-         *  encode it.
-         */
-        path;
-        /**
-         *  The child index of this wallet. Values over ``2 *\* 31`` indicate
-         *  the node is hardened.
-         */
-        index;
-        /**
-         *  The depth of this wallet, which is the number of components
-         *  in its path.
-         */
-        depth;
-        /**
-         *  @private
-         */
-        constructor(guard, signingKey, parentFingerprint, chainCode, path, index, depth, mnemonic, provider) {
-            super(signingKey, provider);
-            assertPrivate(guard, _guard, "HDNodeWallet");
-            defineProperties(this, { publicKey: signingKey.compressedPublicKey });
-            const fingerprint = dataSlice(ripemd160(sha256(this.publicKey)), 0, 4);
-            defineProperties(this, {
-                parentFingerprint, fingerprint,
-                chainCode, path, index, depth
-            });
-            defineProperties(this, { mnemonic });
-        }
-        connect(provider) {
-            return new HDNodeWallet(_guard, this.signingKey, this.parentFingerprint, this.chainCode, this.path, this.index, this.depth, this.mnemonic, provider);
-        }
-        #account() {
-            const account = { address: this.address, privateKey: this.privateKey };
-            const m = this.mnemonic;
-            if (this.path && m && m.wordlist.locale === "en" && m.password === "") {
-                account.mnemonic = {
-                    path: this.path,
-                    locale: "en",
-                    entropy: m.entropy
-                };
-            }
-            return account;
-        }
-        /**
-         *  Resolves to a [JSON Keystore Wallet](json-wallets) encrypted with
-         *  %%password%%.
-         *
-         *  If %%progressCallback%% is specified, it will receive periodic
-         *  updates as the encryption process progreses.
-         */
-        async encrypt(password, progressCallback) {
-            return await encryptKeystoreJson(this.#account(), password, { progressCallback });
-        }
-        /**
-         *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
-         *  %%password%%.
-         *
-         *  It is preferred to use the [async version](encrypt) instead,
-         *  which allows a [[ProgressCallback]] to keep the user informed.
-         *
-         *  This method will block the event loop (freezing all UI) until
-         *  it is complete, which may be a non-trivial duration.
-         */
-        encryptSync(password) {
-            return encryptKeystoreJsonSync(this.#account(), password);
-        }
-        /**
-         *  The extended key.
-         *
-         *  This key will begin with the prefix ``xpriv`` and can be used to
-         *  reconstruct this HD Node to derive its children.
-         */
-        get extendedKey() {
-            // We only support the mainnet values for now, but if anyone needs
-            // testnet values, let me know. I believe current sentiment is that
-            // we should always use mainnet, and use BIP-44 to derive the network
-            //   - Mainnet: public=0x0488B21E, private=0x0488ADE4
-            //   - Testnet: public=0x043587CF, private=0x04358394
-            assert(this.depth < 256, "Depth too deep", "UNSUPPORTED_OPERATION", { operation: "extendedKey" });
-            return encodeBase58Check(concat([
-                "0x0488ADE4", zpad(this.depth, 1), this.parentFingerprint,
-                zpad(this.index, 4), this.chainCode,
-                concat(["0x00", this.privateKey])
-            ]));
-        }
-        /**
-         *  Returns true if this wallet has a path, providing a Type Guard
-         *  that the path is non-null.
-         */
-        hasPath() { return (this.path != null); }
-        /**
-         *  Returns a neutered HD Node, which removes the private details
-         *  of an HD Node.
-         *
-         *  A neutered node has no private key, but can be used to derive
-         *  child addresses and other public data about the HD Node.
-         */
-        neuter() {
-            return new HDNodeVoidWallet(_guard, this.address, this.publicKey, this.parentFingerprint, this.chainCode, this.path, this.index, this.depth, this.provider);
-        }
-        /**
-         *  Return the child for %%index%%.
-         */
-        deriveChild(_index) {
-            const index = getNumber(_index, "index");
-            assertArgument(index <= 0xffffffff, "invalid index", "index", index);
-            // Base path
-            let path = this.path;
-            if (path) {
-                path += "/" + (index & ~HardenedBit);
-                if (index & HardenedBit) {
-                    path += "'";
-                }
-            }
-            const { IR, IL } = ser_I(index, this.chainCode, this.publicKey, this.privateKey);
-            const ki = new SigningKey(toBeHex((toBigInt(IL) + BigInt(this.privateKey)) % N, 32));
-            return new HDNodeWallet(_guard, ki, this.fingerprint, hexlify(IR), path, index, this.depth + 1, this.mnemonic, this.provider);
-        }
-        /**
-         *  Return the HDNode for %%path%% from this node.
-         */
-        derivePath(path) {
-            return derivePath(this, path);
-        }
-        static #fromSeed(_seed, mnemonic) {
-            assertArgument(isBytesLike(_seed), "invalid seed", "seed", "[REDACTED]");
-            const seed = getBytes(_seed, "seed");
-            assertArgument(seed.length >= 16 && seed.length <= 64, "invalid seed", "seed", "[REDACTED]");
-            const I = getBytes(computeHmac("sha512", MasterSecret, seed));
-            const signingKey = new SigningKey(hexlify(I.slice(0, 32)));
-            return new HDNodeWallet(_guard, signingKey, "0x00000000", hexlify(I.slice(32)), "m", 0, 0, mnemonic, null);
-        }
-        /**
-         *  Creates a new HD Node from %%extendedKey%%.
-         *
-         *  If the %%extendedKey%% will either have a prefix or ``xpub`` or
-         *  ``xpriv``, returning a neutered HD Node ([[HDNodeVoidWallet]])
-         *  or full HD Node ([[HDNodeWallet) respectively.
-         */
-        static fromExtendedKey(extendedKey) {
-            const bytes = toBeArray(decodeBase58(extendedKey)); // @TODO: redact
-            assertArgument(bytes.length === 82 || encodeBase58Check(bytes.slice(0, 78)) === extendedKey, "invalid extended key", "extendedKey", "[ REDACTED ]");
-            const depth = bytes[4];
-            const parentFingerprint = hexlify(bytes.slice(5, 9));
-            const index = parseInt(hexlify(bytes.slice(9, 13)).substring(2), 16);
-            const chainCode = hexlify(bytes.slice(13, 45));
-            const key = bytes.slice(45, 78);
-            switch (hexlify(bytes.slice(0, 4))) {
-                // Public Key
-                case "0x0488b21e":
-                case "0x043587cf": {
-                    const publicKey = hexlify(key);
-                    return new HDNodeVoidWallet(_guard, computeAddress(publicKey), publicKey, parentFingerprint, chainCode, null, index, depth, null);
-                }
-                // Private Key
-                case "0x0488ade4":
-                case "0x04358394 ":
-                    if (key[0] !== 0) {
-                        break;
-                    }
-                    return new HDNodeWallet(_guard, new SigningKey(key.slice(1)), parentFingerprint, chainCode, null, index, depth, null, null);
-            }
-            assertArgument(false, "invalid extended key prefix", "extendedKey", "[ REDACTED ]");
-        }
-        /**
-         *  Creates a new random HDNode.
-         */
-        static createRandom(password, path, wordlist) {
-            if (password == null) {
-                password = "";
-            }
-            if (path == null) {
-                path = defaultPath;
-            }
-            if (wordlist == null) {
-                wordlist = LangEn.wordlist();
-            }
-            const mnemonic = Mnemonic.fromEntropy(randomBytes(16), password, wordlist);
-            return HDNodeWallet.#fromSeed(mnemonic.computeSeed(), mnemonic).derivePath(path);
-        }
-        /**
-         *  Create an HD Node from %%mnemonic%%.
-         */
-        static fromMnemonic(mnemonic, path) {
-            if (!path) {
-                path = defaultPath;
-            }
-            return HDNodeWallet.#fromSeed(mnemonic.computeSeed(), mnemonic).derivePath(path);
-        }
-        /**
-         *  Creates an HD Node from a mnemonic %%phrase%%.
-         */
-        static fromPhrase(phrase, password, path, wordlist) {
-            if (password == null) {
-                password = "";
-            }
-            if (path == null) {
-                path = defaultPath;
-            }
-            if (wordlist == null) {
-                wordlist = LangEn.wordlist();
-            }
-            const mnemonic = Mnemonic.fromPhrase(phrase, password, wordlist);
-            return HDNodeWallet.#fromSeed(mnemonic.computeSeed(), mnemonic).derivePath(path);
-        }
-        /**
-         *  Creates an HD Node from a %%seed%%.
-         */
-        static fromSeed(seed) {
-            return HDNodeWallet.#fromSeed(seed, null);
-        }
-    }
-    /**
-     *  A **HDNodeVoidWallet** cannot sign, but provides access to
-     *  the children nodes of a [[link-bip-32]] HD wallet addresses.
-     *
-     *  The can be created by using an extended ``xpub`` key to
-     *  [[HDNodeWallet_fromExtendedKey]] or by
-     *  [nuetering](HDNodeWallet-neuter) a [[HDNodeWallet]].
-     */
-    class HDNodeVoidWallet extends VoidSigner {
-        /**
-         *  The compressed public key.
-         */
-        publicKey;
-        /**
-         *  The fingerprint.
-         *
-         *  A fingerprint allows quick qay to detect parent and child nodes,
-         *  but developers should be prepared to deal with collisions as it
-         *  is only 4 bytes.
-         */
-        fingerprint;
-        /**
-         *  The parent node fingerprint.
-         */
-        parentFingerprint;
-        /**
-         *  The chaincode, which is effectively a public key used
-         *  to derive children.
-         */
-        chainCode;
-        /**
-         *  The derivation path of this wallet.
-         *
-         *  Since extended keys do not provider full path details, this
-         *  may be ``null``, if instantiated from a source that does not
-         *  enocde it.
-         */
-        path;
-        /**
-         *  The child index of this wallet. Values over ``2 *\* 31`` indicate
-         *  the node is hardened.
-         */
-        index;
-        /**
-         *  The depth of this wallet, which is the number of components
-         *  in its path.
-         */
-        depth;
-        /**
-         *  @private
-         */
-        constructor(guard, address, publicKey, parentFingerprint, chainCode, path, index, depth, provider) {
-            super(address, provider);
-            assertPrivate(guard, _guard, "HDNodeVoidWallet");
-            defineProperties(this, { publicKey });
-            const fingerprint = dataSlice(ripemd160(sha256(publicKey)), 0, 4);
-            defineProperties(this, {
-                publicKey, fingerprint, parentFingerprint, chainCode, path, index, depth
-            });
-        }
-        connect(provider) {
-            return new HDNodeVoidWallet(_guard, this.address, this.publicKey, this.parentFingerprint, this.chainCode, this.path, this.index, this.depth, provider);
-        }
-        /**
-         *  The extended key.
-         *
-         *  This key will begin with the prefix ``xpub`` and can be used to
-         *  reconstruct this neutered key to derive its children addresses.
-         */
-        get extendedKey() {
-            // We only support the mainnet values for now, but if anyone needs
-            // testnet values, let me know. I believe current sentiment is that
-            // we should always use mainnet, and use BIP-44 to derive the network
-            //   - Mainnet: public=0x0488B21E, private=0x0488ADE4
-            //   - Testnet: public=0x043587CF, private=0x04358394
-            assert(this.depth < 256, "Depth too deep", "UNSUPPORTED_OPERATION", { operation: "extendedKey" });
-            return encodeBase58Check(concat([
-                "0x0488B21E",
-                zpad(this.depth, 1),
-                this.parentFingerprint,
-                zpad(this.index, 4),
-                this.chainCode,
-                this.publicKey,
-            ]));
-        }
-        /**
-         *  Returns true if this wallet has a path, providing a Type Guard
-         *  that the path is non-null.
-         */
-        hasPath() { return (this.path != null); }
-        /**
-         *  Return the child for %%index%%.
-         */
-        deriveChild(_index) {
-            const index = getNumber(_index, "index");
-            assertArgument(index <= 0xffffffff, "invalid index", "index", index);
-            // Base path
-            let path = this.path;
-            if (path) {
-                path += "/" + (index & ~HardenedBit);
-                if (index & HardenedBit) {
-                    path += "'";
-                }
-            }
-            const { IR, IL } = ser_I(index, this.chainCode, this.publicKey, null);
-            const Ki = SigningKey.addPoints(IL, this.publicKey, true);
-            const address = computeAddress(Ki);
-            return new HDNodeVoidWallet(_guard, address, Ki, this.fingerprint, hexlify(IR), path, index, this.depth + 1, this.provider);
-        }
-        /**
-         *  Return the signer for %%path%% from this node.
-         */
-        derivePath(path) {
-            return derivePath(this, path);
-        }
-    }
-    /*
-    export class HDNodeWalletManager {
-        #root: HDNodeWallet;
-
-        constructor(phrase: string, password?: null | string, path?: null | string, locale?: null | Wordlist) {
-            if (password == null) { password = ""; }
-            if (path == null) { path = "m/44'/60'/0'/0"; }
-            if (locale == null) { locale = LangEn.wordlist(); }
-            this.#root = HDNodeWallet.fromPhrase(phrase, password, path, locale);
-        }
-
-        getSigner(index?: number): HDNodeWallet {
-            return this.#root.deriveChild((index == null) ? 0: index);
-        }
-    }
-    */
-    /**
-     *  Returns the [[link-bip-32]] path for the account at %%index%%.
-     *
-     *  This is the pattern used by wallets like Ledger.
-     *
-     *  There is also an [alternate pattern](getIndexedAccountPath) used by
-     *  some software.
-     */
-    function getAccountPath(_index) {
-        const index = getNumber(_index, "index");
-        assertArgument(index >= 0 && index < HardenedBit, "invalid account index", "index", index);
-        return `m/44'/60'/${index}'/0/0`;
-    }
-    /**
-     *  Returns the path using an alternative pattern for deriving accounts,
-     *  at %%index%%.
-     *
-     *  This derivation path uses the //index// component rather than the
-     *  //account// component to derive sequential accounts.
-     *
-     *  This is the pattern used by wallets like MetaMask.
-     */
-    function getIndexedAccountPath(_index) {
-        const index = getNumber(_index, "index");
-        assertArgument(index >= 0 && index < HardenedBit, "invalid account index", "index", index);
-        return `m/44'/60'/0'/0/${index}`;
-    }
-
-    /**
-     *  @_subsection: api/wallet:JSON Wallets  [json-wallets]
-     */
-    /**
-     *  Returns true if %%json%% is a valid JSON Crowdsale wallet.
-     */
-    function isCrowdsaleJson(json) {
-        try {
-            const data = JSON.parse(json);
-            if (data.encseed) {
-                return true;
-            }
-        }
-        catch (error) { }
-        return false;
-    }
-    // See: https://github.com/ethereum/pyethsaletool
-    /**
-     *  Before Ethereum launched, it was necessary to create a wallet
-     *  format for backers to use, which would be used to receive ether
-     *  as a reward for contributing to the project.
-     *
-     *  The [[link-crowdsale]] format is now obsolete, but it is still
-     *  useful to support and the additional code is fairly trivial as
-     *  all the primitives required are used through core portions of
-     *  the library.
-     */
-    function decryptCrowdsaleJson(json, _password) {
-        const data = JSON.parse(json);
-        const password = getPassword(_password);
-        // Ethereum Address
-        const address = getAddress(spelunk(data, "ethaddr:string!"));
-        // Encrypted Seed
-        const encseed = looseArrayify(spelunk(data, "encseed:string!"));
-        assertArgument(encseed && (encseed.length % 16) === 0, "invalid encseed", "json", json);
-        const key = getBytes(pbkdf2(password, password, 2000, 32, "sha256")).slice(0, 16);
-        const iv = encseed.slice(0, 16);
-        const encryptedSeed = encseed.slice(16);
-        // Decrypt the seed
-        const aesCbc = new CBC(key, iv);
-        const seed = pkcs7Strip(getBytes(aesCbc.decrypt(encryptedSeed)));
-        // This wallet format is weird... Convert the binary encoded hex to a string.
-        let seedHex = "";
-        for (let i = 0; i < seed.length; i++) {
-            seedHex += String.fromCharCode(seed[i]);
-        }
-        return { address, privateKey: id(seedHex) };
-    }
-
-    function stall(duration) {
-        return new Promise((resolve) => { setTimeout(() => { resolve(); }, duration); });
-    }
-    /**
-     *  A **Wallet** manages a single private key which is used to sign
-     *  transactions, messages and other common payloads.
-     *
-     *  This class is generally the main entry point for developers
-     *  that wish to use a private key directly, as it can create
-     *  instances from a large variety of common sources, including
-     *  raw private key, [[link-bip-39]] mnemonics and encrypte JSON
-     *  wallets.
-     */
-    class Wallet extends BaseWallet {
-        /**
-         *  Create a new wallet for the private %%key%%, optionally connected
-         *  to %%provider%%.
-         */
-        constructor(key, provider) {
-            if (typeof (key) === "string" && !key.startsWith("0x")) {
-                key = "0x" + key;
-            }
-            let signingKey = (typeof (key) === "string") ? new SigningKey(key) : key;
-            super(signingKey, provider);
-        }
-        connect(provider) {
-            return new Wallet(this.signingKey, provider);
-        }
-        /**
-         *  Resolves to a [JSON Keystore Wallet](json-wallets) encrypted with
-         *  %%password%%.
-         *
-         *  If %%progressCallback%% is specified, it will receive periodic
-         *  updates as the encryption process progreses.
-         */
-        async encrypt(password, progressCallback) {
-            const account = { address: this.address, privateKey: this.privateKey };
-            return await encryptKeystoreJson(account, password, { progressCallback });
-        }
-        /**
-         *  Returns a [JSON Keystore Wallet](json-wallets) encryped with
-         *  %%password%%.
-         *
-         *  It is preferred to use the [async version](encrypt) instead,
-         *  which allows a [[ProgressCallback]] to keep the user informed.
-         *
-         *  This method will block the event loop (freezing all UI) until
-         *  it is complete, which may be a non-trivial duration.
-         */
-        encryptSync(password) {
-            const account = { address: this.address, privateKey: this.privateKey };
-            return encryptKeystoreJsonSync(account, password);
-        }
-        static #fromAccount(account) {
-            assertArgument(account, "invalid JSON wallet", "json", "[ REDACTED ]");
-            if ("mnemonic" in account && account.mnemonic && account.mnemonic.locale === "en") {
-                const mnemonic = Mnemonic.fromEntropy(account.mnemonic.entropy);
-                const wallet = HDNodeWallet.fromMnemonic(mnemonic, account.mnemonic.path);
-                if (wallet.address === account.address && wallet.privateKey === account.privateKey) {
-                    return wallet;
-                }
-                console.log("WARNING: JSON mismatch address/privateKey != mnemonic; fallback onto private key");
-            }
-            const wallet = new Wallet(account.privateKey);
-            assertArgument(wallet.address === account.address, "address/privateKey mismatch", "json", "[ REDACTED ]");
-            return wallet;
-        }
-        /**
-         *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
-         *  with %%password%%.
-         *
-         *  If %%progress%% is provided, it is called periodically during
-         *  decryption so that any UI can be updated.
-         */
-        static async fromEncryptedJson(json, password, progress) {
-            let account = null;
-            if (isKeystoreJson(json)) {
-                account = await decryptKeystoreJson(json, password, progress);
-            }
-            else if (isCrowdsaleJson(json)) {
-                if (progress) {
-                    progress(0);
-                    await stall(0);
-                }
-                account = decryptCrowdsaleJson(json, password);
-                if (progress) {
-                    progress(1);
-                    await stall(0);
-                }
-            }
-            return Wallet.#fromAccount(account);
-        }
-        /**
-         *  Creates a **Wallet** by decrypting the %%json%% with %%password%%.
-         *
-         *  The [[fromEncryptedJson]] method is preferred, as this method
-         *  will lock up and freeze the UI during decryption, which may take
-         *  some time.
-         */
-        static fromEncryptedJsonSync(json, password) {
-            let account = null;
-            if (isKeystoreJson(json)) {
-                account = decryptKeystoreJsonSync(json, password);
-            }
-            else if (isCrowdsaleJson(json)) {
-                account = decryptCrowdsaleJson(json, password);
-            }
-            else {
-                assertArgument(false, "invalid JSON wallet", "json", "[ REDACTED ]");
-            }
-            return Wallet.#fromAccount(account);
-        }
-        /**
-         *  Creates a new random [[HDNodeWallet]] using the available
-         *  [cryptographic random source](randomBytes).
-         *
-         *  If there is no crytographic random source, this will throw.
-         */
-        static createRandom(provider) {
-            const wallet = HDNodeWallet.createRandom();
-            if (provider) {
-                return wallet.connect(provider);
-            }
-            return wallet;
-        }
-        /**
-         *  Creates a [[HDNodeWallet]] for %%phrase%%.
-         */
-        static fromPhrase(phrase, provider) {
-            const wallet = HDNodeWallet.fromPhrase(phrase);
-            if (provider) {
-                return wallet.connect(provider);
-            }
-            return wallet;
         }
     }
 
@@ -26062,15 +20969,10 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         AbiCoder: AbiCoder,
         AbstractProvider: AbstractProvider,
         AbstractSigner: AbstractSigner,
-        AlchemyProvider: AlchemyProvider,
-        AnkrProvider: AnkrProvider,
         BaseContract: BaseContract,
         BaseWallet: BaseWallet,
         Block: Block,
-        BlockscoutProvider: BlockscoutProvider,
         BrowserProvider: BrowserProvider,
-        ChainstackProvider: ChainstackProvider,
-        CloudflareProvider: CloudflareProvider,
         ConstructorFragment: ConstructorFragment,
         Contract: Contract,
         ContractEventPayload: ContractEventPayload,
@@ -26083,8 +20985,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         ErrorDescription: ErrorDescription,
         ErrorFragment: ErrorFragment,
         EtherSymbol: EtherSymbol,
-        EtherscanPlugin: EtherscanPlugin,
-        EtherscanProvider: EtherscanProvider,
         EventFragment: EventFragment,
         EventLog: EventLog,
         EventPayload: EventPayload,
@@ -26100,11 +21000,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         Fragment: Fragment,
         FunctionFragment: FunctionFragment,
         GasCostPlugin: GasCostPlugin,
-        HDNodeVoidWallet: HDNodeVoidWallet,
-        HDNodeWallet: HDNodeWallet,
         Indexed: Indexed,
-        InfuraProvider: InfuraProvider,
-        InfuraWebSocketProvider: InfuraWebSocketProvider,
         Interface: Interface,
         IpcSocketProvider: IpcSocketProvider,
         JsonRpcApiProvider: JsonRpcApiProvider,
@@ -26117,16 +21013,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         MaxUint256: MaxUint256,
         MessagePrefix: MessagePrefix,
         MinInt256: MinInt256,
-        Mnemonic: Mnemonic,
         MulticoinProviderPlugin: MulticoinProviderPlugin,
-        N: N$1,
+        N: N,
         NamedFragment: NamedFragment,
         Network: Network,
         NetworkPlugin: NetworkPlugin,
         NonceManager: NonceManager,
         ParamType: ParamType,
-        PocketProvider: PocketProvider,
-        QuickNodeProvider: QuickNodeProvider,
         Result: Result,
         Signature: Signature,
         SigningKey: SigningKey,
@@ -26172,23 +21065,18 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         decodeBase64: decodeBase64,
         decodeBytes32String: decodeBytes32String,
         decodeRlp: decodeRlp,
-        decryptCrowdsaleJson: decryptCrowdsaleJson,
-        decryptKeystoreJson: decryptKeystoreJson,
         decryptKeystoreJsonSync: decryptKeystoreJsonSync,
-        defaultPath: defaultPath,
         defineProperties: defineProperties,
         dnsEncode: dnsEncode,
         encodeBase58: encodeBase58,
         encodeBase64: encodeBase64,
         encodeBytes32String: encodeBytes32String,
         encodeRlp: encodeRlp,
-        encryptKeystoreJson: encryptKeystoreJson,
         encryptKeystoreJsonSync: encryptKeystoreJsonSync,
         ensNormalize: ensNormalize,
         formatEther: formatEther,
         formatUnits: formatUnits,
         fromTwos: fromTwos,
-        getAccountPath: getAccountPath,
         getAddress: getAddress,
         getBigInt: getBigInt,
         getBytes: getBytes,
@@ -26196,8 +21084,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         getCreate2Address: getCreate2Address,
         getCreateAddress: getCreateAddress,
         getDefaultProvider: getDefaultProvider,
-        getIcapAddress: getIcapAddress,
-        getIndexedAccountPath: getIndexedAccountPath,
         getNumber: getNumber,
         getUint: getUint,
         hashAuthorization: hashAuthorization,
@@ -26208,7 +21094,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         isAddressable: isAddressable,
         isBytesLike: isBytesLike,
         isCallException: isCallException,
-        isCrowdsaleJson: isCrowdsaleJson,
         isError: isError,
         isHexString: isHexString,
         isKeystoreJson: isKeystoreJson,
@@ -26219,7 +21104,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         mask: mask,
         namehash: namehash,
         parseEther: parseEther,
-        parseUnits: parseUnits$1,
+        parseUnits: parseUnits,
         pbkdf2: pbkdf2,
         randomBytes: randomBytes,
         recoverAddress: recoverAddress,
@@ -26257,15 +21142,10 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.AbiCoder = AbiCoder;
     exports.AbstractProvider = AbstractProvider;
     exports.AbstractSigner = AbstractSigner;
-    exports.AlchemyProvider = AlchemyProvider;
-    exports.AnkrProvider = AnkrProvider;
     exports.BaseContract = BaseContract;
     exports.BaseWallet = BaseWallet;
     exports.Block = Block;
-    exports.BlockscoutProvider = BlockscoutProvider;
     exports.BrowserProvider = BrowserProvider;
-    exports.ChainstackProvider = ChainstackProvider;
-    exports.CloudflareProvider = CloudflareProvider;
     exports.ConstructorFragment = ConstructorFragment;
     exports.Contract = Contract;
     exports.ContractEventPayload = ContractEventPayload;
@@ -26278,8 +21158,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.ErrorDescription = ErrorDescription;
     exports.ErrorFragment = ErrorFragment;
     exports.EtherSymbol = EtherSymbol;
-    exports.EtherscanPlugin = EtherscanPlugin;
-    exports.EtherscanProvider = EtherscanProvider;
     exports.EventFragment = EventFragment;
     exports.EventLog = EventLog;
     exports.EventPayload = EventPayload;
@@ -26295,11 +21173,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.Fragment = Fragment;
     exports.FunctionFragment = FunctionFragment;
     exports.GasCostPlugin = GasCostPlugin;
-    exports.HDNodeVoidWallet = HDNodeVoidWallet;
-    exports.HDNodeWallet = HDNodeWallet;
     exports.Indexed = Indexed;
-    exports.InfuraProvider = InfuraProvider;
-    exports.InfuraWebSocketProvider = InfuraWebSocketProvider;
     exports.Interface = Interface;
     exports.IpcSocketProvider = IpcSocketProvider;
     exports.JsonRpcApiProvider = JsonRpcApiProvider;
@@ -26312,16 +21186,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.MaxUint256 = MaxUint256;
     exports.MessagePrefix = MessagePrefix;
     exports.MinInt256 = MinInt256;
-    exports.Mnemonic = Mnemonic;
     exports.MulticoinProviderPlugin = MulticoinProviderPlugin;
-    exports.N = N$1;
+    exports.N = N;
     exports.NamedFragment = NamedFragment;
     exports.Network = Network;
     exports.NetworkPlugin = NetworkPlugin;
     exports.NonceManager = NonceManager;
     exports.ParamType = ParamType;
-    exports.PocketProvider = PocketProvider;
-    exports.QuickNodeProvider = QuickNodeProvider;
     exports.Result = Result;
     exports.Signature = Signature;
     exports.SigningKey = SigningKey;
@@ -26367,24 +21238,19 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.decodeBase64 = decodeBase64;
     exports.decodeBytes32String = decodeBytes32String;
     exports.decodeRlp = decodeRlp;
-    exports.decryptCrowdsaleJson = decryptCrowdsaleJson;
-    exports.decryptKeystoreJson = decryptKeystoreJson;
     exports.decryptKeystoreJsonSync = decryptKeystoreJsonSync;
-    exports.defaultPath = defaultPath;
     exports.defineProperties = defineProperties;
     exports.dnsEncode = dnsEncode;
     exports.encodeBase58 = encodeBase58;
     exports.encodeBase64 = encodeBase64;
     exports.encodeBytes32String = encodeBytes32String;
     exports.encodeRlp = encodeRlp;
-    exports.encryptKeystoreJson = encryptKeystoreJson;
     exports.encryptKeystoreJsonSync = encryptKeystoreJsonSync;
     exports.ensNormalize = ensNormalize;
     exports.ethers = quantumcoin;
     exports.formatEther = formatEther;
     exports.formatUnits = formatUnits;
     exports.fromTwos = fromTwos;
-    exports.getAccountPath = getAccountPath;
     exports.getAddress = getAddress;
     exports.getBigInt = getBigInt;
     exports.getBytes = getBytes;
@@ -26392,8 +21258,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.getCreate2Address = getCreate2Address;
     exports.getCreateAddress = getCreateAddress;
     exports.getDefaultProvider = getDefaultProvider;
-    exports.getIcapAddress = getIcapAddress;
-    exports.getIndexedAccountPath = getIndexedAccountPath;
     exports.getNumber = getNumber;
     exports.getUint = getUint;
     exports.hashAuthorization = hashAuthorization;
@@ -26404,7 +21268,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.isAddressable = isAddressable;
     exports.isBytesLike = isBytesLike;
     exports.isCallException = isCallException;
-    exports.isCrowdsaleJson = isCrowdsaleJson;
     exports.isError = isError;
     exports.isHexString = isHexString;
     exports.isKeystoreJson = isKeystoreJson;
@@ -26415,7 +21278,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     exports.mask = mask;
     exports.namehash = namehash;
     exports.parseEther = parseEther;
-    exports.parseUnits = parseUnits$1;
+    exports.parseUnits = parseUnits;
     exports.pbkdf2 = pbkdf2;
     exports.randomBytes = randomBytes;
     exports.recoverAddress = recoverAddress;

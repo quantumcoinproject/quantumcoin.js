@@ -1,26 +1,21 @@
 import { SigningKey } from "../crypto/index.js";
-import { assertArgument } from "../utils/index.js";
+import { assertArgument,hexlify } from "../utils/index.js";
 
 import { BaseWallet } from "./base-wallet.js";
-import { HDNodeWallet } from "./hdwallet.js";
-import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
+
+//import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
 import {
-    decryptKeystoreJson, decryptKeystoreJsonSync,
-    encryptKeystoreJson, encryptKeystoreJsonSync,
+    decryptKeystoreJsonSync,
+    encryptKeystoreJsonSync,
     isKeystoreJson
 } from "./json-keystore.js";
-import { Mnemonic } from "./mnemonic.js";
+//import { Mnemonic } from "./mnemonic.js";
+import qcsdk = require('quantum-coin-js-sdk');
 
-import type { ProgressCallback } from "../crypto/index.js";
 import type { Provider } from "../providers/index.js";
 
-import type { CrowdsaleAccount } from "./json-crowdsale.js";
 import type { KeystoreAccount } from "./json-keystore.js";
-
-
-function stall(duration: number): Promise<void> {
-    return new Promise((resolve) => { setTimeout(() => { resolve(); }, duration); });
-}
+//import {newWallet} from "quantum-coin-js-sdk";
 
 /**
  *  A **Wallet** manages a single private key which is used to sign
@@ -58,9 +53,9 @@ export class Wallet extends BaseWallet {
      *  If %%progressCallback%% is specified, it will receive periodic
      *  updates as the encryption process progreses.
      */
-    async encrypt(password: Uint8Array | string, progressCallback?: ProgressCallback): Promise<string> {
+    async encrypt(password: Uint8Array | string): Promise<string> {
         const account = { address: this.address, privateKey: this.privateKey };
-        return await encryptKeystoreJson(account, password, { progressCallback });
+        return encryptKeystoreJsonSync(account, password);
     }
 
     /**
@@ -78,17 +73,8 @@ export class Wallet extends BaseWallet {
         return encryptKeystoreJsonSync(account, password);
     }
 
-    static #fromAccount(account: null | CrowdsaleAccount | KeystoreAccount): HDNodeWallet | Wallet {
+    static #fromAccount(account: null | KeystoreAccount): Wallet {
         assertArgument(account, "invalid JSON wallet", "json", "[ REDACTED ]");
-
-        if ("mnemonic" in account && account.mnemonic && account.mnemonic.locale === "en") {
-            const mnemonic = Mnemonic.fromEntropy(account.mnemonic.entropy);
-            const wallet = HDNodeWallet.fromMnemonic(mnemonic, account.mnemonic.path);
-            if (wallet.address === account.address && wallet.privateKey === account.privateKey) {
-                return wallet;
-            }
-            console.log("WARNING: JSON mismatch address/privateKey != mnemonic; fallback onto private key");
-        }
 
         const wallet = new Wallet(account.privateKey);
 
@@ -101,19 +87,11 @@ export class Wallet extends BaseWallet {
     /**
      *  Creates (asynchronously) a **Wallet** by decrypting the %%json%%
      *  with %%password%%.
-     *
-     *  If %%progress%% is provided, it is called periodically during
-     *  decryption so that any UI can be updated.
      */
-    static async fromEncryptedJson(json: string, password: Uint8Array | string, progress?: ProgressCallback): Promise<HDNodeWallet | Wallet> {
-        let account: null | CrowdsaleAccount | KeystoreAccount = null;
+    static async fromEncryptedJson(json: string, password: Uint8Array | string): Promise<Wallet> {
+        let account: null | KeystoreAccount = null;
         if (isKeystoreJson(json)) {
-            account = await decryptKeystoreJson(json, password, progress);
-
-        } else if (isCrowdsaleJson(json)) {
-            if (progress) { progress(0); await stall(0); }
-            account = decryptCrowdsaleJson(json, password);
-            if (progress) { progress(1); await stall(0); }
+            account = decryptKeystoreJsonSync(json, password);
 
         }
 
@@ -127,12 +105,10 @@ export class Wallet extends BaseWallet {
      *  will lock up and freeze the UI during decryption, which may take
      *  some time.
      */
-    static fromEncryptedJsonSync(json: string, password: Uint8Array | string): HDNodeWallet | Wallet {
-        let account: null | CrowdsaleAccount | KeystoreAccount = null;
+    static fromEncryptedJsonSync(json: string, password: Uint8Array | string): Wallet {
+        let account: null | KeystoreAccount = null;
         if (isKeystoreJson(json)) {
             account = decryptKeystoreJsonSync(json, password);
-        } else if (isCrowdsaleJson(json)) {
-            account = decryptCrowdsaleJson(json, password);
         } else {
             assertArgument(false, "invalid JSON wallet", "json", "[ REDACTED ]");
         }
@@ -141,23 +117,23 @@ export class Wallet extends BaseWallet {
     }
 
     /**
-     *  Creates a new random [[HDNodeWallet]] using the available
+     *  Creates a new random [[Wallet]] using the available
      *  [cryptographic random source](randomBytes).
      *
      *  If there is no crytographic random source, this will throw.
      */
-    static createRandom(provider?: null | Provider): HDNodeWallet {
-        const wallet = HDNodeWallet.createRandom();
-        if (provider) { return wallet.connect(provider); }
-        return wallet;
+    static createRandom(provider?: null | Provider): Wallet {
+        let wal = qcsdk.newWallet();
+        let privKey: any = wal.privateKey;
+        return new Wallet(hexlify(privKey));
     }
 
     /**
      *  Creates a [[HDNodeWallet]] for %%phrase%%.
-     */
+     *//*
     static fromPhrase(phrase: string, provider?: Provider): HDNodeWallet {
         const wallet = HDNodeWallet.fromPhrase(phrase);
         if (provider) { return wallet.connect(provider); }
         return wallet;
-    }
+    }*/
 }

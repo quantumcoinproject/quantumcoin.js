@@ -6,10 +6,10 @@
  */
 
 import { accessListify } from "../transaction/index.js";
-import { getBigInt, assert, assertArgument } from "../utils/index.js";
+import { getBigInt, assertArgument } from "../utils/index.js";
 
 import {
-    EnsPlugin, FetchUrlFeeDataNetworkPlugin, GasCostPlugin
+    EnsPlugin, GasCostPlugin
 } from "./plugins-network.js";
 
 import type { BigNumberish } from "../utils/index.js";
@@ -288,65 +288,6 @@ type Options = {
     plugins?: Array<NetworkPlugin>;
 };
 
-// We don't want to bring in formatUnits because it is backed by
-// FixedNumber and we want to keep Networks tiny. The values
-// included by the Gas Stations are also IEEE 754 with lots of
-// rounding issues and exceed the strict checks formatUnits has.
-function parseUnits(_value: number | string, decimals: number): bigint {
-    const value = String(_value);
-    if (!value.match(/^[0-9.]+$/)) {
-        throw new Error(`invalid gwei value: ${ _value }`);
-    }
-
-    // Break into [ whole, fraction ]
-    const comps = value.split(".");
-    if (comps.length === 1) { comps.push(""); }
-
-    // More than 1 decimal point or too many fractional positions
-    if (comps.length !== 2) {
-        throw new Error(`invalid gwei value: ${ _value }`);
-    }
-
-    // Pad the fraction to 9 decimalplaces
-    while (comps[1].length < decimals) { comps[1] += "0"; }
-
-    // Too many decimals and some non-zero ending, take the ceiling
-    if (comps[1].length > 9) {
-        let frac = BigInt(comps[1].substring(0, 9));
-        if (!comps[1].substring(9).match(/^0+$/)) { frac++; }
-        comps[1] = frac.toString();
-    }
-
-    return BigInt(comps[0] + comps[1]);
-}
-
-// Used by Polygon to use a gas station for fee data
-function getGasStationPlugin(url: string) {
-    return new FetchUrlFeeDataNetworkPlugin(url, async (fetchFeeData, provider, request) => {
-
-        // Prevent Cloudflare from blocking our request in node.js
-        request.setHeader("User-Agent", "ethers");
-
-        let response;
-        try {
-            const [ _response, _feeData ] = await Promise.all([
-                request.send(), fetchFeeData()
-            ]);
-            response = _response;
-            const payload = response.bodyJson.standard;
-            const feeData = {
-                gasPrice: _feeData.gasPrice,
-                maxFeePerGas: parseUnits(payload.maxFee, 9),
-                maxPriorityFeePerGas: parseUnits(payload.maxPriorityFee, 9),
-            };
-            return feeData;
-        } catch (error: any) {
-            assert(false, `error encountered with polygon gas station (${ JSON.stringify(request.url) })`, "SERVER_ERROR", { request, response, error });
-        }
-    });
-}
-
-// See: https://chainlist.org
 let injected = false;
 function injectCommonNetworks(): void {
     if (injected) { return; }
@@ -382,54 +323,5 @@ function injectCommonNetworks(): void {
         }
     }
 
-    registerEth("mainnet", 1, { ensNetwork: 1, altNames: [ "homestead" ] });
-    registerEth("ropsten", 3, { ensNetwork: 3 });
-    registerEth("rinkeby", 4, { ensNetwork: 4 });
-    registerEth("goerli", 5, { ensNetwork: 5 });
-    registerEth("kovan", 42, { ensNetwork: 42 });
-    registerEth("sepolia", 11155111, { ensNetwork: 11155111 });
-    registerEth("holesky", 17000, { ensNetwork: 17000 });
-
-    registerEth("classic", 61, { });
-    registerEth("classicKotti", 6, { });
-
-    registerEth("arbitrum", 42161, {
-        ensNetwork: 1,
-    });
-    registerEth("arbitrum-goerli", 421613, { });
-    registerEth("arbitrum-sepolia", 421614, { });
-
-    registerEth("base", 8453, { ensNetwork: 1 });
-    registerEth("base-goerli", 84531, { });
-    registerEth("base-sepolia", 84532, { });
-
-    registerEth("bnb", 56, { ensNetwork: 1 });
-    registerEth("bnbt", 97, { });
-
-    registerEth("linea", 59144, { ensNetwork: 1 });
-    registerEth("linea-goerli", 59140, { });
-    registerEth("linea-sepolia", 59141, { });
-
-    registerEth("matic", 137, {
-        ensNetwork: 1,
-        plugins: [
-            getGasStationPlugin("https:/\/gasstation.polygon.technology/v2")
-        ]
-    });
-    registerEth("matic-amoy", 80002, { });
-    registerEth("matic-mumbai", 80001, {
-        altNames: [ "maticMumbai", "maticmum" ],  // @TODO: Future remove these alts
-        plugins: [
-            getGasStationPlugin("https:/\/gasstation-testnet.polygon.technology/v2")
-        ]
-    });
-
-    registerEth("optimism", 10, {
-        ensNetwork: 1,
-        plugins: [ ]
-    });
-    registerEth("optimism-goerli", 420, { });
-    registerEth("optimism-sepolia", 11155420, { });
-
-    registerEth("xdai", 100, { ensNetwork: 1 });
+    registerEth("mainnet", 123123, { ensNetwork: 1, altNames: [ "quantumcoin" ] });
 }
