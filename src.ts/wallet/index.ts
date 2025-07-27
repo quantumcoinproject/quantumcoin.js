@@ -24,8 +24,6 @@ export {
     decryptKeystoreJsonSync, encryptKeystoreJsonSync
 } from "./json-keystore.js";
 
-export { Mnemonic } from "./mnemonic.js";
-
 export { Wallet } from "./wallet.js";
 
 

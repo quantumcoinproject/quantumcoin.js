@@ -18,7 +18,6 @@
  */
 export { BaseWallet } from "./base-wallet.js";
 export { isKeystoreJson, decryptKeystoreJsonSync, encryptKeystoreJsonSync } from "./json-keystore.js";
-export { Mnemonic } from "./mnemonic.js";
 export { Wallet } from "./wallet.js";
 export type { KeystoreAccount } from "./json-keystore.js";
 //# sourceMappingURL=index.d.ts.map

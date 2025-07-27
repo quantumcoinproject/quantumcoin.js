@@ -117,7 +117,6 @@ export {
 } from "./utils/index.js";
 
 export {
-    Mnemonic,
     BaseWallet,
     Wallet,
     isKeystoreJson,
