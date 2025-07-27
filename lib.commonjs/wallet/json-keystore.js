@@ -18,7 +18,7 @@ exports.encryptKeystoreJsonSync = exports.decryptKeystoreJsonSync = exports.isKe
 //import { computeAddress } from "../transaction/index.js";
 //concat, assert, assertArgument,
 const index_js_1 = require("../utils/index.js");
-const signing_key_1 = require("../crypto/signing-key");
+const signing_key_js_1 = require("../crypto/signing-key.js");
 //zpad
 //import { spelunk } from "./utils.js";
 //import type { ProgressCallback } from "../crypto/index.js";
@@ -74,7 +74,7 @@ exports.decryptKeystoreJsonSync = decryptKeystoreJsonSync;
  *  used.
  */
 function encryptKeystoreJsonSync(account, password) {
-    const signingKey = new signing_key_1.SigningKey(account.privateKey);
+    const signingKey = new signing_key_js_1.SigningKey(account.privateKey);
     const privateKey = (0, index_js_1.getBytes)(signingKey.privateKey);
     const publicKey = (0, index_js_1.getBytes)(signingKey.publicKey);
     const wal = new qcsdk.Wallet(account.address, privateKey, publicKey);

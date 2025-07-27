@@ -15,7 +15,7 @@
 //import { computeAddress } from "../transaction/index.js";
 //concat, assert, assertArgument,
 import { getBytes, hexlify, toUtf8String } from "../utils/index.js";
-import { SigningKey } from "../crypto/signing-key";
+import { SigningKey } from "../crypto/signing-key.js";
 /**
  *  Returns true if %%json%% is a valid JSON Keystore Wallet.
  */

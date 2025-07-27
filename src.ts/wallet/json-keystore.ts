@@ -20,7 +20,7 @@ import {
     getBytes, hexlify, toUtf8String
 } from "../utils/index.js";
 
-import {SigningKey} from "../crypto/signing-key"
+import {SigningKey} from "../crypto/signing-key.js"
 
 //zpad
 //import { spelunk } from "./utils.js";
