@@ -9,7 +9,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     /**
      *  The current version of Ethers.
      */
-    const version = "6.14.1";
+    const version = "6.14.3";
 
     /**
      *  Property helper functions.

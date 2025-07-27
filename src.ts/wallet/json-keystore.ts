@@ -28,7 +28,9 @@ import {SigningKey} from "../crypto/signing-key.js"
 //import type { ProgressCallback } from "../crypto/index.js";
 //import {Wallet} from "quantum-coin-js-sdk";
 //import type { BytesLike } from "../utils/index.js";
-import qcsdk = require('quantum-coin-js-sdk');
+import qcsdk = require("quantum-coin-js-sdk");
+
+
 
 //import { version } from "../_version.js";
 
