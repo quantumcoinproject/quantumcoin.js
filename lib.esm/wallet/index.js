@@ -17,9 +17,7 @@
  *  @_section: api/wallet:Wallets  [about-wallets]
  */
 export { BaseWallet } from "./base-wallet.js";
-export { defaultPath, getAccountPath, getIndexedAccountPath, HDNodeWallet, HDNodeVoidWallet, } from "./hdwallet.js";
-export { isCrowdsaleJson, decryptCrowdsaleJson } from "./json-crowdsale.js";
-export { isKeystoreJson, decryptKeystoreJsonSync, decryptKeystoreJson, encryptKeystoreJson, encryptKeystoreJsonSync } from "./json-keystore.js";
+export { isKeystoreJson, decryptKeystoreJsonSync, encryptKeystoreJsonSync } from "./json-keystore.js";
 export { Mnemonic } from "./mnemonic.js";
 export { Wallet } from "./wallet.js";
 //# sourceMappingURL=index.js.map

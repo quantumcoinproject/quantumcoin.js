@@ -118,16 +118,11 @@ export {
 
 export {
     Mnemonic,
-    BaseWallet, HDNodeWallet, HDNodeVoidWallet,
+    BaseWallet,
     Wallet,
-
-    defaultPath,
-
-    getAccountPath, getIndexedAccountPath,
-    isCrowdsaleJson, isKeystoreJson,
-
-    decryptCrowdsaleJson, decryptKeystoreJsonSync, decryptKeystoreJson,
-    encryptKeystoreJson, encryptKeystoreJsonSync,
+    isKeystoreJson,
+    decryptKeystoreJsonSync,
+    encryptKeystoreJsonSync,
 } from "./wallet/index.js";
 
 export {
@@ -215,7 +210,7 @@ export type {
 } from "./utils/index.js";
 
 export type {
-    CrowdsaleAccount, KeystoreAccount, EncryptOptions
+    KeystoreAccount
 } from "./wallet/index.js";
 
 // dummy change; to pick-up ws security issue changes

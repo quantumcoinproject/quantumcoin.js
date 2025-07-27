@@ -33,12 +33,14 @@ export class SigningKey {
      *  Return the signature of the signed %%digest%%.
      */
     sign(digest) {
-        assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
+        assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
         const sig = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
+        const pubBytes = getBytes(this.publicKey);
+        const combinedSig = qcsdk.combinePublicKeySignature(pubBytes, sig);
         return Signature.from({
             r: this.publicKey,
-            s: hexlify(sig),
-            v: 0x1b
+            s: combinedSig,
+            v: 0x1
         });
     }
     /**
@@ -56,7 +58,7 @@ export class SigningKey {
         assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
         let priBytes = getBytes(key, "key");
         let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
-        return hexlify(pubKey);
+        return pubKey;
     }
     /**
      *  Returns the public key for the private key which produced the
@@ -81,8 +83,8 @@ export class SigningKey {
         const sig = Signature.from(signature);
         let sigBytes = getBytes(sig.s);
         let digestBytes = digest;
-        let publicKeyBytes = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
-        return hexlify(publicKeyBytes);
+        let publicKey = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+        return publicKey;
     }
 }
 //# sourceMappingURL=signing-key.js.map

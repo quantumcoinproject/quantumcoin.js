@@ -52,14 +52,16 @@ export class SigningKey {
      *  Return the signature of the signed %%digest%%.
      */
     sign(digest: BytesLike): Signature {
-        assertArgument(dataLength(digest) === 32, "invalid digest length", "digest", digest);
+        assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
 
-        const sig = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
+        const sig: any = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
+        const pubBytes: any = getBytes(this.publicKey);
+        const combinedSig = qcsdk.combinePublicKeySignature(pubBytes, sig);
 
         return Signature.from({
             r: this.publicKey,
-            s: hexlify(sig),
-            v: 0x1b
+            s: combinedSig,
+            v: 0x1
         });
     }
 
@@ -78,9 +80,9 @@ export class SigningKey {
         assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
         let priBytes: any = getBytes(key, "key");
 
-        let pubKey: any = qcsdk.publicKeyFromPrivateKey(priBytes);
+        let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
 
-        return hexlify(pubKey);
+        return pubKey;
     }
 
     /**
@@ -108,9 +110,9 @@ export class SigningKey {
         let sigBytes: any = getBytes(sig.s);
         let digestBytes: any = digest;
 
-        let publicKeyBytes: any = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+        let publicKey = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
 
-        return hexlify(publicKeyBytes);
+        return publicKey;
     }
 }
 

@@ -7,16 +7,6 @@ const index_js_1 = require("../index.js");
 describe("Tests JSON Wallet Formats", function () {
     const tests = (0, utils_js_1.loadTests)("wallets");
     tests.forEach((test) => {
-        if (test.type !== "crowdsale") {
-            return;
-        }
-        it(`tests decrypting Crowdsale JSON: ${test.name}`, async function () {
-            const password = (0, index_js_1.getBytes)(test.password);
-            const account = (0, index_js_1.decryptCrowdsaleJson)(test.content, password);
-            assert_1.default.equal(account.address, test.address, "address");
-        });
-    });
-    tests.forEach((test) => {
         if (test.type !== "keystore") {
             return;
         }
@@ -24,18 +14,6 @@ describe("Tests JSON Wallet Formats", function () {
             this.timeout(20000);
             const password = (0, index_js_1.getBytes)(test.password);
             const account = (0, index_js_1.decryptKeystoreJsonSync)(test.content, password);
-            //console.log(account);
-            assert_1.default.equal(account.address, test.address, "address");
-        });
-    });
-    tests.forEach((test) => {
-        if (test.type !== "keystore") {
-            return;
-        }
-        it(`tests decrypting Keystore JSON (async): ${test.name}`, async function () {
-            this.timeout(20000);
-            const password = (0, index_js_1.getBytes)(test.password);
-            const account = await (0, index_js_1.decryptKeystoreJson)(test.content, password);
             //console.log(account);
             assert_1.default.equal(account.address, test.address, "address");
         });
@@ -58,42 +36,8 @@ describe("Tests JSON Wallet Formats", function () {
             assert_1.default.equal(wallet.address, test.address, "address");
         });
     });
-    it("tests encrypting wallet with mnemonic", function () {
-        this.timeout(20000);
-        const wallet = index_js_1.HDNodeWallet.createRandom();
-        assert_1.default.ok(wallet.mnemonic, "mnemonic");
-        const phrase = wallet.mnemonic.phrase;
-        const json = wallet.encryptSync("foobar");
-        const wallet2 = index_js_1.Wallet.fromEncryptedJsonSync(json, "foobar");
-        assert_1.default.ok(wallet2 instanceof index_js_1.HDNodeWallet && wallet2.mnemonic);
-        assert_1.default.equal(wallet2.mnemonic.phrase, phrase, "phrase");
-        assert_1.default.equal(wallet2.address, wallet.address, "address");
-    });
 });
 describe("Tests Extra JSON Wallet Functions", function () {
-    const badCrowdsales = [
-        {
-            name: "undefined",
-            value: undefined
-        },
-        {
-            name: "junk string",
-            value: "junk!"
-        },
-        {
-            name: "non-string",
-            value: 42
-        },
-        {
-            name: "JSON without encseed",
-            value: JSON.stringify({ foo: "bar" })
-        },
-    ];
-    for (const { name, value } of badCrowdsales) {
-        it(`tests the invalid isCrowdsale wallet: ${name}`, function () {
-            assert_1.default.equal((0, index_js_1.isCrowdsaleJson)(value), false);
-        });
-    }
     const badKeystoreOptions = [
         {
             name: "invalid salt type",
@@ -144,10 +88,10 @@ describe("Tests Extra JSON Wallet Functions", function () {
     const wallet = index_js_1.Wallet.createRandom();
     const account = { address: wallet.address, privateKey: wallet.privateKey };
     const password = "foobar";
-    for (const { name, options, error } of badKeystoreOptions) {
+    for (const { name, error } of badKeystoreOptions) {
         it(`tests bad keystore options: ${name}`, function () {
             assert_1.default.throws(() => {
-                const result = (0, index_js_1.encryptKeystoreJsonSync)(account, password, options);
+                const result = (0, index_js_1.encryptKeystoreJsonSync)(account, password);
                 console.log(result);
             }, (e) => {
                 return ((0, index_js_1.isError)(e, "INVALID_ARGUMENT") &&
@@ -158,10 +102,6 @@ describe("Tests Extra JSON Wallet Functions", function () {
     // Mainly to round out weird edge cases in coverage
     it("tests encryption with options (sync)", function () {
         assert_1.default.ok((0, index_js_1.encryptKeystoreJsonSync)(account, password));
-    });
-    // Mainly to round out weird edge cases in coverage
-    it("tests encryption with options (async)", async function () {
-        assert_1.default.ok(await (0, index_js_1.encryptKeystoreJson)(account, password));
     });
 });
 //# sourceMappingURL=test-wallet-json.js.map
