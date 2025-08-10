@@ -2,6 +2,7 @@
 // keccak256,
 import { SigningKey } from "../crypto/index.js";
 import { getBytes } from "../utils/index.js";
+import { addressFromPublicKey } from "quantum-coin-js-sdk";
 /**
  *  Returns the address for the %%key%%.
  *
@@ -10,13 +11,18 @@ import { getBytes } from "../utils/index.js";
 export function computeAddress(key) {
     let pubkey;
     if (typeof (key) === "string") {
-        pubkey = SigningKey.computePublicKey(key);
+        if (key.startsWith("0x")) {
+            pubkey = SigningKey.computePublicKey(key);
+        }
+        else {
+            pubkey = SigningKey.computePublicKey("0x" + key);
+        }
     }
     else {
         pubkey = key.publicKey;
     }
     let pubKeyBytes = getBytes(pubkey);
-    return qcsdk.addressFromPublicKey(pubKeyBytes);
+    return addressFromPublicKey(pubKeyBytes);
 }
 /**
  *  Returns the recovered address for the private key that was

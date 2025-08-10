@@ -29,7 +29,7 @@ export declare class SigningKey {
      */
     sign(digest: BytesLike): Signature;
     /**
-     *  Compute the public key for a private %%key%%.
+     *  Compute the public key for a private %%key%%. If a publicKey is passed, it is returned as is. for backward compatibility.
      *
      *
      *  @example:

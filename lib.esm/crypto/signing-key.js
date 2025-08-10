@@ -3,11 +3,12 @@
  *
  *  @_subsection: api/crypto:Signing  [about-signing]
  */
-import { getBytes, dataLength, getBytesCopy, hexlify, assertArgument } from "../utils/index.js";
+import { combinePublicKeySignature, publicKeyFromPrivateKey, publicKeyFromSignature } from "quantum-coin-js-sdk";
+import { getBytes, dataLength, getBytesCopy, hexlify, assertArgument, } from "../utils/index.js";
 import { Signature } from "./signature.js";
 const CRYPTO_MESSAGE_LENGTH = 32;
 const CRYPTO_SECRETKEY_BYTES = 64 + 2560 + 1312 + 128;
-//const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
+const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
 /**
  *  A **SigningKey** provides high-level access to cryptography operations and key management.
  */
@@ -36,7 +37,7 @@ export class SigningKey {
         assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
         const sig = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
         const pubBytes = getBytes(this.publicKey);
-        const combinedSig = qcsdk.combinePublicKeySignature(pubBytes, sig);
+        const combinedSig = combinePublicKeySignature(pubBytes, sig);
         return Signature.from({
             r: this.publicKey,
             s: combinedSig,
@@ -44,7 +45,7 @@ export class SigningKey {
         });
     }
     /**
-     *  Compute the public key for a private %%key%%.
+     *  Compute the public key for a private %%key%%. If a publicKey is passed, it is returned as is. for backward compatibility.
      *
      *
      *  @example:
@@ -55,9 +56,15 @@ export class SigningKey {
      *    //_result:
      */
     static computePublicKey(key) {
-        assertArgument(dataLength(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
-        let priBytes = getBytes(key, "key");
-        let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
+        let keyBytes = getBytes(key, "key");
+        let pubKey;
+        if (keyBytes.length == CRYPTO_SECRETKEY_BYTES) {
+            pubKey = publicKeyFromPrivateKey(keyBytes);
+        }
+        else if (keyBytes.length == CRYPTO_PUBLICKEY_BYTES) {
+            pubKey = keyBytes;
+        }
+        assertArgument(pubKey !== null && pubKey !== undefined, "invalid key", "key", "[REDACTED]");
         return pubKey;
     }
     /**
@@ -83,7 +90,7 @@ export class SigningKey {
         const sig = Signature.from(signature);
         let sigBytes = getBytes(sig.s);
         let digestBytes = digest;
-        let publicKey = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+        let publicKey = publicKeyFromSignature(digestBytes, sigBytes);
         return publicKey;
     }
 }

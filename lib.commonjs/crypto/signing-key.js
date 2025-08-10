@@ -7,12 +7,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SigningKey = void 0;
 const pqc = require("quantum-coin-pqc-js-sdk");
-const qcsdk = require("quantum-coin-js-sdk");
+const quantum_coin_js_sdk_1 = require("quantum-coin-js-sdk");
 const index_js_1 = require("../utils/index.js");
 const signature_js_1 = require("./signature.js");
 const CRYPTO_MESSAGE_LENGTH = 32;
 const CRYPTO_SECRETKEY_BYTES = 64 + 2560 + 1312 + 128;
-//const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
+const CRYPTO_PUBLICKEY_BYTES = 32 + 1312 + 64;
 /**
  *  A **SigningKey** provides high-level access to cryptography operations and key management.
  */
@@ -41,7 +41,7 @@ class SigningKey {
         (0, index_js_1.assertArgument)((0, index_js_1.dataLength)(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
         const sig = pqc.cryptoSign((0, index_js_1.getBytesCopy)(digest), (0, index_js_1.getBytesCopy)(this.#privateKey));
         const pubBytes = (0, index_js_1.getBytes)(this.publicKey);
-        const combinedSig = qcsdk.combinePublicKeySignature(pubBytes, sig);
+        const combinedSig = (0, quantum_coin_js_sdk_1.combinePublicKeySignature)(pubBytes, sig);
         return signature_js_1.Signature.from({
             r: this.publicKey,
             s: combinedSig,
@@ -49,7 +49,7 @@ class SigningKey {
         });
     }
     /**
-     *  Compute the public key for a private %%key%%.
+     *  Compute the public key for a private %%key%%. If a publicKey is passed, it is returned as is. for backward compatibility.
      *
      *
      *  @example:
@@ -60,9 +60,15 @@ class SigningKey {
      *    //_result:
      */
     static computePublicKey(key) {
-        (0, index_js_1.assertArgument)((0, index_js_1.dataLength)(key) === CRYPTO_SECRETKEY_BYTES, "invalid private key", "privateKey", "[REDACTED]");
-        let priBytes = (0, index_js_1.getBytes)(key, "key");
-        let pubKey = qcsdk.publicKeyFromPrivateKey(priBytes);
+        let keyBytes = (0, index_js_1.getBytes)(key, "key");
+        let pubKey;
+        if (keyBytes.length == CRYPTO_SECRETKEY_BYTES) {
+            pubKey = (0, quantum_coin_js_sdk_1.publicKeyFromPrivateKey)(keyBytes);
+        }
+        else if (keyBytes.length == CRYPTO_PUBLICKEY_BYTES) {
+            pubKey = keyBytes;
+        }
+        (0, index_js_1.assertArgument)(pubKey !== null && pubKey !== undefined, "invalid key", "key", "[REDACTED]");
         return pubKey;
     }
     /**
@@ -88,7 +94,7 @@ class SigningKey {
         const sig = signature_js_1.Signature.from(signature);
         let sigBytes = (0, index_js_1.getBytes)(sig.s);
         let digestBytes = digest;
-        let publicKey = qcsdk.publicKeyFromSignature(digestBytes, sigBytes);
+        let publicKey = (0, quantum_coin_js_sdk_1.publicKeyFromSignature)(digestBytes, sigBytes);
         return publicKey;
     }
 }

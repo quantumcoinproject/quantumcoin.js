@@ -8,9 +8,5 @@
     "./wordlists/wordlists.js": "./wordlists/wordlists-browser.js"
   },
   "sideEffects": false,
-  "type": "module",
-  "dependencies": {
-    "quantum-coin-js-sdk": "^1.0.20",
-    "quantum-coin-pqc-js-sdk": "^1.0.5"
-  }
+  "type": "module"
 }

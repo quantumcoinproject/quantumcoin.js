@@ -7,7 +7,7 @@ const base_wallet_js_1 = require("./base-wallet.js");
 //import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
 const json_keystore_js_1 = require("./json-keystore.js");
 //import { Mnemonic } from "./mnemonic.js";
-const qcsdk = require("quantum-coin-js-sdk");
+const quantum_coin_js_sdk_1 = require("quantum-coin-js-sdk");
 //import {newWallet} from "quantum-coin-js-sdk";
 /**
  *  A **Wallet** manages a single private key which is used to sign
@@ -100,7 +100,7 @@ class Wallet extends base_wallet_js_1.BaseWallet {
      *  If there is no crytographic random source, this will throw.
      */
     static createRandom(provider) {
-        let wal = qcsdk.newWallet();
+        let wal = (0, quantum_coin_js_sdk_1.newWallet)();
         let privKey = wal.privateKey;
         return new Wallet((0, index_js_2.hexlify)(privKey));
     }
