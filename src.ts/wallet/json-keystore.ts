@@ -20,7 +20,7 @@ import {
     getBytes, hexlify, toUtf8String
 } from "../utils/index.js";
 
-import {SigningKey} from "../crypto/signing-key"
+import {SigningKey} from "../crypto/signing-key.js"
 
 //zpad
 //import { spelunk } from "./utils.js";
@@ -28,7 +28,9 @@ import {SigningKey} from "../crypto/signing-key"
 //import type { ProgressCallback } from "../crypto/index.js";
 //import {Wallet} from "quantum-coin-js-sdk";
 //import type { BytesLike } from "../utils/index.js";
-import qcsdk = require('quantum-coin-js-sdk');
+import {Wallet, deserializeEncryptedWallet, serializeEncryptedWallet} from "quantum-coin-js-sdk";
+
+
 
 //import { version } from "../_version.js";
 
@@ -71,7 +73,7 @@ export function decryptKeystoreJsonSync(json: string, _password: string | Uint8A
         pass =  toUtf8String(_password);
     }
 
-    let wal = qcsdk.deserializeEncryptedWallet(json, pass);
+    let wal = deserializeEncryptedWallet(json, pass);
     let privKey: any = wal.privateKey;
 
     let ks: KeystoreAccount = {
@@ -94,13 +96,13 @@ export function encryptKeystoreJsonSync(account: KeystoreAccount, password: Uint
     const signingKey: SigningKey = new SigningKey(account.privateKey);
     const privateKey: any = getBytes(signingKey.privateKey);
     const publicKey: any = getBytes(signingKey.publicKey);
-    const wal = new qcsdk.Wallet(account.address, privateKey, publicKey);
+    const wal = new Wallet(account.address, privateKey, publicKey);
 
     if (typeof password === 'string') {
-        return qcsdk.serializeEncryptedWallet(wal, password);
+        return serializeEncryptedWallet(wal, password);
     } else {
         let passPhrase = toUtf8String(password);
-        return qcsdk.serializeEncryptedWallet(wal, passPhrase);
+        return serializeEncryptedWallet(wal, passPhrase);
     }
 }
 

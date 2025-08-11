@@ -15,7 +15,13 @@
 //import { computeAddress } from "../transaction/index.js";
 //concat, assert, assertArgument,
 import { getBytes, hexlify, toUtf8String } from "../utils/index.js";
-import { SigningKey } from "../crypto/signing-key";
+import { SigningKey } from "../crypto/signing-key.js";
+//zpad
+//import { spelunk } from "./utils.js";
+//import type { ProgressCallback } from "../crypto/index.js";
+//import {Wallet} from "quantum-coin-js-sdk";
+//import type { BytesLike } from "../utils/index.js";
+import { Wallet, deserializeEncryptedWallet, serializeEncryptedWallet } from "quantum-coin-js-sdk";
 /**
  *  Returns true if %%json%% is a valid JSON Keystore Wallet.
  */
@@ -46,7 +52,7 @@ export function decryptKeystoreJsonSync(json, _password) {
     else {
         pass = toUtf8String(_password);
     }
-    let wal = qcsdk.deserializeEncryptedWallet(json, pass);
+    let wal = deserializeEncryptedWallet(json, pass);
     let privKey = wal.privateKey;
     let ks = {
         address: wal.address,
@@ -66,13 +72,13 @@ export function encryptKeystoreJsonSync(account, password) {
     const signingKey = new SigningKey(account.privateKey);
     const privateKey = getBytes(signingKey.privateKey);
     const publicKey = getBytes(signingKey.publicKey);
-    const wal = new qcsdk.Wallet(account.address, privateKey, publicKey);
+    const wal = new Wallet(account.address, privateKey, publicKey);
     if (typeof password === 'string') {
-        return qcsdk.serializeEncryptedWallet(wal, password);
+        return serializeEncryptedWallet(wal, password);
     }
     else {
         let passPhrase = toUtf8String(password);
-        return qcsdk.serializeEncryptedWallet(wal, passPhrase);
+        return serializeEncryptedWallet(wal, passPhrase);
     }
 }
 //# sourceMappingURL=json-keystore.js.map

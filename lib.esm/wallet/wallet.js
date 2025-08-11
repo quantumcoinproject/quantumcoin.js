@@ -3,6 +3,8 @@ import { assertArgument, hexlify } from "../utils/index.js";
 import { BaseWallet } from "./base-wallet.js";
 //import { decryptCrowdsaleJson, isCrowdsaleJson  } from "./json-crowdsale.js";
 import { decryptKeystoreJsonSync, encryptKeystoreJsonSync, isKeystoreJson } from "./json-keystore.js";
+//import { Mnemonic } from "./mnemonic.js";
+import { newWallet } from "quantum-coin-js-sdk";
 //import {newWallet} from "quantum-coin-js-sdk";
 /**
  *  A **Wallet** manages a single private key which is used to sign
@@ -95,7 +97,7 @@ export class Wallet extends BaseWallet {
      *  If there is no crytographic random source, this will throw.
      */
     static createRandom(provider) {
-        let wal = qcsdk.newWallet();
+        let wal = newWallet();
         let privKey = wal.privateKey;
         return new Wallet(hexlify(privKey));
     }

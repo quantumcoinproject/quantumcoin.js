@@ -5,7 +5,7 @@ exports.recoverAddress = exports.computeAddress = void 0;
 // keccak256,
 const index_js_1 = require("../crypto/index.js");
 const index_js_2 = require("../utils/index.js");
-const qcsdk = require("quantum-coin-js-sdk");
+const quantum_coin_js_sdk_1 = require("quantum-coin-js-sdk");
 /**
  *  Returns the address for the %%key%%.
  *
@@ -14,13 +14,18 @@ const qcsdk = require("quantum-coin-js-sdk");
 function computeAddress(key) {
     let pubkey;
     if (typeof (key) === "string") {
-        pubkey = index_js_1.SigningKey.computePublicKey(key);
+        if (key.startsWith("0x")) {
+            pubkey = index_js_1.SigningKey.computePublicKey(key);
+        }
+        else {
+            pubkey = index_js_1.SigningKey.computePublicKey("0x" + key);
+        }
     }
     else {
         pubkey = key.publicKey;
     }
     let pubKeyBytes = (0, index_js_2.getBytes)(pubkey);
-    return qcsdk.addressFromPublicKey(pubKeyBytes);
+    return (0, quantum_coin_js_sdk_1.addressFromPublicKey)(pubKeyBytes);
 }
 exports.computeAddress = computeAddress;
 /**

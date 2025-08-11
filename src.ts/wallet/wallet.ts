@@ -10,8 +10,7 @@ import {
     isKeystoreJson
 } from "./json-keystore.js";
 //import { Mnemonic } from "./mnemonic.js";
-import qcsdk = require('quantum-coin-js-sdk');
-
+import {newWallet} from "quantum-coin-js-sdk";
 import type { Provider } from "../providers/index.js";
 
 import type { KeystoreAccount } from "./json-keystore.js";
@@ -123,7 +122,7 @@ export class Wallet extends BaseWallet {
      *  If there is no crytographic random source, this will throw.
      */
     static createRandom(provider?: null | Provider): Wallet {
-        let wal = qcsdk.newWallet();
+        let wal = newWallet();
         let privKey: any = wal.privateKey;
         return new Wallet(hexlify(privKey));
     }

@@ -1,6 +1,12 @@
 /////////////////////////////
 //
+import { initialize, Config } from "quantum-coin-js-sdk";
+async function initQuantum() {
+    let clientConfigVal = new Config("https://sdk.readrelay.quantumcoinapi.com", "https://sdk.writerelay.quantumcoinapi.com", 123123, "", ""); //Mainnet
+    return await initialize(clientConfigVal);
+}
 export { version } from "./_version.js";
+export { initQuantum, };
 export { decodeBytes32String, encodeBytes32String, AbiCoder, ConstructorFragment, ErrorFragment, EventFragment, Fragment, FallbackFragment, FunctionFragment, NamedFragment, ParamType, StructFragment, checkResultErrors, ErrorDescription, Indexed, Interface, LogDescription, Result, TransactionDescription, Typed, } from "./abi/index.js";
 export { getAddress, getCreateAddress, getCreate2Address, isAddressable, isAddress, resolveAddress } from "./address/index.js";
 export { ZeroAddress, WeiPerEther, MaxUint256, MinInt256, MaxInt256, N, ZeroHash, EtherSymbol, MessagePrefix } from "./constants/index.js";
