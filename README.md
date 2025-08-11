@@ -51,27 +51,13 @@ For the latest changes, see the
 [CHANGELOG](https://github.com/ethers-io/ethers.js/blob/main/CHANGELOG.md).
 
 
-**Summaries**
-
-- [August 2023](https://blog.ricmoo.com/highlights-ethers-js-august-2023-fb68354c576c)
-- [September 2022](https://blog.ricmoo.com/highlights-ethers-js-september-2022-d7bda0fc37ed)
-- [June 2022](https://blog.ricmoo.com/highlights-ethers-js-june-2022-f5328932e35d)
-- [March 2022](https://blog.ricmoo.com/highlights-ethers-js-march-2022-f511fe1e88a1)
-- [December 2021](https://blog.ricmoo.com/highlights-ethers-js-december-2021-dc1adb779d1a)
-- [September 2021](https://blog.ricmoo.com/highlights-ethers-js-september-2021-1bf7cb47d348)
-- [May 2021](https://blog.ricmoo.com/highlights-ethers-js-may-2021-2826e858277d)
-- [March 2021](https://blog.ricmoo.com/highlights-ethers-js-march-2021-173d3a545b8d)
-- [December 2020](https://blog.ricmoo.com/highlights-ethers-js-december-2020-2e2db8bc800a)
-
-
-
 Installing
 ----------
 
 **NodeJS**
 
 ```
-/home/ricmoo/some_project> npm install ethers
+/home/ricmoo/some_project> npm install quantumcoin
 ```
 
 **Browser (ESM)**
