@@ -4,6 +4,7 @@
  *  @_subsection: api/crypto:Signing  [about-signing]
  */
 import { combinePublicKeySignature, publicKeyFromPrivateKey, publicKeyFromSignature } from "quantum-coin-js-sdk";
+import { cryptoSign } from "quantum-coin-pqc-js-sdk";
 import { getBytes, dataLength, getBytesCopy, hexlify, assertArgument, } from "../utils/index.js";
 import { Signature } from "./signature.js";
 const CRYPTO_MESSAGE_LENGTH = 32;
@@ -35,9 +36,10 @@ export class SigningKey {
      */
     sign(digest) {
         assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
-        const sig = pqc.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
+        const sig = cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
         const pubBytes = getBytes(this.publicKey);
-        const combinedSig = combinePublicKeySignature(pubBytes, sig);
+        let combinedSig = combinePublicKeySignature(pubBytes, sig);
+        combinedSig = "0x" + combinedSig;
         return Signature.from({
             r: this.publicKey,
             s: combinedSig,
@@ -60,6 +62,8 @@ export class SigningKey {
         let pubKey;
         if (keyBytes.length == CRYPTO_SECRETKEY_BYTES) {
             pubKey = publicKeyFromPrivateKey(keyBytes);
+            assertArgument(pubKey !== null && pubKey !== undefined, "invalid key", "key", "[REDACTED]");
+            pubKey = '0x' + pubKey;
         }
         else if (keyBytes.length == CRYPTO_PUBLICKEY_BYTES) {
             pubKey = keyBytes;

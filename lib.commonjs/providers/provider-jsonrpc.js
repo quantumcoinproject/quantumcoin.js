@@ -563,7 +563,6 @@ class JsonRpcApiProvider extends abstract_provider_js_1.AbstractProvider {
                     address: a.address,
                     nonce: (0, index_js_5.toQuantity)(a.nonce),
                     chainId: (0, index_js_5.toQuantity)(a.chainId),
-                    yParity: (0, index_js_5.toQuantity)(a.signature.yParity),
                     r: (0, index_js_5.toQuantity)(a.signature.r),
                     s: (0, index_js_5.toQuantity)(a.signature.s),
                 };

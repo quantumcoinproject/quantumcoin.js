@@ -95,9 +95,9 @@ function handleAuthorizationList(value, param) {
                 nonce: handleUint(auth[2], "nonce"),
                 chainId: handleUint(auth[0], "chainId"),
                 signature: index_js_2.Signature.from({
-                    yParity: handleNumber(auth[3], "yParity"),
-                    r: (0, index_js_3.zeroPadValue)(auth[4], 32),
-                    s: (0, index_js_3.zeroPadValue)(auth[5], 32)
+                    r: auth[4],
+                    s: auth[5],
+                    v: 1
                 })
             });
         }
@@ -136,7 +136,6 @@ function formatAuthorizationList(value) {
             formatNumber(a.chainId, "chainId"),
             a.address,
             formatNumber(a.nonce, "nonce"),
-            formatNumber(a.signature.yParity, "yParity"),
             a.signature.r,
             a.signature.s
         ];
@@ -204,16 +203,8 @@ function _serializeLegacy(tx, sig) {
     if (tx.chainId != BN_0) {
         // A chainId was provided; if non-zero we'll use EIP-155
         chainId = (0, index_js_3.getBigInt)(tx.chainId, "tx.chainId");
-        // We have a chainId in the tx and an EIP-155 v in the signature,
-        // make sure they agree with each other
-        (0, index_js_3.assertArgument)(!sig || sig.networkV == null || sig.legacyChainId === chainId, "tx.chainId/sig.v mismatch", "sig", sig);
     }
     else if (tx.signature) {
-        // No explicit chainId, but EIP-155 have a derived implicit chainId
-        const legacy = tx.signature.legacyChainId;
-        if (legacy != null) {
-            chainId = legacy;
-        }
     }
     // Requesting an unsigned transaction
     if (!sig) {
@@ -225,17 +216,7 @@ function _serializeLegacy(tx, sig) {
         }
         return (0, index_js_3.encodeRlp)(fields);
     }
-    // @TODO: We should probably check that tx.signature, chainId, and sig
-    //        match but that logic could break existing code, so schedule
-    //        this for the next major bump.
-    // Compute the EIP-155 v
-    let v = BigInt(27 + sig.yParity);
-    if (chainId !== BN_0) {
-        v = index_js_2.Signature.getChainIdV(chainId, sig.v);
-    }
-    else if (BigInt(sig.v) !== v) {
-        (0, index_js_3.assertArgument)(false, "tx.chainId/sig.v mismatch", "sig", sig);
-    }
+    let v = sig.v;
     // Add the signature
     fields.push((0, index_js_3.toBeArray)(v));
     fields.push((0, index_js_3.toBeArray)(sig.r));
@@ -243,19 +224,9 @@ function _serializeLegacy(tx, sig) {
     return (0, index_js_3.encodeRlp)(fields);
 }
 function _parseEipSignature(tx, fields) {
-    let yParity;
-    try {
-        yParity = handleNumber(fields[0], "yParity");
-        if (yParity !== 0 && yParity !== 1) {
-            throw new Error("bad yParity");
-        }
-    }
-    catch (error) {
-        (0, index_js_3.assertArgument)(false, "invalid yParity", "yParity", fields[0]);
-    }
-    const r = (0, index_js_3.zeroPadValue)(fields[1], 32);
-    const s = (0, index_js_3.zeroPadValue)(fields[2], 32);
-    const signature = index_js_2.Signature.from({ r, s, yParity });
+    const r = fields[1];
+    const s = fields[2];
+    const signature = index_js_2.Signature.from({ r, s });
     tx.signature = signature;
 }
 function _parseEip1559(data) {
@@ -295,7 +266,6 @@ function _serializeEip1559(tx, sig) {
         formatAccessList(tx.accessList || [])
     ];
     if (sig) {
-        fields.push(formatNumber(sig.yParity, "yParity"));
         fields.push((0, index_js_3.toBeArray)(sig.r));
         fields.push((0, index_js_3.toBeArray)(sig.s));
     }
@@ -335,7 +305,6 @@ function _serializeEip2930(tx, sig) {
         formatAccessList(tx.accessList || [])
     ];
     if (sig) {
-        fields.push(formatNumber(sig.yParity, "recoveryParam"));
         fields.push((0, index_js_3.toBeArray)(sig.r));
         fields.push((0, index_js_3.toBeArray)(sig.s));
     }
@@ -413,7 +382,6 @@ function _serializeEip4844(tx, sig, blobs) {
         formatHashes(tx.blobVersionedHashes || [], "blobVersionedHashes")
     ];
     if (sig) {
-        fields.push(formatNumber(sig.yParity, "yParity"));
         fields.push((0, index_js_3.toBeArray)(sig.r));
         fields.push((0, index_js_3.toBeArray)(sig.s));
         // We have blobs; return the network wrapped format
@@ -469,7 +437,6 @@ function _serializeEip7702(tx, sig) {
         formatAuthorizationList(tx.authorizationList || [])
     ];
     if (sig) {
-        fields.push(formatNumber(sig.yParity, "yParity"));
         fields.push((0, index_js_3.toBeArray)(sig.r));
         fields.push((0, index_js_3.toBeArray)(sig.s));
     }

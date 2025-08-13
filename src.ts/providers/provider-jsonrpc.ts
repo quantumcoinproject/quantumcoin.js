@@ -283,7 +283,7 @@ export interface JsonRpcTransactionRequest {
       */
      authorizationList?: Array<{
          address: string, nonce: string, chainId: string,
-         yParity: string, r: string, s: string
+         r: string, s: string
      }>;
 }
 
@@ -865,7 +865,6 @@ export abstract class JsonRpcApiProvider extends AbstractProvider {
                     address: a.address,
                     nonce: toQuantity(a.nonce),
                     chainId: toQuantity(a.chainId),
-                    yParity: toQuantity(a.signature.yParity),
                     r: toQuantity(a.signature.r),
                     s: toQuantity(a.signature.s),
                 }

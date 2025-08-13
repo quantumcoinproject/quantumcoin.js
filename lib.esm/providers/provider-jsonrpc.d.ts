@@ -190,7 +190,6 @@ export interface JsonRpcTransactionRequest {
         address: string;
         nonce: string;
         chainId: string;
-        yParity: string;
         r: string;
         s: string;
     }>;

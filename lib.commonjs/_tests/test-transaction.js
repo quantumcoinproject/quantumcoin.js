@@ -276,7 +276,6 @@ describe("Tests Signed Transaction Parsing", function () {
                 assert_1.default.ok(!!tx.signature, "signature:!null");
                 assert_1.default.equal(tx.signature.r, test.signatureEip155.r, "signature.r");
                 assert_1.default.equal(tx.signature.s, test.signatureEip155.s, "signature.s");
-                assert_1.default.equal(tx.signature.networkV, BigInt(test.signatureEip155.v), "signature.v");
                 tx = tx.clone();
             }
         });
@@ -297,7 +296,6 @@ describe("Tests Signed Transaction Parsing", function () {
                 assert_1.default.ok(!!tx.signature, "signature:!null");
                 assert_1.default.equal(tx.signature.r, test.signatureBerlin.r, "signature.r");
                 assert_1.default.equal(tx.signature.s, test.signatureBerlin.s, "signature.s");
-                assert_1.default.equal(tx.signature.yParity, parseInt(test.signatureBerlin.v), "signature.v");
                 tx = tx.clone();
             }
         });
@@ -317,7 +315,6 @@ describe("Tests Signed Transaction Parsing", function () {
                 assert_1.default.ok(!!tx.signature, "signature:!null");
                 assert_1.default.equal(tx.signature.r, test.signatureLondon.r, "signature.r");
                 assert_1.default.equal(tx.signature.s, test.signatureLondon.s, "signature.s");
-                assert_1.default.equal(tx.signature.yParity, parseInt(test.signatureLondon.v), "signature.v");
                 // Test cloning
                 tx = tx.clone();
             }
@@ -341,7 +338,6 @@ describe("Tests Signed Transaction Parsing", function () {
                 assert_1.default.ok(!!tx.signature, "signature:!null");
                 assert_1.default.equal(tx.signature.r, test.signatureCancun.r, "signature.r");
                 assert_1.default.equal(tx.signature.s, test.signatureCancun.s, "signature.s");
-                assert_1.default.equal(tx.signature.yParity, parseInt(test.signatureCancun.v), "signature.v");
                 // Test cloning
                 tx = tx.clone();
             }
