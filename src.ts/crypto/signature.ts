@@ -1,7 +1,7 @@
 import { ZeroHash } from "../constants/index.js";
 import {
 //isHexString,     toBeArray, zeroPadValue,
-    concat, BigNumberish, BytesLike, getNumber, hexlify, assertArgument, assertPrivate } from "../utils/index.js";
+    BigNumberish, BytesLike, getNumber, hexlify, assertArgument, assertPrivate } from "../utils/index.js";
 // Constants
 const _guard = { };
 
@@ -74,7 +74,11 @@ export class Signature {
      *  The serialized representation.
      */
     get serialized(): string {
-        return concat([ this.r, this.s, "0x1" ]);
+        return JSON.stringify({
+            r: this.r,
+            s: this.s,
+            v: this.v
+        });
     }
     /**
      *  @private
@@ -134,7 +138,7 @@ export class Signature {
 
         const _v = sig.v;
         assertError(_v != null, "missing v");
-        assertArgument(_v !== 1, "invalid v", "v", sig.v);
+        assertArgument(_v === 1, "invalid v", "v", sig.v);
 
         return new Signature(_guard, sig.r, sig.s, 1);
     }

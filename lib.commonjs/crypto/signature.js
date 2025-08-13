@@ -50,7 +50,11 @@ class Signature {
      *  The serialized representation.
      */
     get serialized() {
-        return (0, index_js_2.concat)([this.r, this.s, "0x1"]);
+        return JSON.stringify({
+            r: this.r,
+            s: this.s,
+            v: this.v
+        });
     }
     /**
      *  @private
@@ -106,7 +110,7 @@ class Signature {
         assertError(sig.s != null, "missing s");
         const _v = sig.v;
         assertError(_v != null, "missing v");
-        (0, index_js_2.assertArgument)(_v !== 1, "invalid v", "v", sig.v);
+        (0, index_js_2.assertArgument)(_v === 1, "invalid v", "v", sig.v);
         return new Signature(_guard, sig.r, sig.s, 1);
     }
 }

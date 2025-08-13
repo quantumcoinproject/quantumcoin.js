@@ -4825,7 +4825,11 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  The serialized representation.
          */
         get serialized() {
-            return concat([this.r, this.s, "0x1"]);
+            return JSON.stringify({
+                r: this.r,
+                s: this.s,
+                v: this.v
+            });
         }
         /**
          *  @private
@@ -4880,7 +4884,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             assertError(sig.s != null, "missing s");
             const _v = sig.v;
             assertError(_v != null, "missing v");
-            assertArgument(_v !== 1, "invalid v", "v", sig.v);
+            assertArgument(_v === 1, "invalid v", "v", sig.v);
             return new Signature(_guard$1, sig.r, sig.s, 1);
         }
     }
