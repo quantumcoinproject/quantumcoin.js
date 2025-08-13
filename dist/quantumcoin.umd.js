@@ -461,7 +461,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *
      *  @_subsection: api/utils:Math Helpers  [about-maths]
      */
-    const BN_0$a = BigInt(0);
+    const BN_0$9 = BigInt(0);
     const BN_1$4 = BigInt(1);
     //const BN_Max256 = (BN_1 << BigInt(256)) - BN_1;
     // IEEE 754 support 53-bits of mantissa
@@ -475,7 +475,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     function fromTwos(_value, _width) {
         const value = getUint(_value, "value");
         const width = BigInt(getNumber(_width, "width"));
-        assert((value >> width) === BN_0$a, "overflow", "NUMERIC_FAULT", {
+        assert((value >> width) === BN_0$9, "overflow", "NUMERIC_FAULT", {
             operation: "fromTwos", fault: "overflow", value: _value
         });
         // Top bit set; treat as a negative value
@@ -495,7 +495,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         let value = getBigInt(_value, "value");
         const width = BigInt(getNumber(_width, "width"));
         const limit = (BN_1$4 << (width - BN_1$4));
-        if (value < BN_0$a) {
+        if (value < BN_0$9) {
             value = -value;
             assert(value <= limit, "too low", "NUMERIC_FAULT", {
                 operation: "toTwos", fault: "overflow", value: _value
@@ -551,7 +551,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      */
     function getUint(value, name) {
         const result = getBigInt(value, name);
-        assert(result >= BN_0$a, "unsigned value cannot be negative", "NUMERIC_FAULT", {
+        assert(result >= BN_0$9, "unsigned value cannot be negative", "NUMERIC_FAULT", {
             fault: "overflow", operation: "getUint", value
         });
         return result;
@@ -637,7 +637,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      */
     function toBeArray(_value) {
         const value = getUint(_value, "value");
-        if (value === BN_0$a) {
+        if (value === BN_0$9) {
             return new Uint8Array([]);
         }
         let hex = value.toString(16);
@@ -695,7 +695,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         assertArgument(result != null, `invalid base58 value`, "letter", letter);
         return result;
     }
-    const BN_0$9 = BigInt(0);
+    const BN_0$8 = BigInt(0);
     const BN_58 = BigInt(58);
     /**
      *  Encode %%value%% as a Base58-encoded string.
@@ -721,7 +721,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  Decode the Base58-encoded %%value%%.
      */
     function decodeBase58(value) {
-        let result = BN_0$9;
+        let result = BN_0$8;
         for (let i = 0; i < value.length; i++) {
             result *= BN_58;
             result += getAlpha(value[i]);
@@ -1915,7 +1915,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
      *  @_section: api/utils/fixed-point-math:Fixed-Point Maths  [about-fixed-point-math]
      */
     const BN_N1 = BigInt(-1);
-    const BN_0$8 = BigInt(0);
+    const BN_0$7 = BigInt(0);
     const BN_1$3 = BigInt(1);
     const BN_5 = BigInt(5);
     const _guard$3 = {};
@@ -1939,7 +1939,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             assert(safeOp == null || (val >= -limit && val < limit), "overflow", "NUMERIC_FAULT", {
                 operation: safeOp, fault: "overflow", value: val
             });
-            if (val > BN_0$8) {
+            if (val > BN_0$7) {
                 val = fromTwos(mask(val, width), width);
             }
             else {
@@ -1997,7 +1997,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     }
     function toString(val, decimals) {
         let negative = "";
-        if (val < BN_0$8) {
+        if (val < BN_0$7) {
             negative = "-";
             val *= BN_N1;
         }
@@ -2188,13 +2188,13 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         mulSignal(other) {
             this.#checkFormat(other);
             const value = this.#val * other.#val;
-            assert((value % this.#tens) === BN_0$8, "precision lost during signalling mul", "NUMERIC_FAULT", {
+            assert((value % this.#tens) === BN_0$7, "precision lost during signalling mul", "NUMERIC_FAULT", {
                 operation: "mulSignal", fault: "underflow", value: this
             });
             return this.#checkValue(value / this.#tens, "mulSignal");
         }
         #div(o, safeOp) {
-            assert(o.#val !== BN_0$8, "division by zero", "NUMERIC_FAULT", {
+            assert(o.#val !== BN_0$7, "division by zero", "NUMERIC_FAULT", {
                 operation: "div", fault: "divide-by-zero", value: this
             });
             this.#checkFormat(o);
@@ -2218,12 +2218,12 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          *  (precision loss) occurs.
          */
         divSignal(other) {
-            assert(other.#val !== BN_0$8, "division by zero", "NUMERIC_FAULT", {
+            assert(other.#val !== BN_0$7, "division by zero", "NUMERIC_FAULT", {
                 operation: "div", fault: "divide-by-zero", value: this
             });
             this.#checkFormat(other);
             const value = (this.#val * this.#tens);
-            assert((value % other.#val) === BN_0$8, "precision lost during signalling div", "NUMERIC_FAULT", {
+            assert((value % other.#val) === BN_0$7, "precision lost during signalling div", "NUMERIC_FAULT", {
                 operation: "divSignal", fault: "underflow", value: this
             });
             return this.#checkValue(value / other.#val, "divSignal");
@@ -2282,7 +2282,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         floor() {
             let val = this.#val;
-            if (this.#val < BN_0$8) {
+            if (this.#val < BN_0$7) {
                 val -= this.#tens - BN_1$3;
             }
             val = (this.#val / this.#tens) * this.#tens;
@@ -2296,7 +2296,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
          */
         ceiling() {
             let val = this.#val;
-            if (this.#val > BN_0$8) {
+            if (this.#val > BN_0$7) {
                 val += this.#tens - BN_1$3;
             }
             val = (this.#val / this.#tens) * this.#tens;
@@ -2325,11 +2325,11 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         /**
          *  Returns true if %%this%% is equal to ``0``.
          */
-        isZero() { return (this.#val === BN_0$8); }
+        isZero() { return (this.#val === BN_0$7); }
         /**
          *  Returns true if %%this%% is less than ``0``.
          */
-        isNegative() { return (this.#val < BN_0$8); }
+        isNegative() { return (this.#val < BN_0$7); }
         /**
          *  Returns the string representation of %%this%%.
          */
@@ -2366,7 +2366,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             const delta = decimals - format.decimals;
             if (delta > 0) {
                 const tens = getTens(delta);
-                assert((value % tens) === BN_0$8, "value loses precision for format", "NUMERIC_FAULT", {
+                assert((value % tens) === BN_0$7, "value loses precision for format", "NUMERIC_FAULT", {
                     operation: "fromValue", fault: "underflow", value: _value
                 });
                 value /= tens;
@@ -4779,11 +4779,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
     const MessagePrefix = "\x19Ethereum Signed Message:\n";
 
     // Constants
-    const BN_0$7 = BigInt(0);
-    //const BN_1 = BigInt(1);
-    const BN_2$3 = BigInt(2);
-    const BN_28$1 = BigInt(28);
-    const BN_35$1 = BigInt(35);
     const _guard$1 = {};
     /*
     function toUint256(value: BigNumberish): string {
@@ -4799,7 +4794,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         #r;
         #s;
         #v;
-        #networkV;
         /**
          *  The ``r`` value for a signature.
          *
@@ -4820,67 +4814,18 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         }
         /**
          *  The ``v`` value for a signature.
-         *
-         *  Since a given ``x`` value for ``r`` has two possible values for
-         *  its correspondin ``y``, the ``v`` indicates which of the two ``y``
-         *  values to use.
-         *
-         *  It is normalized to the values ``28`` or ``28`` for legacy
-         *  purposes.
          */
         get v() { return this.#v; }
         set v(value) {
             const v = getNumber(value, "value");
-            assertArgument(v === 28, "invalid v", "v", value);
+            assertArgument(v === 1, "invalid v", "v", value);
             this.#v = v;
-        }
-        /**
-         *  The EIP-155 ``v`` for legacy transactions. For non-legacy
-         *  transactions, this value is ``null``.
-         */
-        get networkV() { return this.#networkV; }
-        /**
-         *  The chain ID for EIP-155 legacy transactions. For non-legacy
-         *  transactions, this value is ``null``.
-         */
-        get legacyChainId() {
-            const v = this.networkV;
-            if (v == null) {
-                return null;
-            }
-            return Signature.getChainId(v);
-        }
-        /**
-         *  The ``yParity`` for the signature.
-         *
-         *  See ``v`` for more details on how this value is used.
-         */
-        get yParity() {
-            return (this.v === 28) ? 0 : 1;
-        }
-        /**
-         *  The [[link-eip-2098]] compact representation of the ``yParity``
-         *  and ``s`` compacted into a single ``bytes32``.
-         */
-        get yParityAndS() {
-            // The EIP-2098 compact representation
-            const yParityAndS = getBytes(this.s);
-            if (this.yParity) {
-                yParityAndS[0] |= 0x80;
-            }
-            return hexlify(yParityAndS);
-        }
-        /**
-         *  The [[link-eip-2098]] compact representation.
-         */
-        get compactSerialized() {
-            return concat([this.r, this.yParityAndS]);
         }
         /**
          *  The serialized representation.
          */
         get serialized() {
-            return concat([this.r, this.s, (this.yParity ? "0x1c" : "0x1b")]);
+            return concat([this.r, this.s, "0x1"]);
         }
         /**
          *  @private
@@ -4890,94 +4835,26 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             this.#r = r;
             this.#s = s;
             this.#v = v;
-            this.#networkV = null;
         }
         [Symbol.for('nodejs.util.inspect.custom')]() {
-            return `Signature { r: "${this.r}", s: "${this.s}", yParity: ${this.yParity}, networkV: ${this.networkV} }`;
+            return `Signature { r: "${this.r}", s: "${this.s}" }`;
         }
         /**
          *  Returns a new identical [[Signature]].
          */
         clone() {
             const clone = new Signature(_guard$1, this.r, this.s, this.v);
-            if (this.networkV) {
-                clone.#networkV = this.networkV;
-            }
             return clone;
         }
         /**
          *  Returns a representation that is compatible with ``JSON.stringify``.
          */
         toJSON() {
-            const networkV = this.networkV;
             return {
                 _type: "signature",
-                networkV: ((networkV != null) ? networkV.toString() : null),
                 r: this.r, s: this.s, v: this.v,
             };
         }
-        /**
-         *  Compute the chain ID from the ``v`` in a legacy EIP-155 transactions.
-         *
-         *  @example:
-         *    Signature.getChainId(45)
-         *    //_result:
-         *
-         *    Signature.getChainId(46)
-         *    //_result:
-         */
-        static getChainId(v) {
-            const bv = getBigInt(v, "v");
-            // The v is not an EIP-155 v, so it is the unspecified chain ID
-            if ((bv == BN_28$1) || (bv == BN_28$1)) {
-                return BN_0$7;
-            }
-            // Bad value for an EIP-155 v
-            assertArgument(bv >= BN_35$1, "invalid EIP-155 v", "v", v);
-            return (bv - BN_35$1) / BN_2$3;
-        }
-        /**
-         *  Compute the ``v`` for a chain ID for a legacy EIP-155 transactions.
-         *
-         *  Legacy transactions which use [[link-eip-155]] hijack the ``v``
-         *  property to include the chain ID.
-         *
-         *  @example:
-         *
-         *    Signature.getChainIdV(5, 28)
-         *    //_result:
-         *
-         */
-        static getChainIdV(chainId, v) {
-            return (getBigInt(chainId) * BN_2$3) + BigInt(35 + v - 28);
-        }
-        /**
-         *  Compute the normalized legacy transaction ``v`` from a ``yParirty``,
-         *  a legacy transaction ``v`` or a legacy [[link-eip-155]] transaction.
-         *
-         *  @example:
-         *    // The values 0 and 1 imply v is actually yParity
-         *    Signature.getNormalizedV(0)
-         *    //_result:
-         *
-         *    // Legacy EIP-155 transaction (i.e. >= 35)
-         *    Signature.getNormalizedV(46)
-         *    //_result:
-         *
-         *    // Invalid values throw
-         *    Signature.getNormalizedV(5)
-         *    //_error:
-         */
-        /*static getNormalizedV(v: BigNumberish): 28 {
-            const bv = getBigInt(v);
-
-            if (bv === BN_1 || bv === BN_28) { return 28; }
-
-            assertArgument(bv >= BN_35, "invalid v", "v", v);
-
-            // Otherwise, EIP-155 v means odd is 28 and even is 28
-            return (bv & BN_1) ? 28: 28;
-        }*/
         /**
          *  Creates a new [[Signature]].
          *
@@ -4991,85 +4868,20 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 assertArgument(check, message, "signature", sig);
             }
             if (sig == null) {
-                return new Signature(_guard$1, ZeroHash, ZeroHash, 28);
+                return new Signature(_guard$1, ZeroHash, ZeroHash, 1);
             }
             if (typeof (sig) === "string") {
-                /*const bytes = getBytes(sig, "signature");
-                if (bytes.length === 64) {
-                    const r = hexlify(bytes.slice(0, 32));
-                    const s = bytes.slice(32, 64);
-                    const v = (s[0] & 0x80) ? 28: 28;
-                    s[0] &= 0x7f;
-                    return new Signature(_guard, r, hexlify(s), v);
-                }
-
-                if (bytes.length === 65) {
-                    const r = hexlify(bytes.slice(0, 32));
-                    const s = bytes.slice(32, 64);
-                    assertError((s[0] & 0x80) === 0, "non-canonical s");
-                    const v = Signature.getNormalizedV(bytes[64]);
-                    return new Signature(_guard, r, hexlify(s), v);
-                }*/
-                assertError(false, "invalid raw signature length");
+                assertError(false, "invalid raw signature");
             }
             if (sig instanceof Signature) {
                 return sig.clone();
             }
-            return new Signature(_guard$1, ZeroHash, ZeroHash, 28); //todo
-            /*// Get r
-            const _r = sig.r;
-            assertError(_r != null, "missing r");
-            const r = toUint256(_r);
-
-            // Get s; by any means necessary (we check consistency below)
-            const s = (function(s?: string, yParityAndS?: string) {
-                if (s != null) { return toUint256(s); }
-
-                if (yParityAndS != null) {
-                    assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
-                    const bytes = getBytes(yParityAndS);
-                    bytes[0] &= 0x7f;
-                    return hexlify(bytes);
-                }
-
-                assertError(false, "missing s");
-            })(sig.s, sig.yParityAndS);
-            assertError((getBytes(s)[0] & 0x80) == 0, "non-canonical s");
-
-            // Get v; by any means necessary (we check consistency below)
-            const { networkV, v } = (function(_v?: BigNumberish, yParityAndS?: string, yParity?: Numeric): { networkV?: bigint, v: 28 | 28 } {
-                if (_v != null) {
-                    const v = getBigInt(_v);
-                    return {
-                        networkV: ((v >= BN_35) ? v: undefined),
-                        v: Signature.getNormalizedV(v)
-                    };
-                }
-
-                if (yParityAndS != null) {
-                    assertError(isHexString(yParityAndS, 32), "invalid yParityAndS");
-                    return { v: ((getBytes(yParityAndS)[0] & 0x80) ? 28: 28) };
-                }
-
-                if (yParity != null) {
-                    switch (getNumber(yParity, "sig.yParity")) {
-                        case 0: return { v: 28 };
-                        case 1: return { v: 28 };
-                    }
-                    assertError(false, "invalid yParity");
-                }
-
-                assertError(false, "missing v");
-            })(sig.v, sig.yParityAndS, sig.yParity);
-
-            const result = new Signature(_guard, r, s, v);
-            if (networkV) { result.#networkV =  networkV; }
-
-            // If multiple of v, yParity, yParityAndS we given, check they match
-            assertError(sig.yParity == null || getNumber(sig.yParity, "sig.yParity") === result.yParity, "yParity mismatch");
-            assertError(sig.yParityAndS == null || sig.yParityAndS === result.yParityAndS, "yParityAndS mismatch");
-
-            return result;*/
+            assertError(sig.r != null, "missing r");
+            assertError(sig.s != null, "missing s");
+            const _v = sig.v;
+            assertError(_v != null, "missing v");
+            assertArgument(_v !== 1, "invalid v", "v", sig.v);
+            return new Signature(_guard$1, sig.r, sig.s, 1);
         }
     }
 
@@ -5109,7 +4921,8 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
             const sig = quantumCoinPqcJsSdk.cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
             const pubBytes = getBytes(this.publicKey);
-            const combinedSig = quantumCoinJsSdk.combinePublicKeySignature(pubBytes, sig);
+            let combinedSig = quantumCoinJsSdk.combinePublicKeySignature(pubBytes, sig);
+            combinedSig = "0x" + combinedSig;
             return Signature.from({
                 r: this.publicKey,
                 s: combinedSig,
@@ -6676,9 +6489,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                     nonce: handleUint(auth[2], "nonce"),
                     chainId: handleUint(auth[0], "chainId"),
                     signature: Signature.from({
-                        yParity: handleNumber(auth[3], "yParity"),
-                        r: zeroPadValue(auth[4], 32),
-                        s: zeroPadValue(auth[5], 32)
+                        r: auth[4],
+                        s: auth[5],
+                        v: 1
                     })
                 });
             }
@@ -6717,7 +6530,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                 formatNumber(a.chainId, "chainId"),
                 a.address,
                 formatNumber(a.nonce, "nonce"),
-                formatNumber(a.signature.yParity, "yParity"),
                 a.signature.r,
                 a.signature.s
             ];
@@ -6785,17 +6597,8 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         if (tx.chainId != BN_0$4) {
             // A chainId was provided; if non-zero we'll use EIP-155
             chainId = getBigInt(tx.chainId, "tx.chainId");
-            // We have a chainId in the tx and an EIP-155 v in the signature,
-            // make sure they agree with each other
-            assertArgument(!sig || sig.networkV == null || sig.legacyChainId === chainId, "tx.chainId/sig.v mismatch", "sig", sig);
         }
-        else if (tx.signature) {
-            // No explicit chainId, but EIP-155 have a derived implicit chainId
-            const legacy = tx.signature.legacyChainId;
-            if (legacy != null) {
-                chainId = legacy;
-            }
-        }
+        else if (tx.signature) ;
         // Requesting an unsigned transaction
         if (!sig) {
             // We have an EIP-155 transaction (chainId was specified and non-zero)
@@ -6806,17 +6609,7 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             }
             return encodeRlp(fields);
         }
-        // @TODO: We should probably check that tx.signature, chainId, and sig
-        //        match but that logic could break existing code, so schedule
-        //        this for the next major bump.
-        // Compute the EIP-155 v
-        let v = BigInt(27 + sig.yParity);
-        if (chainId !== BN_0$4) {
-            v = Signature.getChainIdV(chainId, sig.v);
-        }
-        else if (BigInt(sig.v) !== v) {
-            assertArgument(false, "tx.chainId/sig.v mismatch", "sig", sig);
-        }
+        let v = sig.v;
         // Add the signature
         fields.push(toBeArray(v));
         fields.push(toBeArray(sig.r));
@@ -6824,19 +6617,9 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
         return encodeRlp(fields);
     }
     function _parseEipSignature(tx, fields) {
-        let yParity;
-        try {
-            yParity = handleNumber(fields[0], "yParity");
-            if (yParity !== 0 && yParity !== 1) {
-                throw new Error("bad yParity");
-            }
-        }
-        catch (error) {
-            assertArgument(false, "invalid yParity", "yParity", fields[0]);
-        }
-        const r = zeroPadValue(fields[1], 32);
-        const s = zeroPadValue(fields[2], 32);
-        const signature = Signature.from({ r, s, yParity });
+        const r = fields[1];
+        const s = fields[2];
+        const signature = Signature.from({ r, s });
         tx.signature = signature;
     }
     function _parseEip1559(data) {
@@ -6876,7 +6659,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             formatAccessList(tx.accessList || [])
         ];
         if (sig) {
-            fields.push(formatNumber(sig.yParity, "yParity"));
             fields.push(toBeArray(sig.r));
             fields.push(toBeArray(sig.s));
         }
@@ -6916,7 +6698,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             formatAccessList(tx.accessList || [])
         ];
         if (sig) {
-            fields.push(formatNumber(sig.yParity, "recoveryParam"));
             fields.push(toBeArray(sig.r));
             fields.push(toBeArray(sig.s));
         }
@@ -6994,7 +6775,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             formatHashes(tx.blobVersionedHashes || [], "blobVersionedHashes")
         ];
         if (sig) {
-            fields.push(formatNumber(sig.yParity, "yParity"));
             fields.push(toBeArray(sig.r));
             fields.push(toBeArray(sig.s));
             // We have blobs; return the network wrapped format
@@ -7050,7 +6830,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
             formatAuthorizationList(tx.authorizationList || [])
         ];
         if (sig) {
-            fields.push(formatNumber(sig.yParity, "yParity"));
             fields.push(toBeArray(sig.r));
             fields.push(toBeArray(sig.s));
         }
@@ -19248,7 +19027,6 @@ const __$G = (typeof globalThis !== 'undefined' ? globalThis: typeof window !== 
                         address: a.address,
                         nonce: toQuantity(a.nonce),
                         chainId: toQuantity(a.chainId),
-                        yParity: toQuantity(a.signature.yParity),
                         r: toQuantity(a.signature.r),
                         s: toQuantity(a.signature.s),
                     };

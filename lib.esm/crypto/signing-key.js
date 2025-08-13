@@ -38,7 +38,8 @@ export class SigningKey {
         assertArgument(dataLength(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
         const sig = cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
         const pubBytes = getBytes(this.publicKey);
-        const combinedSig = combinePublicKeySignature(pubBytes, sig);
+        let combinedSig = combinePublicKeySignature(pubBytes, sig);
+        combinedSig = "0x" + combinedSig;
         return Signature.from({
             r: this.publicKey,
             s: combinedSig,

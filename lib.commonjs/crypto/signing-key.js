@@ -41,7 +41,8 @@ class SigningKey {
         (0, index_js_1.assertArgument)((0, index_js_1.dataLength)(digest) === CRYPTO_MESSAGE_LENGTH, "invalid digest length", "digest", digest);
         const sig = (0, quantum_coin_pqc_js_sdk_1.cryptoSign)((0, index_js_1.getBytesCopy)(digest), (0, index_js_1.getBytesCopy)(this.#privateKey));
         const pubBytes = (0, index_js_1.getBytes)(this.publicKey);
-        const combinedSig = (0, quantum_coin_js_sdk_1.combinePublicKeySignature)(pubBytes, sig);
+        let combinedSig = (0, quantum_coin_js_sdk_1.combinePublicKeySignature)(pubBytes, sig);
+        combinedSig = "0x" + combinedSig;
         return signature_js_1.Signature.from({
             r: this.publicKey,
             s: combinedSig,

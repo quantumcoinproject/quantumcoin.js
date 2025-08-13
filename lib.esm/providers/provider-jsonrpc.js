@@ -559,7 +559,6 @@ export class JsonRpcApiProvider extends AbstractProvider {
                     address: a.address,
                     nonce: toQuantity(a.nonce),
                     chainId: toQuantity(a.chainId),
-                    yParity: toQuantity(a.signature.yParity),
                     r: toQuantity(a.signature.r),
                     s: toQuantity(a.signature.s),
                 };

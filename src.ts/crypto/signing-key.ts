@@ -56,7 +56,8 @@ export class SigningKey {
 
         const sig: any = cryptoSign(getBytesCopy(digest), getBytesCopy(this.#privateKey));
         const pubBytes: any = getBytes(this.publicKey);
-        const combinedSig = combinePublicKeySignature(pubBytes, sig);
+        let combinedSig = combinePublicKeySignature(pubBytes, sig);
+        combinedSig = "0x" + combinedSig;
 
         return Signature.from({
             r: this.publicKey,
