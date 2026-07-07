@@ -419,6 +419,8 @@ Core signing implementation.
 - `getAddress(): Promise<string>`
 - `signTransaction(tx: TransactionRequest): Promise<string>`
 - `sendTransaction(tx: TransactionRequest): Promise<TransactionResponse>`
+- `signMessageSync(message: string | Uint8Array, signingContext?: number | null): string` — signs an arbitrary message using the EIP-191 personal-message digest (see [Message signing](#message-signing-eip-191)). Returns an opaque post-quantum signature blob (0x hex) that embeds the signer's public key. The message may be at most 1 MiB once UTF-8 encoded (`INVALID_ARGUMENT` otherwise). Optional `signingContext`: omitted/`null` derives the compact context from the key type (`0` for keyType 3, `1` for keyType 5); `2` selects the full-signature scheme for a keyType 3 wallet.
+- `signMessage(message: string | Uint8Array, signingContext?: number | null): Promise<string>` — async wrapper over `signMessageSync` (honors the ethers `Signer` interface contract; the underlying signing is synchronous).
 
 ### `Wallet`
 
@@ -486,6 +488,38 @@ Address-only signer.
 
 - `new VoidSigner(address: string, provider?: AbstractProvider)`
 - `getAddress(): Promise<string>`
+
+### Message signing (EIP-191)
+
+Arbitrary-message signing and verification, adapted from ethers for
+QuantumCoin's post-quantum cryptography.
+
+- `Wallet.signMessage(message, signingContext?)` / `Wallet.signMessageSync(message, signingContext?)` — see [`BaseWallet`](#basewallet).
+- `hashMessage(message: string | Uint8Array): string` — the EIP-191 digest,
+  `keccak256("\x19Ethereum Signed Message:\n" + len + message)` (32 bytes). Same
+  prefix as Ethereum, so it matches `personal_sign` in `quantum-coin-go`. Strings
+  are UTF-8 encoded; the length prefix counts message **bytes**.
+- `verifyMessage(message: string | Uint8Array, signature: string | Uint8Array): string`
+  — **synchronous** (matches ethers; there is no `verifyMessageSync`). Returns the
+  recovered 32-byte signer address; throws `INVALID_ARGUMENT` if the signature is
+  malformed or does not verify.
+
+```js
+const { Wallet, verifyMessage } = require("quantumcoin");
+const wallet = Wallet.createRandom();
+const sig = await wallet.signMessage("Hello Joe");
+verifyMessage("Hello Joe", sig) === wallet.address; // true
+```
+
+**Key differences vs Ethereum**
+
+| Property | Ethereum | QuantumCoin |
+| --- | --- | --- |
+| Message prefix / hash | EIP-191 + keccak256 | Identical EIP-191 + keccak256 |
+| Signature | 65-byte `(r, s, v)` | Opaque multi-KB blob (scheme id byte + **embedded public key**) |
+| Address size | 20 bytes | 32 bytes |
+| Recovery | ECDSA `ecrecover` | Extract embedded public key + PQC verify (no `ecrecover`) |
+| `signTypedData` (EIP-712) | Supported | Not yet supported |
 
 ## Contracts
 
@@ -679,6 +713,7 @@ const asOutput: Uint256 = 123n;
 - `sha512(data: BytesLike): string`
 - `ripemd160(data: BytesLike): string`
 - `id(text: string): string` (=`keccak256(utf8Bytes(text))`)
+- `hashMessage(message: BytesLike): string` — EIP-191 personal-message digest, `keccak256("\x19Ethereum Signed Message:\n" + len + message)`. See [Message signing](#message-signing-eip-191).
 - `randomBytes(length: number): Uint8Array`
 - `computeHmac(algorithm: string, key: BytesLike, data: BytesLike): string`
 - `pbkdf2(password: BytesLike, salt: BytesLike, iterations: number, keylen: number, algorithm?: string): string`

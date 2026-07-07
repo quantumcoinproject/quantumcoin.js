@@ -52,6 +52,24 @@ export class BaseWallet extends AbstractSigner {
      */
     signTransaction(tx: import("../providers/provider").TransactionRequest): Promise<string>;
     /**
+     * Sign an arbitrary message (EIP-191 personal-message scheme), synchronously.
+     * Returns an opaque post-quantum signature blob (0x hex) that embeds the
+     * signer's public key. Optional signingContext: when omitted/null the compact
+     * context is derived from the key type (0 for keyType 3, 1 for keyType 5);
+     * pass 2 for the full-signature scheme on a keyType 3 wallet.
+     * @param {string|Uint8Array} message
+     * @param {number|null=} signingContext
+     * @returns {string}
+     */
+    signMessageSync(message: string | Uint8Array, signingContext?: (number | null) | undefined): string;
+    /**
+     * Sign an arbitrary message (EIP-191). Async wrapper over signMessageSync.
+     * @param {string|Uint8Array} message
+     * @param {number|null=} signingContext
+     * @returns {Promise<string>}
+     */
+    signMessage(message: string | Uint8Array, signingContext?: (number | null) | undefined): Promise<string>;
+    /**
      * Internal: sign a transaction and return both the raw serialized transaction
      * and the signer-computed transaction hash. The hash is later used to
      * verify that an untrusted RPC node broadcast exactly the transaction we
@@ -225,3 +243,16 @@ export class VoidSigner extends AbstractSigner {
     _address: string;
     getAddress(): Promise<string>;
 }
+/**
+ * Recover the signer's 32-byte address from an EIP-191 message signature.
+ *
+ * QuantumCoin has no ECDSA ecrecover; the post-quantum signature embeds the
+ * public key, which is extracted and verified against the message digest before
+ * the address is returned. Throws INVALID_ARGUMENT if the signature is malformed
+ * or does not verify. Synchronous, matching ethers' verifyMessage.
+ *
+ * @param {string|Uint8Array} message The original message (strings are UTF-8 encoded).
+ * @param {string|Uint8Array} signature The signature produced by signMessage.
+ * @returns {string} 0x-prefixed 32-byte signer address.
+ */
+export function verifyMessage(message: string | Uint8Array, signature: string | Uint8Array): string;

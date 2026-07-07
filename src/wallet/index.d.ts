@@ -1,4 +1,5 @@
 declare const _exports: {
+    verifyMessage(message: string | Uint8Array, signature: string | Uint8Array): string;
     SigningKey: typeof import("./wallet").SigningKey;
     AbstractSigner: typeof import("./wallet").AbstractSigner;
     BaseWallet: typeof import("./wallet").BaseWallet;

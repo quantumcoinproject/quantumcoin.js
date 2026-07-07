@@ -90,6 +90,32 @@ function id(text) {
 }
 
 /**
+ * Compute the EIP-191 "personal message" digest for a message.
+ *
+ * QuantumCoin uses the exact same prefix as Ethereum, so this is byte-for-byte
+ * compatible with `personal_sign` in `quantum-coin-go`:
+ *
+ *   keccak256("\x19Ethereum Signed Message:\n" + message.length + message)
+ *
+ * The resulting 32-byte hash is the digest passed to `Wallet.signMessage` /
+ * `Wallet.signMessageSync` and re-derived by `verifyMessage`. The decimal length
+ * prefix counts message BYTES, not characters. A string message is UTF-8
+ * encoded; a Uint8Array (or 0x hex string coerced via `arrayify`) is treated as
+ * raw bytes.
+ *
+ * @param {string|Uint8Array} message The message to hash. Strings are UTF-8 encoded.
+ * @returns {string} 0x-prefixed, 32-byte keccak256 digest.
+ */
+function hashMessage(message) {
+  const msgBytes = typeof message === "string" ? utf8ToBytes(message) : arrayify(message);
+  const prefix = utf8ToBytes(`\x19Ethereum Signed Message:\n${msgBytes.length}`);
+  const composed = new Uint8Array(prefix.length + msgBytes.length);
+  composed.set(prefix, 0);
+  composed.set(msgBytes, prefix.length);
+  return keccak256(composed);
+}
+
+/**
  * Generate cryptographically strong random bytes.
  *
  * Uses the platform Web Crypto API (`globalThis.crypto`), which is available in
@@ -181,6 +207,7 @@ module.exports = {
   sha512,
   ripemd160,
   id,
+  hashMessage,
   randomBytes,
   computeHmac,
   pbkdf2,

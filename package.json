@@ -1,6 +1,6 @@
 {
   "name": "quantumcoin",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "QuantumCoin.js - a post quantum cryptography SDK for QuantumCoin",
   "main": "index.js",
   "types": "src/index.d.ts",
@@ -59,12 +59,14 @@
     "example:events:ts": "npx tsx examples/events.ts",
     "example:offline-signing": "node examples/offline-signing.js",
     "example:offline-signing:ts": "npx tsx examples/offline-signing.ts",
+    "example:sign-message": "node examples/sign-message.js",
+    "example:sign-message:ts": "npx tsx examples/sign-message.ts",
     "example:generator-js": "node examples/example-generator-sdk-js.js",
     "example:generator-js:ts": "npx tsx examples/example-generator-sdk-js.ts",
     "example:generator-ts": "node examples/example-generator-sdk-ts.js",
     "example:generator-ts:ts": "npx tsx examples/example-generator-sdk-ts.ts",
-    "examples": "node examples/example.js && node examples/wallet-offline.js && node examples/read-operations.js && node examples/events.js && node examples/example-generator-sdk-js.js && node examples/example-generator-sdk-ts.js",
-    "examples:ts": "npx tsx examples/example.ts && npx tsx examples/wallet-offline.ts && npx tsx examples/read-operations.ts && npx tsx examples/events.ts && npx tsx examples/example-generator-sdk-js.ts && npx tsx examples/example-generator-sdk-ts.ts",
+    "examples": "node examples/example.js && node examples/wallet-offline.js && node examples/sign-message.js && node examples/read-operations.js && node examples/events.js && node examples/example-generator-sdk-js.js && node examples/example-generator-sdk-ts.js",
+    "examples:ts": "npx tsx examples/example.ts && npx tsx examples/wallet-offline.ts && npx tsx examples/sign-message.ts && npx tsx examples/read-operations.ts && npx tsx examples/events.ts && npx tsx examples/example-generator-sdk-js.ts && npx tsx examples/example-generator-sdk-ts.ts",
     "build": "npx -p typescript tsc -p tsconfig.build.json && node scripts/copy-declarations.js"
   },
   "repository": {

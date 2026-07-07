@@ -86,6 +86,52 @@ const restored = Wallet.fromEncryptedJsonSync(json, "mySecurePassword123");
 console.log(restored.address);
 ```
 
+## Message signing (EIP-191 / `personal_sign`)
+
+Sign and verify arbitrary messages using QuantumCoin's post-quantum keys. The
+message digest uses the exact same EIP-191 prefix as Ethereum
+(`keccak256("\x19Ethereum Signed Message:\n" + len + message)`), so it is
+byte-for-byte compatible with `personal_sign` in `quantum-coin-go`.
+
+```js
+const { Wallet, verifyMessage, hashMessage } = require("quantumcoin");
+const { Initialize } = require("quantumcoin/config");
+
+await Initialize(null);
+
+const wallet = Wallet.createRandom();
+
+// async (ethers Signer contract) or sync
+const signature = await wallet.signMessage("Hello Joe");
+const signatureSync = wallet.signMessageSync("Hello Joe");
+
+// verifyMessage is synchronous and returns the recovered signer address
+const signer = verifyMessage("Hello Joe", signature);
+console.log(signer === wallet.address); // true
+
+// The EIP-191 digest is available on its own if needed
+console.log(hashMessage("Hello Joe")); // 0x...32-byte hash
+```
+
+### Differences vs Ethereum
+
+- **Signature shape:** not a 65-byte `(r, s, v)` value. It is an opaque,
+  scheme-dependent multi-kilobyte hex blob whose first byte is the scheme id and
+  which **embeds the signer's public key**. There is no `Signature`/`r`/`s`/`v`
+  object.
+- **Address size:** recovered addresses are the full 32 bytes (66 hex chars).
+- **No `ecrecover`:** `verifyMessage` does not recover a key from `(digest, sig)`
+  cryptographically. It extracts the embedded public key, verifies it against the
+  digest, and returns its address; a signature that fails verification throws.
+- **Signing context:** `signMessage`/`signMessageSync` accept an optional
+  `signingContext`. When omitted it derives the compact context from the key type
+  (`0` for keyType 3, `1` for keyType 5); pass `2` to request the full-signature
+  scheme for a keyType 3 wallet.
+- **Message size:** the message must be at most 1 MiB (once UTF-8 encoded);
+  larger inputs throw `INVALID_ARGUMENT`. The message is only ever hashed to a
+  32-byte digest, so there is no need for larger payloads.
+- **EIP-712 (`signTypedData`)** is not yet supported.
+
 ## Contracts (read-only)
 
 ```js
@@ -156,6 +202,7 @@ Common types:
 ```bash
 npm run example
 npm run example:wallet
+npm run example:sign-message
 npm run example:contract:read
 npm run example:events
 # Run all examples (including SDK generator JS/TS)

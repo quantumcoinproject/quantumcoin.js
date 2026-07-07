@@ -12,8 +12,9 @@ const qcsdk = require("quantum-coin-js-sdk");
 const seedWords = require("seed-words");
 const { JsonRpcProvider } = require("../providers/json-rpc-provider");
 const { assertArgument, assertSecretArgument, makeError } = require("../errors");
-const { arrayify, bytesToHex, bytesToUtf8, hexToBytes, isHexString, normalizeHex } = require("../internal/hex");
-const { getAddress } = require("../utils/address");
+const { arrayify, bytesToHex, bytesToUtf8, hexToBytes, isHexString, normalizeHex, utf8ToBytes } = require("../internal/hex");
+const { computeAddress, getAddress } = require("../utils/address");
+const { hashMessage } = require("../utils/hashing");
 const { WeiPerEther } = require("../constants");
 
 function _requireInitialized() {
@@ -33,6 +34,13 @@ function _requireInitialized() {
 function _bytesToNumberArray(bytes) {
   return Array.from(bytes);
 }
+
+// Upper bound on the message size accepted by signMessage/signMessageSync. The
+// message is only ever hashed to a 32-byte digest, so there is no protocol need
+// for large inputs; this cap is a guardrail against accidentally signing an
+// unbounded buffer (e.g. a whole file passed in by mistake). 1 MiB is far larger
+// than any realistic personal_sign payload.
+const MAX_MESSAGE_BYTES = 1024 * 1024;
 
 /**
  * Verify that a private/public key pair is internally consistent (the public
@@ -212,6 +220,74 @@ class BaseWallet extends AbstractSigner {
   async signTransaction(tx) {
     const { raw } = await this._signDetailed(tx);
     return raw;
+  }
+
+  /**
+   * Sign an arbitrary message using QuantumCoin's EIP-191 personal-message
+   * scheme, synchronously.
+   *
+   * The message is hashed with {@link hashMessage} (the same
+   * `keccak256("\x19Ethereum Signed Message:\n" + len + message)` digest used by
+   * `personal_sign` in quantum-coin-go), producing a 32-byte digest that is then
+   * signed with the wallet's post-quantum key.
+   *
+   * Unlike Ethereum's 65-byte `(r, s, v)` signature, the returned value is an
+   * opaque, scheme-dependent multi-kilobyte blob whose first byte is the scheme
+   * id and which EMBEDS the signer's public key. This is what allows
+   * {@link verifyMessage} to recover the signer address without an ecrecover
+   * primitive.
+   *
+   * @param {string|Uint8Array} message The message to sign (strings are UTF-8 encoded).
+   *   Must be at most {@link MAX_MESSAGE_BYTES} (1 MiB) once UTF-8 encoded.
+   * @param {number|null=} signingContext Optional signing context. When omitted or
+   *   null, `quantum-coin-js-sdk` derives the compact context from the key type
+   *   (0 for keyType 3, 1 for keyType 5); pass 2 to request the full-signature
+   *   scheme for a keyType 3 wallet.
+   * @returns {string} 0x-prefixed signature blob (public key embedded).
+   * @throws {TypeError} INVALID_ARGUMENT if the message exceeds the size limit.
+   */
+  signMessageSync(message, signingContext) {
+    _requireInitialized();
+    const msgBytes = typeof message === "string" ? utf8ToBytes(message) : arrayify(message);
+    assertArgument(
+      msgBytes.length <= MAX_MESSAGE_BYTES,
+      `message too long (max ${MAX_MESSAGE_BYTES} bytes)`,
+      "message",
+      msgBytes.length,
+    );
+    const digestArr = _bytesToNumberArray(hexToBytes(hashMessage(msgBytes)));
+    const privArr = _bytesToNumberArray(this.signingKey.privateKeyBytes);
+    const pubArr = _bytesToNumberArray(this.signingKey.publicKeyBytes);
+    const ctx = signingContext == null ? null : signingContext;
+    const res = qcsdk.sign(privArr, digestArr, ctx);
+    if (!res || typeof res !== "object" || res.resultCode !== 0 || res.signature == null) {
+      throw makeError("signMessage failed", "UNKNOWN_ERROR", {
+        resultCode: res && typeof res === "object" ? res.resultCode : null,
+      });
+    }
+    // qcsdk.sign returns the signature-only bytes. Combine the public key into
+    // the blob (sig + pubKey) so the result is self-describing and verifyMessage
+    // can recover the signer without a separately supplied public key.
+    const sigArr = Array.from(res.signature);
+    const combined = qcsdk.combinePublicKeySignature(pubArr, sigArr);
+    if (typeof combined !== "string") {
+      throw makeError("signMessage failed to combine public key with signature", "UNKNOWN_ERROR", {});
+    }
+    return normalizeHex(combined);
+  }
+
+  /**
+   * Sign an arbitrary message (EIP-191). Async wrapper over
+   * {@link BaseWallet#signMessageSync} that honors the ethers `Signer` interface
+   * contract (`Signer.signMessage` is async); the underlying PQC signing is
+   * synchronous.
+   *
+   * @param {string|Uint8Array} message The message to sign (strings are UTF-8 encoded).
+   * @param {number|null=} signingContext Optional signing context (see signMessageSync).
+   * @returns {Promise<string>} 0x-prefixed signature blob (public key embedded).
+   */
+  async signMessage(message, signingContext) {
+    return this.signMessageSync(message, signingContext);
   }
 
   /**
@@ -739,6 +815,39 @@ class VoidSigner extends AbstractSigner {
   }
 }
 
+/**
+ * Recover the signer's 32-byte address from an EIP-191 message signature.
+ *
+ * QuantumCoin has no ECDSA `ecrecover`: signatures are opaque post-quantum blobs
+ * that embed the signer's public key. This function re-derives the EIP-191
+ * digest with {@link hashMessage}, extracts and cryptographically verifies the
+ * embedded public key against that digest via
+ * `quantum-coin-js-sdk.publicKeyFromSignature`, and returns the corresponding
+ * 32-byte address. If the signature does not verify there is nothing to recover,
+ * so the function throws.
+ *
+ * Synchronous, matching ethers' `verifyMessage` (there is no async variant).
+ *
+ * @param {string|Uint8Array} message The original message (strings are UTF-8 encoded).
+ * @param {string|Uint8Array} signature The signature produced by `signMessage`.
+ * @returns {string} 0x-prefixed 32-byte signer address.
+ * @throws {TypeError} INVALID_ARGUMENT if the signature is malformed or does not verify.
+ */
+function verifyMessage(message, signature) {
+  _requireInitialized();
+  const digestHex = hashMessage(message);
+  const digestArr = _bytesToNumberArray(hexToBytes(digestHex));
+  const sigArr = _bytesToNumberArray(arrayify(signature));
+  const pubHex = qcsdk.publicKeyFromSignature(digestArr, sigArr);
+  if (typeof pubHex !== "string") {
+    throw makeError("verifyMessage failed: signature did not verify", "INVALID_ARGUMENT", {
+      argument: "signature",
+      value: "[signature]",
+    });
+  }
+  return computeAddress(pubHex);
+}
+
 module.exports = {
   SigningKey,
   AbstractSigner,
@@ -747,5 +856,6 @@ module.exports = {
   NonceManager,
   JsonRpcSigner,
   VoidSigner,
+  verifyMessage,
 };
 

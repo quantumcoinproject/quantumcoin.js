@@ -29,6 +29,7 @@ declare const _exports: {
     sha512(data: string | Uint8Array): string;
     ripemd160(data: string | Uint8Array): string;
     id(text: string): string;
+    hashMessage(message: string | Uint8Array): string;
     randomBytes(length: number): Uint8Array;
     computeHmac(algorithm: string, key: string | Uint8Array, data: string | Uint8Array): string;
     pbkdf2(password: string | Uint8Array, salt: string | Uint8Array, iterations: number, keylen: number, algorithm?: string | undefined): string;
@@ -88,6 +89,7 @@ declare const _exports: {
     ContractTransactionResponse: typeof import("./contract/contract").ContractTransactionResponse;
     ContractTransactionReceipt: typeof import("./contract/contract").ContractTransactionReceipt;
     EventLog: typeof import("./contract/contract").EventLog;
+    verifyMessage(message: string | Uint8Array, signature: string | Uint8Array): string;
     SigningKey: typeof import("./wallet/wallet").SigningKey;
     AbstractSigner: typeof import("./wallet/wallet").AbstractSigner;
     BaseWallet: typeof import("./wallet/wallet").BaseWallet;
