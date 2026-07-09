@@ -43,9 +43,52 @@ class Fragment {
 }
 
 class NamedFragment extends Fragment {}
-class FunctionFragment extends NamedFragment {}
-class EventFragment extends NamedFragment {}
-class ErrorFragment extends NamedFragment {}
+
+class FunctionFragment extends NamedFragment {
+  /**
+   * The 4-byte function selector (sighash), e.g. "0xa9059cbb". Requires the SDK
+   * to be initialized (uses keccak256). Mirrors ethers.js v6.
+   * @returns {string}
+   */
+  get selector() {
+    // Lazy require to keep fragment construction dependency-free.
+    // eslint-disable-next-line global-require
+    const { functionSelectorHex } = require("./js-abi-coder");
+    return functionSelectorHex(this.name, Array.isArray(this.inputs) ? this.inputs : []);
+  }
+}
+
+class EventFragment extends NamedFragment {
+  /**
+   * The event topic hash (topic0). Requires the SDK to be initialized (uses
+   * keccak256). Mirrors ethers.js v6.
+   * @returns {string}
+   */
+  get topicHash() {
+    // eslint-disable-next-line global-require
+    const { canonicalType } = require("./js-abi-coder");
+    // eslint-disable-next-line global-require
+    const { id } = require("../utils/hashing");
+    // eslint-disable-next-line global-require
+    const { normalizeHex } = require("../internal/hex");
+    const inputs = Array.isArray(this.inputs) ? this.inputs : [];
+    return normalizeHex(id(`${this.name}(${inputs.map((i) => canonicalType(i)).join(",")})`));
+  }
+}
+
+class ErrorFragment extends NamedFragment {
+  /**
+   * The 4-byte error selector. Requires the SDK to be initialized (uses
+   * keccak256). Mirrors ethers.js v6.
+   * @returns {string}
+   */
+  get selector() {
+    // eslint-disable-next-line global-require
+    const { functionSelectorHex } = require("./js-abi-coder");
+    return functionSelectorHex(this.name, Array.isArray(this.inputs) ? this.inputs : []);
+  }
+}
+
 class ConstructorFragment extends Fragment {}
 class StructFragment extends Fragment {}
 class FallbackFragment extends Fragment {}

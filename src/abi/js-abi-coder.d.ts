@@ -6,3 +6,5 @@ export function functionSelectorHex(name: any, inputs: any): string;
 export function encodeFunctionData(name: any, inputs: any, values: any): string;
 export function encodeTupleLike(params: any, values: any, depth: any): Uint8Array<any>;
 export function decodeFunctionResult(outputs: any, dataHex: any): any[];
+export function decodeTupleLike(params: any, data: any, baseOffset: any, depth: any): any[];
+export function decodeParam(param: any, data: any, offset: any, depth: any): any;

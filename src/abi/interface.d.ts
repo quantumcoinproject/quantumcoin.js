@@ -31,23 +31,26 @@ export class Interface {
      */
     format(format?: string | undefined): string;
     /**
-     * Get a function fragment by name (first match).
-     * @param {string} nameOrSignature
+     * Get a function fragment by bare name, canonical signature
+     * (`name(type,...)`), or 4-byte selector (`0x` + 8 hex). Mirrors ethers.js v6.
+     * @param {string} nameOrSignatureOrSelector
      * @returns {FunctionFragment}
      */
-    getFunction(nameOrSignature: string): FunctionFragment;
+    getFunction(nameOrSignatureOrSelector: string): FunctionFragment;
     /**
-     * Get an event fragment by name (first match).
-     * @param {string} nameOrSignature
+     * Get an event fragment by bare name, canonical signature, or topic0
+     * (`0x` + 64 hex). Mirrors ethers.js v6.
+     * @param {string} nameOrSignatureOrTopic
      * @returns {EventFragment}
      */
-    getEvent(nameOrSignature: string): EventFragment;
+    getEvent(nameOrSignatureOrTopic: string): EventFragment;
     /**
-     * Get an error fragment by name (first match).
-     * @param {string} nameOrSignature
+     * Get an error fragment by bare name, canonical signature, or 4-byte selector.
+     * Mirrors ethers.js v6.
+     * @param {string} nameOrSignatureOrSelector
      * @returns {ErrorFragment}
      */
-    getError(nameOrSignature: string): ErrorFragment;
+    getError(nameOrSignatureOrSelector: string): ErrorFragment;
     /**
      * Returns the constructor fragment if present.
      * @returns {ConstructorFragment|null}
@@ -60,6 +63,23 @@ export class Interface {
      * @returns {string}
      */
     encodeFunctionData(functionFragment: FunctionFragment | string, values: any[]): string;
+    /**
+     * Encode ABI constructor arguments for a contract deployment (no selector).
+     * Returns "0x" when the constructor takes no arguments. The caller appends
+     * this to the creation bytecode. Mirrors ethers.js v6.
+     * @param {any[]=} values
+     * @returns {string}
+     */
+    encodeDeploy(values?: any[] | undefined): string;
+    /**
+     * Decode the calldata of a function call (4-byte selector + ABI-encoded
+     * arguments), returning the decoded input arguments as a Result. The data's
+     * selector must match the resolved function. Mirrors ethers.js v6.
+     * @param {FunctionFragment|string} fragment
+     * @param {string} data
+     * @returns {Result}
+     */
+    decodeFunctionData(fragment: FunctionFragment | string, data: string): Result;
     /**
      * Decode function result using quantum-coin-js-sdk.
      * @param {FunctionFragment|string} functionFragment
@@ -85,7 +105,25 @@ export class Interface {
      * @returns {any}
      */
     decodeEventLog(eventFragment: EventFragment | any, topics: string[], data: string): any;
-    parseTransaction(): void;
+    /**
+     * Parse a transaction's calldata into its function + decoded arguments.
+     * Resolves the function by the 4-byte selector in `tx.data`, decodes the
+     * arguments from the real bytes, and reports `value` as a bigint. Mirrors
+     * ethers.js v6 (returns a TransactionDescription-shaped object).
+     * @param {{ data: string, value?: any }} tx
+     * @returns {{ fragment: FunctionFragment, name: string, signature: string, selector: string, args: Result, value: bigint }}
+     */
+    parseTransaction(tx: {
+        data: string;
+        value?: any;
+    }): {
+        fragment: FunctionFragment;
+        name: string;
+        signature: string;
+        selector: string;
+        args: Result;
+        value: bigint;
+    };
     parseLog(...args: any[]): {
         fragment: EventFragment;
         name: any;
@@ -93,8 +131,27 @@ export class Interface {
         topic: string;
         args: Result;
     };
-    parseError(): void;
-    getSighash(): void;
+    /**
+     * Parse custom-error return data into its error fragment + decoded arguments.
+     * Resolves the error by the 4-byte selector in `data`. Mirrors ethers.js v6
+     * (returns an ErrorDescription-shaped object).
+     * @param {string} data
+     * @returns {{ fragment: ErrorFragment, name: string, signature: string, selector: string, args: Result }}
+     */
+    parseError(data: string): {
+        fragment: ErrorFragment;
+        name: string;
+        signature: string;
+        selector: string;
+        args: Result;
+    };
+    /**
+     * Return the 4-byte function selector (sighash) for a function fragment or
+     * name. Mirrors ethers.js v5 getSighash / v6 FunctionFragment.selector.
+     * @param {FunctionFragment|string} fragmentOrName
+     * @returns {string}
+     */
+    getSighash(fragmentOrName: FunctionFragment | string): string;
     /**
      * Compute the topic0 (event signature hash) for an event.
      * @param {string|EventFragment|any} nameOrFragment
@@ -105,6 +162,11 @@ export class Interface {
     getReceive(): null;
 }
 export class AbiCoder {
+    /**
+     * Return the shared default AbiCoder instance (ethers.js v6 shape).
+     * @returns {AbiCoder}
+     */
+    static defaultAbiCoder(): AbiCoder;
     /**
      * Encode values by types into ABI data.
      * @param {(string|any)[]} types

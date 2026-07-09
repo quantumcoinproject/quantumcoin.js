@@ -29,10 +29,28 @@ export class Fragment {
 export class NamedFragment extends Fragment {
 }
 export class FunctionFragment extends NamedFragment {
+    /**
+     * The 4-byte function selector (sighash), e.g. "0xa9059cbb". Requires the SDK
+     * to be initialized (uses keccak256). Mirrors ethers.js v6.
+     * @returns {string}
+     */
+    get selector(): string;
 }
 export class EventFragment extends NamedFragment {
+    /**
+     * The event topic hash (topic0). Requires the SDK to be initialized (uses
+     * keccak256). Mirrors ethers.js v6.
+     * @returns {string}
+     */
+    get topicHash(): string;
 }
 export class ErrorFragment extends NamedFragment {
+    /**
+     * The 4-byte error selector. Requires the SDK to be initialized (uses
+     * keccak256). Mirrors ethers.js v6.
+     * @returns {string}
+     */
+    get selector(): string;
 }
 export class ConstructorFragment extends Fragment {
 }

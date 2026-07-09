@@ -148,6 +148,48 @@ const staking = new Contract(address, abi, provider);
 console.log(await staking.getDepositorCount());
 ```
 
+## ABI encoding & decoding
+
+`Interface` and `AbiCoder` provide ethers.js v6-compatible ABI handling. Beyond
+encoding, you can resolve fragments by name, canonical signature, or hex
+identifier, and decode/parse raw calldata — useful for a strict "what you see is
+what you sign" verification (decode the real bytes, then re-encode and compare).
+
+```js
+const { Initialize } = require("quantumcoin/config");
+const { Interface, AbiCoder } = require("quantumcoin");
+
+await Initialize(null);
+const iface = new Interface([
+  { type: "function", name: "transfer",
+    inputs: [{ name: "to", type: "address" }, { name: "amount", type: "uint256" }],
+    outputs: [{ type: "bool" }] },
+]);
+
+const to = "0x" + "ab".repeat(32);           // 32-byte QuantumCoin address
+const data = iface.encodeFunctionData("transfer", [to, 1000n]);
+
+const tx = iface.parseTransaction({ data }); // resolves by selector, decodes args
+// tx.name === "transfer", tx.selector === "0xa9059cbb", tx.args.amount === 1000n
+
+// Re-encode the decoded args and confirm they reproduce the original calldata.
+const verified = iface.encodeFunctionData(tx.fragment, Array.from(tx.args)) === data;
+
+const coder = AbiCoder.defaultAbiCoder();
+coder.encode(["uint256"], [1n]);
+```
+
+Highlights: `getFunction`/`getError` (by name, signature, or 4-byte selector),
+`getEvent` (by name, signature, or topic0), `decodeFunctionData`,
+`parseTransaction`, `parseError`, `getSighash`, `FunctionFragment.selector`,
+`EventFragment.topicHash`, `Interface.encodeDeploy`, and
+`AbiCoder.defaultAbiCoder()`.
+
+> QuantumCoin addresses are 32 bytes and fill a full ABI word (Ethereum left-pads
+> a 20-byte address). Canonical signatures are identical, so selectors and event
+> topics match Ethereum exactly; only address-bearing calldata words differ. See
+> [README-SDK.md](./README-SDK.md#interface) for the full API.
+
 ## Typed contract generator
 
 This repo includes a generator described in `SPEC.md` section 15.

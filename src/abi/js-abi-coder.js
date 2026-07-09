@@ -534,5 +534,7 @@ module.exports = {
   encodeFunctionData,
   encodeTupleLike,
   decodeFunctionResult,
+  decodeTupleLike,
+  decodeParam,
 };
 

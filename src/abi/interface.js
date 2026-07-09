@@ -8,11 +8,44 @@
 
 const qcsdk = require("quantum-coin-js-sdk");
 const { makeError, assertArgument } = require("../errors");
-const { normalizeHex, arrayify, bytesToHex } = require("../internal/hex");
+const { normalizeHex, arrayify, bytesToHex, isHexString } = require("../internal/hex");
 const { EventFragment, FunctionFragment, ErrorFragment, ConstructorFragment } = require("./fragments");
 const { Result } = require("../utils/result");
 const { id } = require("../utils/hashing");
 const jsAbi = require("./js-abi-coder");
+
+// Remove all whitespace (used to normalize a caller-supplied canonical signature
+// like "transfer(address, uint256)" before comparing against the ABI).
+function _stripWhitespace(s) {
+  return String(s).replace(/\s+/g, "");
+}
+
+// Canonical Solidity signature for a fragment, e.g. "transfer(address,uint256)".
+// Tuples/arrays are expanded via the shared js-abi-coder canonicalizer so it
+// matches the selector/topic hashing used everywhere else.
+function _canonicalSignature(frag) {
+  const inputs = Array.isArray(frag.inputs) ? frag.inputs : [];
+  return `${frag.name}(${inputs.map((i) => jsAbi.canonicalType(i)).join(",")})`;
+}
+
+// 0x + 8 hex => a 4-byte function/error selector.
+function _isSelectorHex(s) {
+  return typeof s === "string" && /^0x[0-9a-fA-F]{8}$/.test(s.trim());
+}
+
+// 0x + 64 hex => a 32-byte event topic (topic0).
+function _isTopicHex(s) {
+  return typeof s === "string" && /^0x[0-9a-fA-F]{64}$/.test(s.trim());
+}
+
+// Resolve a function fragment for decode/encode. A fragment object (e.g. the one
+// returned by parseTransaction/getFunction) is used AS-IS so an overloaded name
+// is never re-resolved ambiguously; a string resolves through the ABI.
+function _resolveFunctionFragment(iface, fragment) {
+  if (fragment instanceof FunctionFragment) return fragment;
+  if (fragment && typeof fragment === "object" && fragment.name) return new FunctionFragment(fragment);
+  return iface.getFunction(fragment);
+}
 
 function _requireInitialized() {
   // eslint-disable-next-line global-require
@@ -289,39 +322,96 @@ class Interface {
   }
 
   /**
-   * Get a function fragment by name (first match).
-   * @param {string} nameOrSignature
+   * Get a function fragment by bare name, canonical signature
+   * (`name(type,...)`), or 4-byte selector (`0x` + 8 hex). Mirrors ethers.js v6.
+   * @param {string} nameOrSignatureOrSelector
    * @returns {FunctionFragment}
    */
-  getFunction(nameOrSignature) {
-    assertArgument(typeof nameOrSignature === "string", "name must be a string", "nameOrSignature", nameOrSignature);
-    const found = this.abi.find((f) => f && f.type === "function" && f.name === nameOrSignature);
-    if (!found) throw makeError("function not found", "INVALID_ARGUMENT", { nameOrSignature });
-    return new FunctionFragment(found);
+  getFunction(nameOrSignatureOrSelector) {
+    assertArgument(typeof nameOrSignatureOrSelector === "string", "name must be a string", "nameOrSignatureOrSelector", nameOrSignatureOrSelector);
+    const key = nameOrSignatureOrSelector.trim();
+    const fns = this.abi.filter((f) => f && f.type === "function" && f.name);
+
+    if (_isSelectorHex(key)) {
+      const sel = normalizeHex(key).toLowerCase();
+      const found = fns.find((f) => jsAbi.functionSelectorHex(f.name, f.inputs || []).toLowerCase() === sel);
+      if (!found) throw makeError("no matching function for selector", "INVALID_ARGUMENT", { selector: key });
+      return new FunctionFragment(found);
+    }
+
+    if (key.indexOf("(") >= 0) {
+      const norm = _stripWhitespace(key);
+      const found = fns.find((f) => _canonicalSignature(f) === norm);
+      if (!found) throw makeError("no matching function for signature", "INVALID_ARGUMENT", { signature: key });
+      return new FunctionFragment(found);
+    }
+
+    const matches = fns.filter((f) => f.name === key);
+    if (matches.length === 0) throw makeError("function not found", "INVALID_ARGUMENT", { nameOrSignatureOrSelector });
+    if (matches.length > 1) {
+      throw makeError("ambiguous function name; specify the full signature", "INVALID_ARGUMENT", { nameOrSignatureOrSelector });
+    }
+    return new FunctionFragment(matches[0]);
   }
 
   /**
-   * Get an event fragment by name (first match).
-   * @param {string} nameOrSignature
+   * Get an event fragment by bare name, canonical signature, or topic0
+   * (`0x` + 64 hex). Mirrors ethers.js v6.
+   * @param {string} nameOrSignatureOrTopic
    * @returns {EventFragment}
    */
-  getEvent(nameOrSignature) {
-    assertArgument(typeof nameOrSignature === "string", "name must be a string", "nameOrSignature", nameOrSignature);
-    const found = this.abi.find((f) => f && f.type === "event" && f.name === nameOrSignature);
-    if (!found) throw makeError("event not found", "INVALID_ARGUMENT", { nameOrSignature });
-    return new EventFragment(found);
+  getEvent(nameOrSignatureOrTopic) {
+    assertArgument(typeof nameOrSignatureOrTopic === "string", "name must be a string", "nameOrSignatureOrTopic", nameOrSignatureOrTopic);
+    const key = nameOrSignatureOrTopic.trim();
+    const evs = this.abi.filter((f) => f && f.type === "event" && f.name);
+
+    if (_isTopicHex(key)) {
+      const topic = normalizeHex(key);
+      const found = evs.find((f) => !f.anonymous && normalizeHex(id(_canonicalSignature(f))) === topic);
+      if (!found) throw makeError("no matching event for topic", "INVALID_ARGUMENT", { topic: key });
+      return new EventFragment(found);
+    }
+
+    if (key.indexOf("(") >= 0) {
+      const norm = _stripWhitespace(key);
+      const found = evs.find((f) => _canonicalSignature(f) === norm);
+      if (!found) throw makeError("no matching event for signature", "INVALID_ARGUMENT", { signature: key });
+      return new EventFragment(found);
+    }
+
+    const matches = evs.filter((f) => f.name === key);
+    if (matches.length === 0) throw makeError("event not found", "INVALID_ARGUMENT", { nameOrSignatureOrTopic });
+    return new EventFragment(matches[0]);
   }
 
   /**
-   * Get an error fragment by name (first match).
-   * @param {string} nameOrSignature
+   * Get an error fragment by bare name, canonical signature, or 4-byte selector.
+   * Mirrors ethers.js v6.
+   * @param {string} nameOrSignatureOrSelector
    * @returns {ErrorFragment}
    */
-  getError(nameOrSignature) {
-    assertArgument(typeof nameOrSignature === "string", "name must be a string", "nameOrSignature", nameOrSignature);
-    const found = this.abi.find((f) => f && f.type === "error" && f.name === nameOrSignature);
-    if (!found) throw makeError("error not found", "INVALID_ARGUMENT", { nameOrSignature });
-    return new ErrorFragment(found);
+  getError(nameOrSignatureOrSelector) {
+    assertArgument(typeof nameOrSignatureOrSelector === "string", "name must be a string", "nameOrSignatureOrSelector", nameOrSignatureOrSelector);
+    const key = nameOrSignatureOrSelector.trim();
+    const errs = this.abi.filter((f) => f && f.type === "error" && f.name);
+
+    if (_isSelectorHex(key)) {
+      const sel = normalizeHex(key).toLowerCase();
+      const found = errs.find((f) => jsAbi.functionSelectorHex(f.name, f.inputs || []).toLowerCase() === sel);
+      if (!found) throw makeError("no matching error for selector", "INVALID_ARGUMENT", { selector: key });
+      return new ErrorFragment(found);
+    }
+
+    if (key.indexOf("(") >= 0) {
+      const norm = _stripWhitespace(key);
+      const found = errs.find((f) => _canonicalSignature(f) === norm);
+      if (!found) throw makeError("no matching error for signature", "INVALID_ARGUMENT", { signature: key });
+      return new ErrorFragment(found);
+    }
+
+    const matches = errs.filter((f) => f.name === key);
+    if (matches.length === 0) throw makeError("error not found", "INVALID_ARGUMENT", { nameOrSignatureOrSelector });
+    return new ErrorFragment(matches[0]);
   }
 
   /**
@@ -341,22 +431,74 @@ class Interface {
    */
   encodeFunctionData(functionFragment, values) {
     _requireInitialized();
-    const name = typeof functionFragment === "string" ? functionFragment : functionFragment?.name;
+    const rawArgs = Array.isArray(values) ? values : [];
+
+    // When a fragment object is supplied (e.g. from parseTransaction /
+    // getFunction), encode directly from its exact inputs via the pure-JS coder.
+    // This guarantees encode/decode is a faithful round-trip (including
+    // overloaded functions) and matches decodeFunctionData byte-for-byte.
+    if (functionFragment && typeof functionFragment === "object") {
+      const fname = functionFragment.name;
+      assertArgument(typeof fname === "string" && fname.length > 0, "invalid function", "functionFragment", functionFragment);
+      const finputs = Array.isArray(functionFragment.inputs) ? functionFragment.inputs : [];
+      return jsAbi.encodeFunctionData(fname, finputs, rawArgs);
+    }
+
+    const name = functionFragment;
     assertArgument(typeof name === "string" && name.length > 0, "invalid function", "functionFragment", functionFragment);
     const frag = this.getFunction(name);
     const inputs = Array.isArray(frag.inputs) ? frag.inputs : [];
-    const rawArgs = Array.isArray(values) ? values : [];
 
     // Fallback for complex ABI surfaces where qcsdk packing is unreliable.
     if (jsAbi.needsJsAbi(inputs)) {
-      return jsAbi.encodeFunctionData(name, inputs, rawArgs);
+      return jsAbi.encodeFunctionData(frag.name, inputs, rawArgs);
     }
 
     const args = inputs.map((p, idx) => _convertInputValueForQcsdk(p, rawArgs[idx]));
-    const res = qcsdk.packMethodData(this._qcsdkAbiJson, name, ...args);
+    const res = qcsdk.packMethodData(this._qcsdkAbiJson, frag.name, ...args);
     if (!res || typeof res.error !== "string") throw makeError("packMethodData failed", "UNKNOWN_ERROR", {});
-    if (res.error) throw makeError(res.error, "UNKNOWN_ERROR", { operation: "packMethodData", function: name });
+    if (res.error) throw makeError(res.error, "UNKNOWN_ERROR", { operation: "packMethodData", function: frag.name });
     return normalizeHex(res.result);
+  }
+
+  /**
+   * Encode ABI constructor arguments for a contract deployment (no selector).
+   * Returns "0x" when the constructor takes no arguments. The caller appends
+   * this to the creation bytecode. Mirrors ethers.js v6.
+   * @param {any[]=} values
+   * @returns {string}
+   */
+  encodeDeploy(values) {
+    _requireInitialized();
+    const ctor = this.getConstructor();
+    const inputs = ctor && Array.isArray(ctor.inputs) ? ctor.inputs : [];
+    const rawArgs = Array.isArray(values) ? values : [];
+    if (inputs.length === 0) return "0x";
+    return normalizeHex(bytesToHex(jsAbi.encodeTupleLike(inputs, rawArgs)));
+  }
+
+  /**
+   * Decode the calldata of a function call (4-byte selector + ABI-encoded
+   * arguments), returning the decoded input arguments as a Result. The data's
+   * selector must match the resolved function. Mirrors ethers.js v6.
+   * @param {FunctionFragment|string} fragment
+   * @param {string} data
+   * @returns {Result}
+   */
+  decodeFunctionData(fragment, data) {
+    _requireInitialized();
+    assertArgument(typeof data === "string" && isHexString(data), "data must be a hex string", "data", data);
+    const frag = _resolveFunctionFragment(this, fragment);
+    const inputs = Array.isArray(frag.inputs) ? frag.inputs : [];
+    const selector = jsAbi.functionSelectorHex(frag.name, inputs).toLowerCase();
+    const norm = normalizeHex(data);
+    const bytes = arrayify(norm);
+    if (bytes.length < 4 || norm.slice(0, 10).toLowerCase() !== selector) {
+      throw makeError("data selector does not match function", "INVALID_ARGUMENT", { function: frag.name, data });
+    }
+    const items = jsAbi.decodeTupleLike(inputs, bytes.slice(4), 0);
+    const keys = inputs.map((i) => (i && typeof i.name === "string" && i.name.length ? i.name : null));
+    return Result.fromItems(items, keys);
   }
 
   /**
@@ -442,9 +584,40 @@ class Interface {
     }
   }
 
-  // The following methods exist in ethers.js v6. We provide placeholders to keep API shape.
-  parseTransaction() {
-    throw makeError("parseTransaction not implemented", "NOT_IMPLEMENTED", {});
+  /**
+   * Parse a transaction's calldata into its function + decoded arguments.
+   * Resolves the function by the 4-byte selector in `tx.data`, decodes the
+   * arguments from the real bytes, and reports `value` as a bigint. Mirrors
+   * ethers.js v6 (returns a TransactionDescription-shaped object).
+   * @param {{ data: string, value?: any }} tx
+   * @returns {{ fragment: FunctionFragment, name: string, signature: string, selector: string, args: Result, value: bigint }}
+   */
+  parseTransaction(tx) {
+    _requireInitialized();
+    assertArgument(tx && typeof tx === "object", "tx must be an object", "tx", tx);
+    const data = tx.data;
+    assertArgument(typeof data === "string" && isHexString(data), "tx.data must be a hex string", "tx.data", data);
+    const norm = normalizeHex(data);
+    if (arrayify(norm).length < 4) throw makeError("data too short for a function selector", "INVALID_ARGUMENT", { data });
+    const selector = norm.slice(0, 10);
+    const frag = this.getFunction(selector);
+    const args = this.decodeFunctionData(frag, norm);
+    let value = 0n;
+    if (tx.value != null) {
+      try {
+        value = BigInt(tx.value);
+      } catch {
+        value = 0n;
+      }
+    }
+    return {
+      fragment: frag,
+      name: frag.name,
+      signature: _canonicalSignature(frag),
+      selector: jsAbi.functionSelectorHex(frag.name, Array.isArray(frag.inputs) ? frag.inputs : []),
+      args,
+      value,
+    };
   }
   parseLog() {
     _requireInitialized();
@@ -512,11 +685,47 @@ class Interface {
       args,
     };
   }
-  parseError() {
-    throw makeError("parseError not implemented", "NOT_IMPLEMENTED", {});
+  /**
+   * Parse custom-error return data into its error fragment + decoded arguments.
+   * Resolves the error by the 4-byte selector in `data`. Mirrors ethers.js v6
+   * (returns an ErrorDescription-shaped object).
+   * @param {string} data
+   * @returns {{ fragment: ErrorFragment, name: string, signature: string, selector: string, args: Result }}
+   */
+  parseError(data) {
+    _requireInitialized();
+    assertArgument(typeof data === "string" && isHexString(data), "data must be a hex string", "data", data);
+    const norm = normalizeHex(data);
+    const bytes = arrayify(norm);
+    if (bytes.length < 4) throw makeError("data too short for an error selector", "INVALID_ARGUMENT", { data });
+    const selector = norm.slice(0, 10).toLowerCase();
+    const errs = this.abi.filter((f) => f && f.type === "error" && f.name);
+    const found = errs.find((f) => jsAbi.functionSelectorHex(f.name, f.inputs || []).toLowerCase() === selector);
+    if (!found) throw makeError("no matching error for selector", "INVALID_ARGUMENT", { selector });
+    const inputs = Array.isArray(found.inputs) ? found.inputs : [];
+    const items = jsAbi.decodeTupleLike(inputs, bytes.slice(4), 0);
+    const keys = inputs.map((i) => (i && typeof i.name === "string" && i.name.length ? i.name : null));
+    return {
+      fragment: new ErrorFragment(found),
+      name: found.name,
+      signature: _canonicalSignature(found),
+      selector: jsAbi.functionSelectorHex(found.name, inputs),
+      args: Result.fromItems(items, keys),
+    };
   }
-  getSighash() {
-    throw makeError("getSighash not implemented", "NOT_IMPLEMENTED", {});
+
+  /**
+   * Return the 4-byte function selector (sighash) for a function fragment or
+   * name. Mirrors ethers.js v5 getSighash / v6 FunctionFragment.selector.
+   * @param {FunctionFragment|string} fragmentOrName
+   * @returns {string}
+   */
+  getSighash(fragmentOrName) {
+    const frag =
+      fragmentOrName && typeof fragmentOrName === "object" && fragmentOrName.name
+        ? fragmentOrName
+        : this.getFunction(fragmentOrName);
+    return jsAbi.functionSelectorHex(frag.name, Array.isArray(frag.inputs) ? frag.inputs : []);
   }
   /**
    * Compute the topic0 (event signature hash) for an event.
@@ -598,6 +807,15 @@ class AbiCoder {
     // Lightweight default; ethers returns a Result. Here we return array of nulls.
     assertArgument(Array.isArray(types), "types must be an array", "types", types);
     return types.map(() => null);
+  }
+
+  /**
+   * Return the shared default AbiCoder instance (ethers.js v6 shape).
+   * @returns {AbiCoder}
+   */
+  static defaultAbiCoder() {
+    if (!AbiCoder._instance) AbiCoder._instance = new AbiCoder();
+    return AbiCoder._instance;
   }
 }
 

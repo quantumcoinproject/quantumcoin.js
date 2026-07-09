@@ -179,19 +179,13 @@ describe("Security: Password strength enforcement", () => {
   });
 });
 
-describe("Security: Message signing removed", () => {
-  logSuite("Security: Message signing removed");
+describe("Security: ecrecover-style recovery APIs are not exported", () => {
+  logSuite("Security: ecrecover-style recovery APIs are not exported");
 
-  it("hashMessage is not exported", () => {
-    logTest("hashMessage is not exported", {});
-    assert.equal(qc.hashMessage, undefined, "hashMessage should not be exported");
-  });
-
-  it("verifyMessage is not exported", () => {
-    logTest("verifyMessage is not exported", {});
-    assert.equal(qc.verifyMessage, undefined, "verifyMessage should not be exported");
-  });
-
+  // QuantumCoin's post-quantum signatures have no ecrecover: an address cannot be
+  // recovered from a signature. Message signing IS supported via hashMessage +
+  // verifyMessage (which verifies against the self-describing sig+pubKey blob),
+  // but the ethers ecrecover-style helpers must stay unexported.
   it("recoverAddress is not exported", () => {
     logTest("recoverAddress is not exported", {});
     assert.equal(qc.recoverAddress, undefined, "recoverAddress should not be exported");
@@ -200,6 +194,12 @@ describe("Security: Message signing removed", () => {
   it("MessagePrefix is not exported", () => {
     logTest("MessagePrefix is not exported", {});
     assert.equal(qc.MessagePrefix, undefined, "MessagePrefix should not be exported");
+  });
+
+  it("hashMessage and verifyMessage are exported", () => {
+    logTest("hashMessage and verifyMessage are exported", {});
+    assert.equal(typeof qc.hashMessage, "function", "hashMessage should be exported");
+    assert.equal(typeof qc.verifyMessage, "function", "verifyMessage should be exported");
   });
 });
 

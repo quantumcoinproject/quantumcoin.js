@@ -610,23 +610,90 @@ ABI encoding/decoding compatibility layer.
 
 - `new Interface(abi: any[] | Interface | null)`
 
-**Methods**
+**Fragment lookup** — each accepts a bare name, a canonical signature
+(`name(type,...)`), or a hex identifier, mirroring ethers.js v6:
+- `getFunction(nameOrSignatureOrSelector: string): FunctionFragment`
+  - Resolves by name, `transfer(address,uint256)`, or 4-byte selector `0xa9059cbb`.
+  - Throws `INVALID_ARGUMENT` when unresolved or when a bare name is ambiguous
+    across overloads (pass the full signature instead).
+- `getEvent(nameOrSignatureOrTopic: string): EventFragment`
+  - Resolves by name, signature, or topic0 (`0x` + 64 hex).
+- `getError(nameOrSignatureOrSelector: string): ErrorFragment`
+  - Resolves by name, signature, or 4-byte selector.
+- `getConstructor(): ConstructorFragment | null`
+- `getSighash(fragmentOrName): string` — 4-byte function selector.
 - `formatJson(): string`
 - `format(format?: string | null): string`
-- `getFunction(name: string): FunctionFragment`
-- `getEvent(name: string): EventFragment`
-- `getError(name: string): ErrorFragment`
-- `getConstructor(): ConstructorFragment | null`
 
-**Encoding**
+`FunctionFragment` / `ErrorFragment` expose a `selector` getter and
+`EventFragment` a `topicHash` getter (both require `Initialize()`).
+
+**Encoding / decoding**
 - `encodeFunctionData(functionFragmentOrName, values?: any[] | null): string`
+- `decodeFunctionData(functionFragmentOrName, data: string): Result` — decode a
+  call's arguments (selector + args). The data's selector must match the resolved
+  function, otherwise it throws `INVALID_ARGUMENT`. `encodeFunctionData(fragment,
+  decodeFunctionData(fragment, data))` reproduces `data` byte-for-byte.
 - `decodeFunctionResult(functionFragmentOrName, data: string): any`
+- `encodeDeploy(values?: any[]): string` — ABI-encode constructor arguments (no
+  selector), or `"0x"` when the constructor takes no arguments. Append to the
+  creation bytecode for a deployment.
 - `encodeEventLog(eventFragmentOrName, values?: any[] | null): { topics: string[], data: string }`
 - `decodeEventLog(eventFragmentOrName, topics: string[], data: string): any`
 
 **Parsing**
+- `parseTransaction(tx: { data: string, value?: BigNumberish }): { fragment, name, signature, selector, args: Result, value: bigint }`
+  - Resolves the function by the 4-byte selector in `tx.data`, decodes the
+    arguments from the real bytes, and reports `value` as a `bigint`.
+- `parseError(data: string): { fragment, name, signature, selector, args: Result }`
+  - Resolves a custom error by its 4-byte selector and decodes its arguments.
 - `parseLog(log: { topics: string[], data: string }): { fragment, name, signature, topic, args }`
   - Uses signature topic matching and `decodeEventLog(...)`
+
+> **32-byte addresses:** QuantumCoin addresses are 32 bytes and occupy a full ABI
+> word, whereas Ethereum left-pads a 20-byte address. Canonical signatures are
+> identical strings, so keccak-derived selectors and event topics match Ethereum
+> exactly (e.g. `transfer(address,uint256)` → `0xa9059cbb`); only the contents of
+> an address-bearing calldata word differ.
+
+**Example (JS):**
+
+```js
+const { Initialize } = require("quantumcoin/config");
+const { Interface } = require("quantumcoin");
+
+await Initialize(null);
+const iface = new Interface([
+  { type: "function", name: "transfer",
+    inputs: [{ name: "to", type: "address" }, { name: "amount", type: "uint256" }],
+    outputs: [{ type: "bool" }] },
+]);
+
+const to = "0x" + "ab".repeat(32); // 32-byte address
+const data = iface.encodeFunctionData("transfer", [to, 1000n]);
+
+const tx = iface.parseTransaction({ data, value: "0x0" });
+console.log(tx.name, tx.signature, tx.selector); // transfer transfer(address,uint256) 0xa9059cbb
+console.log(tx.args.to, tx.args.amount);          // <to> 1000n
+
+// "What you see is what you sign": re-encode the decoded args and compare.
+const ok = iface.encodeFunctionData(tx.fragment, Array.from(tx.args)) === data; // true
+```
+
+**Example (TS):**
+
+```ts
+import { Initialize } from "quantumcoin/config";
+import qc from "quantumcoin";
+
+await Initialize(null);
+const iface = new qc.Interface([
+  { type: "error", name: "InsufficientBalance",
+    inputs: [{ name: "have", type: "uint256" }, { name: "want", type: "uint256" }] },
+]);
+const selector: string = iface.getError("InsufficientBalance").selector;
+// const desc = iface.parseError(revertData); // { name, args: { have, want }, ... }
+```
 
 ### `AbiCoder`
 
@@ -635,6 +702,8 @@ Minimal ABI coder for encoding/decoding tuples of values.
 - `encode(types: (string|any)[], values: any[]): string`
 - `decode(types: (string|any)[], data: string): any`
 - `getDefaultValue(types: (string|any)[]): any`
+- `static defaultAbiCoder(): AbiCoder` — shared singleton instance (ethers.js v6
+  shape): `AbiCoder.defaultAbiCoder().encode(["uint256"], [1n])`.
 
 ## Utilities
 
