@@ -3,6 +3,9 @@
  * @blockchainRequired readonly
  * @transactional false
  * @description Read-only integration tests. Endpoint from QC_ENDPOINT or QC_RPC_URL (default: public RPC).
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_ENDPOINT/QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

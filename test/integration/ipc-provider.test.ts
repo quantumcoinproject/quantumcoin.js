@@ -3,6 +3,10 @@
  * @blockchainRequired readonly
  * @transactional false
  * @description Read-only IPC JSON-RPC integration tests against a local geth IPC endpoint
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_ENDPOINT at its IPC path
+ * (Windows: \\.\pipe\geth.ipc, macOS/Ubuntu: data/geth.ipc) —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

@@ -9,6 +9,12 @@
  * - Runs `npm install`
  * - Verifies tests/examples were generated
  * - Runs the generated package tests against the provided JSON-RPC URL
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
+ *
+ * Solidity is compiled in-process with the JS-based @quantumcoin/solc package
+ * (https://www.npmjs.com/package/@quantumcoin/solc); no external solc install is needed.
  */
 
 const { describe, it } = require("node:test");
@@ -16,9 +22,9 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
-const { execFileSync, spawnSync } = require("node:child_process");
+const { spawnSync } = require("node:child_process");
 
-const { getRpcUrl, getChainId, getSolcPath, assertSolcExists, logE2eConfig } = require("./helpers");
+const { getRpcUrl, getChainId, compileSol, logE2eConfig } = require("./helpers");
 const { logSuite, logTest } = require("../verbose-logger");
 
 function getNpmCmd() {
@@ -51,15 +57,9 @@ function runNpm(args, cwd, env) {
   return run(getNpmCmd(), args, cwd, env);
 }
 
-function compileSolidity({ solcPath, solPath, contractName }) {
-  const out = execFileSync(solcPath, ["--optimize", "--combined-json", "abi,bin", solPath], { encoding: "utf8" });
-  const parsed = JSON.parse(out);
-  const key = Object.keys(parsed.contracts || {}).find((k) => k.endsWith(`:${contractName}`));
-  if (!key) throw new Error(`Compiled contract ${contractName} not found in solc output`);
-  const c = parsed.contracts[key];
-  const abi = JSON.parse(c.abi);
-  const bin = c.bin || "";
-  return { abi, bin };
+function compileSolidity({ solPath, contractName }) {
+  const [artifact] = compileSol({ solPaths: solPath, contractName });
+  return { abi: artifact.abi, bin: artifact.bin };
 }
 
 // Runs a read-only `npm audit` on the generated SDK and fails the test only when
@@ -97,8 +97,6 @@ describe("typed contract generator package e2e", () => {
     }
     logE2eConfig();
     const chainId = getChainId();
-    const solcPath = getSolcPath();
-    assertSolcExists(solcPath);
 
     const repoRoot = path.resolve(__dirname, "..", "..");
     const fixtureSol = path.join(repoRoot, "test", "fixtures", "ConstructorParam.sol");
@@ -112,7 +110,7 @@ describe("typed contract generator package e2e", () => {
     let succeeded = false;
     try {
       // 1) Compile fixture to ABI + BIN
-      const { abi, bin } = compileSolidity({ solcPath, solPath: fixtureSol, contractName });
+      const { abi, bin } = compileSolidity({ solPath: fixtureSol, contractName });
 
       const abiPath = path.join(tmpBase, `${contractName}.abi.json`);
       const binPath = path.join(tmpBase, `${contractName}.bin`);
@@ -207,8 +205,6 @@ describe("typed contract generator package e2e", () => {
     }
 
     const chainId = getChainId();
-    const solcPath = getSolcPath();
-    assertSolcExists(solcPath);
 
     const repoRoot = path.resolve(__dirname, "..", "..");
     const fixtureCtorSol = path.join(repoRoot, "test", "fixtures", "ConstructorParam.sol");
@@ -225,8 +221,8 @@ describe("typed contract generator package e2e", () => {
       const ctorName = "ConstructorParam";
       const alphaName = "Alpha";
 
-      const { abi: ctorAbi, bin: ctorBin } = compileSolidity({ solcPath, solPath: fixtureCtorSol, contractName: ctorName });
-      const { abi: alphaAbi, bin: alphaBin } = compileSolidity({ solcPath, solPath: fixtureMultiSol, contractName: alphaName });
+      const { abi: ctorAbi, bin: ctorBin } = compileSolidity({ solPath: fixtureCtorSol, contractName: ctorName });
+      const { abi: alphaAbi, bin: alphaBin } = compileSolidity({ solPath: fixtureMultiSol, contractName: alphaName });
 
       const ctorAbiPath = path.join(tmpBase, `${ctorName}.abi.json`);
       const ctorBinPath = path.join(tmpBase, `${ctorName}.bin`);
@@ -338,8 +334,6 @@ describe("typed contract generator package e2e", () => {
     }
 
     const chainId = getChainId();
-    const solcPath = getSolcPath();
-    assertSolcExists(solcPath);
 
     const repoRoot = path.resolve(__dirname, "..", "..");
     const fixtureSol = path.join(repoRoot, "test", "fixtures", "MultiContracts.sol");
@@ -359,8 +353,6 @@ describe("typed contract generator package e2e", () => {
           generatorCli,
           "--sol",
           fixtureSol,
-          "--solc",
-          solcPath,
           "--create-package",
           "--package-dir",
           pkgDir,

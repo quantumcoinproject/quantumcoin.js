@@ -5,6 +5,9 @@
  * @description Read-only integration tests. Endpoint from QC_ENDPOINT or QC_RPC_URL (default: public RPC).
  * Works with HTTP, WebSocket, or IPC; use QC_ENDPOINT=\\.\pipe\geth.ipc to run over IPC.
  * Run with VERBOSE=1 or QC_VERBOSE=1 for test names, addresses, block numbers.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_ENDPOINT/QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 const { describe, it } = require("node:test");

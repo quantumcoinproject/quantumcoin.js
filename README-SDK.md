@@ -903,10 +903,12 @@ node generate-sdk.js --lang js --abi path/to/My.abi.json --bin path/to/My.bin --
 
 2) **Solidity sources**
 
-```bash
-node generate-sdk.js --sol ".\\contracts\\A.sol,.\\contracts\\B.sol" --solc "c:\\solc\\solc.exe" --out ./out --non-interactive
+Compiled by default with the JS-based [`@quantumcoin/solc`](https://www.npmjs.com/package/@quantumcoin/solc) package — no external solc install needed:
 
-# Pass additional solc args (example)
+```bash
+node generate-sdk.js --sol ".\\contracts\\A.sol,.\\contracts\\B.sol" --out ./out --non-interactive
+
+# Optionally use an external solc binary instead (--solc-args applies only to this mode)
 node generate-sdk.js --sol ".\\contracts\\A.sol" --solc "c:\\solc\\solc.exe" --solc-args "--via-ir --evm-version london" --out ./out --non-interactive
 ```
 

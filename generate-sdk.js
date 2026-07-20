@@ -48,8 +48,10 @@ INPUT MODES
   2) Solidity (.sol) sources
      --sol "<A.sol,B.sol,...>"    (comma-separated list; can be 1+ files)
      --name <ContractName>        (optional; if omitted, generates ALL deployable contracts found)
-     --solc <path/to/solc.exe>    (optional; defaults from env; see ENV below)
-     --solc-args "<args>"         (optional; extra args passed to solc, e.g. "--via-ir --evm-version london")
+     --solc <path/to/solc.exe>    (optional; use an EXTERNAL solc binary instead of the default
+                                   JS-based @quantumcoin/solc npm package; see ENV below)
+     --solc-args "<args>"         (optional; extra args passed to the external solc binary only,
+                                   e.g. "--via-ir --evm-version london"; ignored with the JS compiler)
 
   3) Artifacts JSON (array of ABI+BIN pairs)
      --artifacts-json <path/to/artifacts.json>
@@ -111,8 +113,9 @@ GENERAL OPTIONS
 
 ENVIRONMENT
   QC_SOLC_PATH / SOLC / SOLC_PATH
-    Path to solc executable used when compiling Solidity.
-    Default: c:\\solc\\solc.exe
+    Optional path to an external solc executable used when compiling Solidity.
+    Default: unset — Solidity is compiled in-process with the JS-based
+    @quantumcoin/solc npm package (https://www.npmjs.com/package/@quantumcoin/solc).
 
   QC_RPC_URL / QC_CHAIN_ID
     Used by the auto-generated transactional tests in the generated package.
@@ -124,8 +127,7 @@ EXAMPLES
   Generate a new typed package from ABI+BIN:
     node generate-sdk.js --abi .\\My.abi.json --bin .\\My.bin --name MyContract --create-package --package-dir .\\tmp --package-name my-typed-contract --package-description "My typed contract" --package-author "me" --non-interactive
 
-  Generate a new typed package from Solidity (single file):
-    set QC_SOLC_PATH=c:\\solc\\solc.exe
+  Generate a new typed package from Solidity (single file; compiled with @quantumcoin/solc):
     node generate-sdk.js --sol ".\\contracts\\MyContract.sol" --create-package --package-dir .\\tmp --package-name my-typed-contract --package-description "My typed contract" --package-author "me" --non-interactive
 
   Generate a new typed package from Solidity (multiple files):
@@ -419,41 +421,108 @@ function _parseSolcExtraArgs(raw) {
   return out;
 }
 
+// Returns the external solc binary path when explicitly requested (via --solc
+// or env vars), otherwise null — which selects the bundled JS compiler
+// (@quantumcoin/solc).
 function _resolveSolcPath(argv) {
   const solcArg = _argValue(argv, "--solc") || _argValue(argv, "--solc-path") || _argValue(argv, "--solcPath");
-  const env =
+  return (
     solcArg ||
     process.env.QC_SOLC_PATH ||
     process.env.SOLC ||
     process.env.SOLC_PATH ||
     process.env.solc ||
-    null;
-  return env || "c:\\solc\\solc.exe";
+    null
+  );
 }
 
 function _assertSolcExists(solcPath) {
   if (!fs.existsSync(solcPath)) {
     throw new Error(
-      `solc not found at ${solcPath}. Set env QC_SOLC_PATH or SOLC (e.g. c:\\\\solc\\\\solc.exe) or pass --solc <path>.`,
+      `solc not found at ${solcPath}. Fix the --solc/QC_SOLC_PATH/SOLC/SOLC_PATH value, or omit it to compile with the JS-based @quantumcoin/solc package.`,
     );
   }
 }
 
-function _compileSolidityToArtifacts({ solcPath, solFilesAbs, contractNameFilter, solcExtraArgs }) {
+function _requireQuantumcoinSolc() {
+  try {
+    return require("@quantumcoin/solc");
+  } catch (err) {
+    throw new Error(
+      "The JS Solidity compiler is not installed. Run `npm install @quantumcoin/solc`, or pass --solc <path> (or set QC_SOLC_PATH/SOLC/SOLC_PATH) to use an external solc binary.",
+    );
+  }
+}
+
+// Compiles with the JS-based @quantumcoin/solc via standard JSON input/output.
+function _compileWithJsSolc({ solFilesAbs }) {
+  const solc = _requireQuantumcoinSolc();
+  const sources = {};
+  for (const f of solFilesAbs) {
+    sources[path.basename(f)] = { content: fs.readFileSync(f, "utf8") };
+  }
+  const input = {
+    language: "Solidity",
+    sources,
+    settings: {
+      optimizer: { enabled: true, runs: 200 },
+      outputSelection: { "*": { "*": ["abi", "evm.bytecode.object"] } },
+    },
+  };
+  const output = JSON.parse(solc.compile(JSON.stringify(input)));
+  const errors = (output.errors || []).filter((e) => e.severity === "error");
+  if (errors.length > 0) {
+    throw new Error(
+      "@quantumcoin/solc compilation failed:\n" + errors.map((e) => e.formattedMessage || e.message).join("\n"),
+    );
+  }
+  // Normalize to the combined-json-like shape used below: { "<file>:<name>": { abi, bin } }
+  const contracts = {};
+  for (const file of Object.keys(output.contracts || {})) {
+    for (const name of Object.keys(output.contracts[file])) {
+      const c = output.contracts[file][name];
+      const bin = c && c.evm && c.evm.bytecode && c.evm.bytecode.object ? c.evm.bytecode.object : "";
+      contracts[`${file}:${name}`] = { abi: c.abi, bin };
+    }
+  }
+  return contracts;
+}
+
+// Compiles with an external solc binary (--combined-json output).
+function _compileWithExternalSolc({ solcPath, solFilesAbs, solcExtraArgs }) {
   _assertSolcExists(solcPath);
   const extra = Array.isArray(solcExtraArgs) ? solcExtraArgs : [];
   const base = extra.includes("--optimize") ? [] : ["--optimize"];
   const out = execFileSync(solcPath, [...base, ...extra, "--combined-json", "abi,bin", ...solFilesAbs], { encoding: "utf8" });
   const parsed = JSON.parse(out);
-
-  const artifacts = [];
+  const contracts = {};
   for (const key of Object.keys(parsed.contracts || {})) {
     const entry = parsed.contracts[key];
+    const abi = entry && entry.abi ? JSON.parse(entry.abi) : null;
+    const bin = entry && typeof entry.bin === "string" ? entry.bin : "";
+    contracts[key] = { abi, bin };
+  }
+  return contracts;
+}
+
+function _compileSolidityToArtifacts({ solcPath, solFilesAbs, contractNameFilter, solcExtraArgs }) {
+  // Default: JS-based @quantumcoin/solc. An explicit --solc/QC_SOLC_PATH/SOLC/SOLC_PATH
+  // switches to the external binary (the only mode where --solc-args applies).
+  if (!solcPath && Array.isArray(solcExtraArgs) && solcExtraArgs.length > 0) {
+    console.warn("Warning: --solc-args only applies to an external solc binary (--solc <path>); ignored with the JS compiler.");
+  }
+  const contracts = solcPath
+    ? _compileWithExternalSolc({ solcPath, solFilesAbs, solcExtraArgs })
+    : _compileWithJsSolc({ solFilesAbs });
+
+  const artifacts = [];
+  for (const key of Object.keys(contracts)) {
+    const entry = contracts[key];
     const name = key.includes(":") ? key.split(":").pop() : key;
     if (!name) continue;
     if (contractNameFilter && name !== contractNameFilter) continue;
-    const abi = entry && entry.abi ? JSON.parse(entry.abi) : null;
-    const bin = entry && typeof entry.bin === "string" ? entry.bin : "";
+    const abi = entry.abi;
+    const bin = typeof entry.bin === "string" ? entry.bin : "";
     if (!abi || !Array.isArray(abi)) continue;
     if (!bin) continue; // skip abstract/interfaces
     // Validate before _writeSolcArtifacts uses the name to build paths.

@@ -147,3 +147,178 @@ describe("typed contract generator", () => {
   });
 });
 
+describe("generated identifier collisions with ABI parameter names", () => {
+  logSuite("generated identifier collisions with ABI parameter names");
+
+  const vm = require("node:vm");
+  // Parse (not execute) generated JS; throws SyntaxError on redeclared identifiers.
+  const assertParses = (file) => {
+    const src = fs.readFileSync(file, "utf8");
+    assert.doesNotThrow(() => new vm.Script(src, { filename: path.basename(file) }));
+    return src;
+  };
+
+  // Mirrors UniswapV2Pair.swap(uint,uint,address,bytes data), which shadowed the
+  // generated `const data = encodeFunctionData(...)` local before the fix.
+  const collisionAbi = [
+    {
+      type: "function",
+      name: "swap",
+      stateMutability: "nonpayable",
+      inputs: [
+        { name: "amountOut", type: "uint256" },
+        { name: "to", type: "address" },
+        { name: "data", type: "bytes" },
+      ],
+      outputs: [],
+    },
+    {
+      type: "function",
+      name: "configure",
+      stateMutability: "nonpayable",
+      inputs: [
+        { name: "overrides", type: "uint256" },
+        { name: "safeOverrides", type: "uint256" },
+        { name: "k", type: "uint256" },
+      ],
+      outputs: [],
+    },
+    {
+      type: "function",
+      name: "lookup",
+      stateMutability: "view",
+      inputs: [{ name: "res", type: "uint256" }],
+      outputs: [{ name: "", type: "uint256" }],
+    },
+    {
+      type: "constructor",
+      stateMutability: "nonpayable",
+      inputs: [
+        { name: "nonce", type: "uint256" },
+        { name: "txReq", type: "address" },
+        { name: "from", type: "address" },
+        { name: "overrides", type: "uint256" },
+      ],
+    },
+  ];
+
+  it("JS: params named data/overrides/safeOverrides/res do not shadow generated locals (positive)", () => {
+    logTest("JS collision-safe contract generation", {});
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "qcgen-collide-js-"));
+    const res = generateFromArtifacts({
+      outDir,
+      lang: "js",
+      artifacts: [{ contractName: "CollideToken", abi: collisionAbi, bytecode: "0x6000" }],
+    });
+
+    const contractSrc = assertParses(res.contracts[0].contractFile);
+    // populateTransaction.swap keeps the `data` param intact and renames the local
+    assert.ok(contractSrc.includes("swap: async (amountOut, to, data, overrides) =>"));
+    assert.ok(contractSrc.includes('const _data = this.interface.encodeFunctionData("swap", [amountOut, to, data]);'));
+    assert.ok(contractSrc.includes("to: this.address, data: _data"));
+    // configure collides with overrides/safeOverrides/k
+    assert.ok(contractSrc.includes("configure: async (overrides, safeOverrides, k, _overrides) =>"));
+    assert.ok(contractSrc.includes("const _safeOverrides = {};"));
+    // send method also renames its overrides parameter
+    assert.ok(contractSrc.includes("async configure(overrides, safeOverrides, k, _overrides) {"));
+    assert.ok(contractSrc.includes('return this.send("configure", [overrides, safeOverrides, k], _overrides);'));
+    // view method with a param named res
+    assert.ok(contractSrc.includes("async lookup(res) {"));
+    assert.ok(contractSrc.includes('const _res = await this.call("lookup", [res]);'));
+
+    // contract .d.ts renames the overrides parameter in the colliding signatures
+    const contractDts = fs.readFileSync(path.join(outDir, "CollideToken.d.ts"), "utf8");
+    const configureDecls = contractDts.split("\n").filter((l) => l.includes("configure("));
+    assert.ok(configureDecls.length >= 2, "configure appears in populateTransaction and method declarations");
+    for (const decl of configureDecls) assert.ok(decl.includes("_overrides?: any"), `got: ${decl}`);
+  });
+
+  it("JS factory: constructor params named nonce/txReq/from/overrides do not shadow deploy() locals (positive)", () => {
+    logTest("JS collision-safe factory generation", {});
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "qcgen-collide-factory-"));
+    const res = generateFromArtifacts({
+      outDir,
+      lang: "js",
+      artifacts: [{ contractName: "CollideToken", abi: collisionAbi, bytecode: "0x6000" }],
+    });
+
+    const factorySrc = assertParses(res.contracts[0].factoryFile);
+    assert.ok(factorySrc.includes("async deploy(nonce, txReq, from, overrides, _overrides) {"));
+    assert.ok(factorySrc.includes("let _nonce;"));
+    assert.ok(factorySrc.includes("const _txReq = this.getDeployTransaction(nonce, txReq, from, overrides);"));
+    assert.ok(factorySrc.includes("const _from ="));
+    assert.ok(factorySrc.includes("getCreateAddress({ from: _from, nonce: _nonce })"));
+    assert.ok(factorySrc.includes("nonce: _nonce });"));
+
+    // .d.ts twin must rename the overrides parameter too
+    const dts = fs.readFileSync(path.join(outDir, "CollideToken__factory.d.ts"), "utf8");
+    const deployDecl = dts.split("\n").find((l) => l.includes("deploy("));
+    assert.ok(deployDecl, "factory d.ts has a deploy() declaration");
+    assert.ok(deployDecl.includes("_overrides?: any): Promise<CollideToken>;"), `got: ${deployDecl}`);
+  });
+
+  it("TS: collision ABI renames generated locals in .ts output (positive)", () => {
+    logTest("TS collision-safe contract generation", {});
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "qcgen-collide-ts-"));
+    const res = generateFromArtifacts({
+      outDir,
+      lang: "ts",
+      artifacts: [{ contractName: "CollideToken", abi: collisionAbi, bytecode: "0x6000" }],
+    });
+
+    const contractSrc = fs.readFileSync(res.contracts[0].contractFile, "utf8");
+    assert.ok(contractSrc.includes('const _data = this.interface.encodeFunctionData("swap", [amountOut, to, data]);'));
+    assert.ok(contractSrc.includes("to: this.address, data: _data"));
+    assert.ok(contractSrc.includes("const _safeOverrides: any = {};"));
+    assert.ok(contractSrc.includes('return this.send("configure", [overrides, safeOverrides, k], _overrides);'));
+    assert.ok(contractSrc.includes("const _res = await this.call("));
+
+    const factorySrc = fs.readFileSync(res.contracts[0].factoryFile, "utf8");
+    assert.ok(factorySrc.includes("let _nonce: number;"));
+    assert.ok(factorySrc.includes("const _txReq: any = this.getDeployTransaction(nonce, txReq, from, overrides);"));
+  });
+
+  it("JS: non-colliding ABI keeps the canonical local names (negative control)", () => {
+    logTest("JS non-colliding generation unchanged", {});
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), "qcgen-nocollide-"));
+    const abi = [
+      {
+        type: "function",
+        name: "transfer",
+        stateMutability: "nonpayable",
+        inputs: [
+          { name: "to", type: "address" },
+          { name: "amount", type: "uint256" },
+        ],
+        outputs: [{ name: "", type: "bool" }],
+      },
+      {
+        type: "function",
+        name: "balanceOf",
+        stateMutability: "view",
+        inputs: [{ name: "account", type: "address" }],
+        outputs: [{ name: "", type: "uint256" }],
+      },
+    ];
+    const res = generateFromArtifacts({
+      outDir,
+      lang: "js",
+      artifacts: [{ contractName: "PlainToken", abi, bytecode: "0x6000" }],
+    });
+
+    const contractSrc = assertParses(res.contracts[0].contractFile);
+    assert.ok(contractSrc.includes("transfer: async (to, amount, overrides) =>"));
+    assert.ok(contractSrc.includes('const data = this.interface.encodeFunctionData("transfer", [to, amount]);'));
+    assert.ok(contractSrc.includes("return { ...safeOverrides, to: this.address, data };"));
+    assert.ok(contractSrc.includes("async transfer(to, amount, overrides) {"));
+    assert.ok(contractSrc.includes("const res = await this.call("));
+    assert.ok(!contractSrc.includes("_data"));
+    assert.ok(!contractSrc.includes("_overrides"));
+
+    const factorySrc = assertParses(res.contracts[0].factoryFile);
+    assert.ok(factorySrc.includes("async deploy(overrides) {"));
+    assert.ok(factorySrc.includes("getCreateAddress({ from, nonce })"));
+    assert.ok(factorySrc.includes("const tx = await signer.sendTransaction({ ...txReq, ...safeOverrides, nonce });"));
+  });
+});
+

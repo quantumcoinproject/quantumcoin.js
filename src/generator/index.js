@@ -377,6 +377,18 @@ function _safeIdent(name) {
   return (name || "arg").replace(/[^a-zA-Z0-9_]/g, "_");
 }
 
+// Generated code declares its own locals (data, safeOverrides, res, txReq, ...)
+// and appends an extra `overrides` parameter next to the ABI-derived parameter
+// names. If a Solidity parameter shares one of those names (e.g. Uniswap's
+// swap(..., bytes data)), the generated declaration would redeclare/shadow it
+// and the file would not even parse. Prefix with underscores until free.
+function _uniqueIdent(base, takenNames) {
+  let name = base;
+  while (takenNames.has(name)) name = `_${name}`;
+  takenNames.add(name);
+  return name;
+}
+
 // NatSpec/doc text is attacker-controllable (it comes from arbitrary Solidity
 // source). It is emitted into generated `/** ... */` JSDoc blocks, so a `*/` in the
 // text would close the comment early and turn whatever follows into executable code
@@ -619,20 +631,27 @@ function _renderContractTs({ contractName, abi, bytecode, docs }) {
     for (const fn of txFns) {
       const name = fn.name;
       const inputs = fn.inputs || [];
+      const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+      const overridesId = _uniqueIdent("overrides", taken);
+      const dataId = _uniqueIdent("data", taken);
+      const safeOverridesId = _uniqueIdent("safeOverrides", taken);
+      const kId = _uniqueIdent("k", taken);
       const argsSig = inputs
         .map((p, i) => `${_safeIdent(p.name || `arg${i}`)}: ${_solParamToTs(p, "input", tupleReg)}`)
         .join(", ");
       const argsNames = inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)).join(", ");
       contractTsLines.push(
-        `      ${name}: async (${argsSig}${argsSig ? ", " : ""}overrides?: any): Promise<import("quantumcoin").TransactionRequest> => {`,
+        `      ${name}: async (${argsSig}${argsSig ? ", " : ""}${overridesId}?: any): Promise<import("quantumcoin").TransactionRequest> => {`,
       );
-      contractTsLines.push(`        const data = this.interface.encodeFunctionData(${JSON.stringify(name)}, [${argsNames}]);`);
+      contractTsLines.push(`        const ${dataId} = this.interface.encodeFunctionData(${JSON.stringify(name)}, [${argsNames}]);`);
       // Drop attacker-controllable to/data/from; protected fields win.
-      contractTsLines.push(`        const safeOverrides: any = {};`);
+      contractTsLines.push(`        const ${safeOverridesId}: any = {};`);
       contractTsLines.push(
-        `        for (const k of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "chainId", "remarks", "signingContext"]) { if (overrides && overrides[k] !== undefined) safeOverrides[k] = overrides[k]; }`,
+        `        for (const ${kId} of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "chainId", "remarks", "signingContext"]) { if (${overridesId} && ${overridesId}[${kId}] !== undefined) ${safeOverridesId}[${kId}] = ${overridesId}[${kId}]; }`,
       );
-      contractTsLines.push(`        return { ...safeOverrides, to: this.address, data };`);
+      contractTsLines.push(
+        `        return { ...${safeOverridesId}, to: this.address, ${dataId === "data" ? "data" : `data: ${dataId}`} };`,
+      );
       contractTsLines.push(`      },`);
     }
     contractTsLines.push(`    } as any;`);
@@ -673,23 +692,26 @@ function _renderContractTs({ contractName, abi, bytecode, docs }) {
       }
     }
     contractTsLines.push(`   */`);
+    const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
     if (isView) {
+      const resId = _uniqueIdent("res", taken);
       contractTsLines.push(`  async ${name}(${argsSig}): ${returnTs} {`);
-      contractTsLines.push(`    const res = await this.call(${JSON.stringify(name)}, [${argsNames}]);`);
+      contractTsLines.push(`    const ${resId} = await this.call(${JSON.stringify(name)}, [${argsNames}]);`);
       if (outputs.length === 0) {
-        contractTsLines.push(`    void res;`);
+        contractTsLines.push(`    void ${resId};`);
         contractTsLines.push(`    return;`);
       } else if (outputs.length === 1) {
-        contractTsLines.push(`    return (Array.isArray(res) ? res[0] : res) as unknown as ${_solParamToTs(outputs[0], "output", tupleReg)};`);
+        contractTsLines.push(`    return (Array.isArray(${resId}) ? ${resId}[0] : ${resId}) as unknown as ${_solParamToTs(outputs[0], "output", tupleReg)};`);
       } else {
         contractTsLines.push(
-          `    return res as unknown as [${outputs.map((o) => _solParamToTs(o, "output", tupleReg)).join(", ")}];`,
+          `    return ${resId} as unknown as [${outputs.map((o) => _solParamToTs(o, "output", tupleReg)).join(", ")}];`,
         );
       }
       contractTsLines.push(`  }`);
     } else {
-      contractTsLines.push(`  async ${name}(${argsSig}${argsSig ? ", " : ""}overrides?: any): ${returnTs} {`);
-      contractTsLines.push(`    return this.send(${JSON.stringify(name)}, [${argsNames}], overrides);`);
+      const overridesId = _uniqueIdent("overrides", taken);
+      contractTsLines.push(`  async ${name}(${argsSig}${argsSig ? ", " : ""}${overridesId}?: any): ${returnTs} {`);
+      contractTsLines.push(`    return this.send(${JSON.stringify(name)}, [${argsNames}], ${overridesId});`);
       contractTsLines.push(`  }`);
     }
   }
@@ -743,16 +765,23 @@ function _renderContractJs({ contractName, abi, bytecode, docs }) {
     for (const fn of txFns) {
       const name = fn.name;
       const inputs = fn.inputs || [];
+      const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+      const overridesId = _uniqueIdent("overrides", taken);
+      const dataId = _uniqueIdent("data", taken);
+      const safeOverridesId = _uniqueIdent("safeOverrides", taken);
+      const kId = _uniqueIdent("k", taken);
       const argsNames = inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)).join(", ");
       const argsSig = inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)).join(", ");
-      lines.push(`      ${name}: async (${argsSig}${argsSig ? ", " : ""}overrides) => {`);
-      lines.push(`        const data = this.interface.encodeFunctionData(${JSON.stringify(name)}, [${argsNames}]);`);
+      lines.push(`      ${name}: async (${argsSig}${argsSig ? ", " : ""}${overridesId}) => {`);
+      lines.push(`        const ${dataId} = this.interface.encodeFunctionData(${JSON.stringify(name)}, [${argsNames}]);`);
       // Drop attacker-controllable to/data/from; protected fields win.
-      lines.push(`        const safeOverrides = {};`);
+      lines.push(`        const ${safeOverridesId} = {};`);
       lines.push(
-        `        for (const k of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "chainId", "remarks", "signingContext"]) { if (overrides && overrides[k] !== undefined) safeOverrides[k] = overrides[k]; }`,
+        `        for (const ${kId} of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "chainId", "remarks", "signingContext"]) { if (${overridesId} && ${overridesId}[${kId}] !== undefined) ${safeOverridesId}[${kId}] = ${overridesId}[${kId}]; }`,
       );
-      lines.push(`        return { ...safeOverrides, to: this.address, data };`);
+      lines.push(
+        `        return { ...${safeOverridesId}, to: this.address, ${dataId === "data" ? "data" : `data: ${dataId}`} };`,
+      );
       lines.push("      },");
     }
     lines.push("    };");
@@ -799,20 +828,23 @@ function _renderContractJs({ contractName, abi, bytecode, docs }) {
     }
     lines.push("   */");
 
+    const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
     if (isView) {
+      const resId = _uniqueIdent("res", taken);
       lines.push(`  async ${name}(${argsNames}) {`);
-      lines.push(`    const res = await this.call(${JSON.stringify(name)}, [${argsNames}]);`);
+      lines.push(`    const ${resId} = await this.call(${JSON.stringify(name)}, [${argsNames}]);`);
       if (outputs.length === 0) {
         lines.push(`    return;`);
       } else if (outputs.length === 1) {
-        lines.push(`    return Array.isArray(res) ? res[0] : res;`);
+        lines.push(`    return Array.isArray(${resId}) ? ${resId}[0] : ${resId};`);
       } else {
-        lines.push(`    return res;`);
+        lines.push(`    return ${resId};`);
       }
       lines.push(`  }`);
     } else {
-      lines.push(`  async ${name}(${argsNames}${argsNames ? ", " : ""}overrides) {`);
-      lines.push(`    return this.send(${JSON.stringify(name)}, [${argsNames}], overrides);`);
+      const overridesId = _uniqueIdent("overrides", taken);
+      lines.push(`  async ${name}(${argsNames}${argsNames ? ", " : ""}${overridesId}) {`);
+      lines.push(`    return this.send(${JSON.stringify(name)}, [${argsNames}], ${overridesId});`);
       lines.push(`  }`);
     }
   }
@@ -848,11 +880,13 @@ function _renderContractDts({ contractName, abi }) {
     for (const fn of txFns) {
       const name = fn.name;
       const inputs = fn.inputs || [];
+      const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+      const overridesId = _uniqueIdent("overrides", taken);
       const argsSig = inputs
         .map((p, i) => `${_safeIdent(p.name || `arg${i}`)}: ${_solParamToTs(p, "input", tupleReg)}`)
         .join(", ");
       lines.push(
-        `    ${name}(${argsSig}${argsSig ? ", " : ""}overrides?: any): Promise<import("quantumcoin").TransactionRequest>;`,
+        `    ${name}(${argsSig}${argsSig ? ", " : ""}${overridesId}?: any): Promise<import("quantumcoin").TransactionRequest>;`,
       );
     }
     lines.push(`  };`);
@@ -880,7 +914,9 @@ function _renderContractDts({ contractName, abi }) {
     if (isView) {
       lines.push(`  ${name}(${argsSig}): ${returnTs};`);
     } else {
-      lines.push(`  ${name}(${argsSig}${argsSig ? ", " : ""}overrides?: any): ${returnTs};`);
+      const taken = new Set(inputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+      const overridesId = _uniqueIdent("overrides", taken);
+      lines.push(`  ${name}(${argsSig}${argsSig ? ", " : ""}${overridesId}?: any): ${returnTs};`);
     }
   }
 
@@ -930,25 +966,30 @@ function _renderFactoryTs({ contractName, abi }) {
     .map((p, i) => `${_safeIdent(p.name || `arg${i}`)}: ${_solParamToTs(p, "input", tupleReg)}`)
     .join(", ");
   const deployArgsNames = ctorInputs.map((p, i) => _safeIdent(p.name || `arg${i}`)).join(", ");
+  const taken = new Set(ctorInputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+  const [overridesId, signerId, fromId, providerId, nonceId, addressId, txReqId, safeOverridesId, kId, txId] = [
+    "overrides", "signer", "from", "provider", "nonce", "address", "txReq", "safeOverrides", "k", "tx",
+  ].map((n) => _uniqueIdent(n, taken));
+  const prop = (key, id) => (id === key ? key : `${key}: ${id}`);
 
-  factoryTsLines.push(`  async deploy(${deployArgsSig}${deployArgsSig ? ", " : ""}overrides?: any): Promise<${contractName}> {`);
-  factoryTsLines.push(`    const signer: any = (this as any).signer;`);
-  factoryTsLines.push(`    if (!signer) { throw new Error("missing signer"); }`);
-  factoryTsLines.push(`    const from: string = signer.getAddress ? await signer.getAddress() : signer.address;`);
-  factoryTsLines.push(`    const provider: any = signer.provider;`);
-  factoryTsLines.push(`    if (!provider || !provider.getTransactionCount) { throw new Error("missing provider"); }`);
-  factoryTsLines.push(`    let nonce: number;`);
-  factoryTsLines.push(`    try { nonce = await provider.getTransactionCount(from, "pending"); } catch { nonce = await provider.getTransactionCount(from, "latest"); }`);
-  factoryTsLines.push(`    const address = getCreateAddress({ from, nonce });`);
-  factoryTsLines.push(`    const txReq: any = this.getDeployTransaction(${deployArgsNames});`);
+  factoryTsLines.push(`  async deploy(${deployArgsSig}${deployArgsSig ? ", " : ""}${overridesId}?: any): Promise<${contractName}> {`);
+  factoryTsLines.push(`    const ${signerId}: any = (this as any).signer;`);
+  factoryTsLines.push(`    if (!${signerId}) { throw new Error("missing signer"); }`);
+  factoryTsLines.push(`    const ${fromId}: string = ${signerId}.getAddress ? await ${signerId}.getAddress() : ${signerId}.address;`);
+  factoryTsLines.push(`    const ${providerId}: any = ${signerId}.provider;`);
+  factoryTsLines.push(`    if (!${providerId} || !${providerId}.getTransactionCount) { throw new Error("missing provider"); }`);
+  factoryTsLines.push(`    let ${nonceId}: number;`);
+  factoryTsLines.push(`    try { ${nonceId} = await ${providerId}.getTransactionCount(${fromId}, "pending"); } catch { ${nonceId} = await ${providerId}.getTransactionCount(${fromId}, "latest"); }`);
+  factoryTsLines.push(`    const ${addressId} = getCreateAddress({ ${prop("from", fromId)}, ${prop("nonce", nonceId)} });`);
+  factoryTsLines.push(`    const ${txReqId}: any = this.getDeployTransaction(${deployArgsNames});`);
   // Only allow-listed override fields may reach the signer; protected fields
   // (to/data from txReq, and the computed nonce) always win.
-  factoryTsLines.push(`    const safeOverrides: any = {};`);
+  factoryTsLines.push(`    const ${safeOverridesId}: any = {};`);
   factoryTsLines.push(
-    `    for (const k of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "remarks", "signingContext"]) { if (overrides && overrides[k] !== undefined) safeOverrides[k] = overrides[k]; }`,
+    `    for (const ${kId} of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "remarks", "signingContext"]) { if (${overridesId} && ${overridesId}[${kId}] !== undefined) ${safeOverridesId}[${kId}] = ${overridesId}[${kId}]; }`,
   );
-  factoryTsLines.push(`    const tx = await signer.sendTransaction({ ...txReq, ...safeOverrides, nonce });`);
-  factoryTsLines.push(`    return new ${contractName}(address, signer as any, tx as any);`);
+  factoryTsLines.push(`    const ${txId} = await ${signerId}.sendTransaction({ ...${txReqId}, ...${safeOverridesId}, ${prop("nonce", nonceId)} });`);
+  factoryTsLines.push(`    return new ${contractName}(${addressId}, ${signerId} as any, ${txId} as any);`);
   factoryTsLines.push(`  }`);
   factoryTsLines.push(``);
 
@@ -976,24 +1017,30 @@ function _renderFactoryJs({ contractName, abi }) {
   lines.push(`    super(${contractName}.abi, ${contractName}.bytecode, runner);`);
   lines.push(`  }`);
   lines.push("");
-  lines.push(`  async deploy(${deployArgsNames}${deployArgsNames ? ", " : ""}overrides) {`);
-  lines.push(`    const signer = this.signer;`);
-  lines.push(`    if (!signer) { throw new Error("missing signer"); }`);
-  lines.push(`    const from = signer.getAddress ? await signer.getAddress() : signer.address;`);
-  lines.push(`    const provider = signer.provider;`);
-  lines.push(`    if (!provider || !provider.getTransactionCount) { throw new Error("missing provider"); }`);
-  lines.push(`    let nonce;`);
-  lines.push(`    try { nonce = await provider.getTransactionCount(from, "pending"); } catch { nonce = await provider.getTransactionCount(from, "latest"); }`);
-  lines.push(`    const address = getCreateAddress({ from, nonce });`);
-  lines.push(`    const txReq = this.getDeployTransaction(${deployArgsNames});`);
+  const taken = new Set(ctorInputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+  const [overridesId, signerId, fromId, providerId, nonceId, addressId, txReqId, safeOverridesId, kId, txId] = [
+    "overrides", "signer", "from", "provider", "nonce", "address", "txReq", "safeOverrides", "k", "tx",
+  ].map((n) => _uniqueIdent(n, taken));
+  const prop = (key, id) => (id === key ? key : `${key}: ${id}`);
+
+  lines.push(`  async deploy(${deployArgsNames}${deployArgsNames ? ", " : ""}${overridesId}) {`);
+  lines.push(`    const ${signerId} = this.signer;`);
+  lines.push(`    if (!${signerId}) { throw new Error("missing signer"); }`);
+  lines.push(`    const ${fromId} = ${signerId}.getAddress ? await ${signerId}.getAddress() : ${signerId}.address;`);
+  lines.push(`    const ${providerId} = ${signerId}.provider;`);
+  lines.push(`    if (!${providerId} || !${providerId}.getTransactionCount) { throw new Error("missing provider"); }`);
+  lines.push(`    let ${nonceId};`);
+  lines.push(`    try { ${nonceId} = await ${providerId}.getTransactionCount(${fromId}, "pending"); } catch { ${nonceId} = await ${providerId}.getTransactionCount(${fromId}, "latest"); }`);
+  lines.push(`    const ${addressId} = getCreateAddress({ ${prop("from", fromId)}, ${prop("nonce", nonceId)} });`);
+  lines.push(`    const ${txReqId} = this.getDeployTransaction(${deployArgsNames});`);
   // Only allow-listed override fields may reach the signer; protected fields
   // (to/data from txReq, and the computed nonce) always win.
-  lines.push(`    const safeOverrides = {};`);
+  lines.push(`    const ${safeOverridesId} = {};`);
   lines.push(
-    `    for (const k of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "remarks", "signingContext"]) { if (overrides && overrides[k] !== undefined) safeOverrides[k] = overrides[k]; }`,
+    `    for (const ${kId} of ["value", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "remarks", "signingContext"]) { if (${overridesId} && ${overridesId}[${kId}] !== undefined) ${safeOverridesId}[${kId}] = ${overridesId}[${kId}]; }`,
   );
-  lines.push(`    const tx = await signer.sendTransaction({ ...txReq, ...safeOverrides, nonce });`);
-  lines.push(`    return new ${contractName}(address, signer, tx);`);
+  lines.push(`    const ${txId} = await ${signerId}.sendTransaction({ ...${txReqId}, ...${safeOverridesId}, ${prop("nonce", nonceId)} });`);
+  lines.push(`    return new ${contractName}(${addressId}, ${signerId}, ${txId});`);
   lines.push(`  }`);
   lines.push("");
   lines.push(`  static connect(address, runner) {`);
@@ -1037,9 +1084,11 @@ function _renderFactoryDts({ contractName, abi }) {
     lines.push(`import type { ${Array.from(ctorTupleTypes).sort().join(", ")} } from "./${contractName}";`);
   }
   lines.push("");
+  const takenDts = new Set(ctorInputs.map((p, i) => _safeIdent(p.name || `arg${i}`)));
+  const overridesId = _uniqueIdent("overrides", takenDts);
   lines.push(`export declare class ${factoryName} extends ContractFactory {`);
   lines.push(`  constructor(runner: ContractRunner);`);
-  lines.push(`  deploy(${deployArgsSig}${deployArgsSig ? ", " : ""}overrides?: any): Promise<${contractName}>;`);
+  lines.push(`  deploy(${deployArgsSig}${deployArgsSig ? ", " : ""}${overridesId}?: any): Promise<${contractName}>;`);
   lines.push(`  static connect(address: string, runner?: ContractRunner): ${contractName};`);
   lines.push(`}`);
   return lines.join("\n") + "\n";

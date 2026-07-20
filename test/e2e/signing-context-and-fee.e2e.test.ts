@@ -3,6 +3,9 @@
  * @blockchainRequired write
  * @transactional true
  * Sends 1M coins to 32/36-word wallets, then sends back with signingContext (null, 0, 1, 2). Asserts transaction fees.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL/QC_ENDPOINT at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

@@ -3,18 +3,22 @@
  * @blockchainRequired write
  * @transactional true
  * @description Transactional tests (send coins, deploy contract, invoke contract) against a JSON-RPC endpoint.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123, prefilled funded wallet) and point
+ * QC_RPC_URL at its HTTP RPC port (e.g. http://127.0.0.1:8545) —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
+ *
+ * Solidity is compiled in-process with the JS-based @quantumcoin/solc package
+ * (https://www.npmjs.com/package/@quantumcoin/solc); no external solc install is needed.
  */
 
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import os from "node:os";
-import fs from "node:fs";
-import { execFileSync } from "node:child_process";
 
 import qc from "../../index";
 import { Initialize } from "../../config";
-import { getRpcUrl, getChainId, getSolcPath, assertSolcExists, logE2eConfig } from "./helpers";
+import { getRpcUrl, getChainId, compileSol, logE2eConfig } from "./helpers";
 import { logSuite, logTest, logTxn, logAddress } from "../verbose-logger";
 
 const TEST_WALLET_ENCRYPTED_JSON =
@@ -26,17 +30,10 @@ const FIXED_COINS_PER_21000_GAS = 1000n;
 const FIXED_GAS_UNITS = 21000n;
 const FIXED_GAS_PRICE_WEI = (FIXED_COINS_PER_21000_GAS * ONE_COIN_WEI) / FIXED_GAS_UNITS;
 
-function compileSimpleStorage(solcPath: string) {
+function compileSimpleStorage() {
   const srcPath = path.join(__dirname, "..", "fixtures", "SimpleStorage.sol");
-  const out = execFileSync(solcPath, ["--optimize", "--combined-json", "abi,bin", srcPath], { encoding: "utf8" });
-  const json = JSON.parse(out);
-  const contracts = json.contracts || {};
-  const key = Object.keys(contracts).find((k) => k.toLowerCase().includes("simplestorage"));
-  if (!key) throw new Error("solc output missing SimpleStorage contract");
-  const abi = JSON.parse(contracts[key].abi);
-  const bin = contracts[key].bin;
-  if (!bin) throw new Error("solc output missing bytecode");
-  return { abi, bytecode: "0x" + bin };
+  const [artifact] = compileSol({ solPaths: srcPath, contractName: "SimpleStorage" });
+  return { abi: artifact.abi, bytecode: artifact.bin };
 }
 
 describe("Transactional E2E (write)", () => {
@@ -146,15 +143,13 @@ describe("Transactional E2E (write)", () => {
     logE2eConfig();
 
     const chainId = getChainId();
-    const solcPath = getSolcPath();
-    assertSolcExists(solcPath);
 
     await Initialize(null);
     const provider = qc.getProvider(rpcUrl, chainId);
     const wallet = qc.Wallet.fromEncryptedJsonSync(TEST_WALLET_ENCRYPTED_JSON, TEST_WALLET_PASSPHRASE, provider);
     logAddress("deployer", wallet.address);
 
-    const { abi, bytecode } = compileSimpleStorage(solcPath);
+    const { abi, bytecode } = compileSimpleStorage();
 
     const deployNonce = await provider.getTransactionCount(wallet.address, "latest");
     const expectedAddress = qc.getCreateAddress({ from: wallet.address, nonce: deployNonce });

@@ -3,6 +3,9 @@
  * @blockchainRequired readonly
  * @transactional false
  * @description Read-only WebSocket JSON-RPC integration tests (validates WebSocketProvider only).
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_WS_URL at its WebSocket port —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

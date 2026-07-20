@@ -5,6 +5,9 @@
  *
  * Generates typed SDK packages (TS and JS) for AllSolidityTypes.sol,
  * then injects additional tests that call all methods and validate outputs.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 const { describe, it } = require("node:test");

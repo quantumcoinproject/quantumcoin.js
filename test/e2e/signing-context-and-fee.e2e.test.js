@@ -6,6 +6,9 @@
  * Asserts transaction fees. Run once and copy logged fee values into EXPECTED_FEE_* constants below.
  *
  * Requires QC_RPC_URL or QC_ENDPOINT. Uses same hardcoded test wallet as transactional.test.js.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL/QC_ENDPOINT at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 const { describe, it } = require("node:test");

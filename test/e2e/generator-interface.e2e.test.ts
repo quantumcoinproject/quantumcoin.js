@@ -6,6 +6,9 @@
  *              validation for interface contracts. Materializes a tiny interface
  *              SDK to a tmpdir and runs the generator's emitted `node --test`
  *              file against the real QC_RPC_URL chain with the real test wallet.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

@@ -3,6 +3,9 @@
  * @blockchainRequired write
  * @transactional true
  * Generates typed SDK packages (TS and JS) for examples/SimpleIERC20.sol (SimpleERC20), runs their tests.
+ *
+ * Local testing: run the QuantumCoin devnet (network ID 123123) and point QC_RPC_URL at it —
+ * see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
  */
 
 import { describe, it } from "node:test";

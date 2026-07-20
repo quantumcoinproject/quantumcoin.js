@@ -1,6 +1,6 @@
 {
   "name": "quantumcoin",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "description": "QuantumCoin.js - a post quantum cryptography SDK for QuantumCoin",
   "main": "index.js",
   "types": "src/index.d.ts",
@@ -102,6 +102,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
+    "@quantumcoin/solc": "^0.7.6",
     "esbuild": "^0.28.1",
     "tsx": "^4.19.0"
   },

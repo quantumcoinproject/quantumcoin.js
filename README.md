@@ -281,6 +281,10 @@ The E2E tests broadcast real transactions and require a funded test wallet.
 
 - Set RPC URL via env var: `QC_RPC_URL`
 - (Optional) chain id via env var: `QC_CHAIN_ID` (default: 123123)
-- (Optional) solc path via env var: `QC_SOLC_PATH` (default: `c:\solc\solc.exe`)
+- Solidity in tests is compiled with the JS-based [`@quantumcoin/solc`](https://www.npmjs.com/package/@quantumcoin/solc) package (installed via `npm install`); no external solc binary is needed. The `generate-sdk.js` CLI also defaults to it, with `--solc <path>` / `QC_SOLC_PATH` available as an optional external-binary override.
+
+For local testing, run the QuantumCoin devnet (network ID 123123, prefilled funded wallet) and point
+`QC_RPC_URL` at its HTTP RPC port (e.g. `http://127.0.0.1:8545`) —
+see https://github.com/quantumcoinproject/quantum-coin-go/blob/main/quantumcoin-devnet-readme.md
 
 
